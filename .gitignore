@@ -1,0 +1,7 @@
+bin
+obj
+out
+.vs
+.idea
+.vscode
+*.user
