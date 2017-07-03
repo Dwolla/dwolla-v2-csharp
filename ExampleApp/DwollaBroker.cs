@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Net;
 using System.Threading.Tasks;
 using Dwolla.Client;
 using Dwolla.Client.Models;
 using Dwolla.Client.Models.Requests;
 using Dwolla.Client.Models.Responses;
 using Dwolla.Client.Rest;
-using Newtonsoft.Json;
 
 namespace ExampleApp
 {
@@ -41,8 +39,8 @@ namespace ExampleApp
             return response.Response.Headers.Location;
         }
 
-        public async Task<GetCustomerResponse> GetCustomer(Uri uri) =>
-            (await GetAsync<GetCustomerResponse>(uri)).Content;
+        public async Task<Customer> GetCustomer(Uri uri) =>
+            (await GetAsync<Customer>(uri)).Content;
 
         private async Task<RestResponse<TRes>> GetAsync<TRes>(Uri uri)
         {
@@ -55,19 +53,9 @@ namespace ExampleApp
                 Console.WriteLine(e);
 
                 // Example error handling. More info: https://docsv2.dwolla.com/#errors
-                if (e.Response.StatusCode != HttpStatusCode.Unauthorized) throw;
-                try
+                if (e.Error?.Code == "ExpiredAccessToken")
                 {
-                    var error = JsonConvert.DeserializeObject<ErrorResponse>(e.Content);
-                    if (error.Code == "ExpiredAccessToken")
-                    {
-                        // TODO: Refresh token and retry request
-                    }
-                }
-                catch (Exception)
-                {
-                    // Failed to deserialize Dwolla JSON error
-                    throw e;
+                    // TODO: Refresh token and retry request
                 }
                 throw;
             }

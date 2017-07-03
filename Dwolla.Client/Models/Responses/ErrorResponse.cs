@@ -9,21 +9,21 @@ namespace Dwolla.Client.Models.Responses
         public string Message { get; set; }
 
         [JsonProperty(PropertyName = "_embedded")]
-        public Embedded Embedded { get; set; }
+        public ErrorEmbed Embedded { get; set; }
     }
 
-    public class Embedded
+    public class ErrorEmbed
     {
         public List<Error> Errors { get; set; }
     }
 
     public class Error
     {
+        [JsonProperty(PropertyName = "_links")]
+        public Dictionary<string, Link> Links { get; set; }
+
         public string Code { get; set; }
         public string Message { get; set; }
         public string Path { get; set; }
-
-        [JsonProperty(PropertyName = "_links")]
-        public Dictionary<string, Link> Links { get; set; }
     }
 }

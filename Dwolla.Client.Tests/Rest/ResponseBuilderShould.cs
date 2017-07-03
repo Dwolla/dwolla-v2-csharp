@@ -9,9 +9,8 @@ namespace Dwolla.Client.Tests.Rest
 {
     public class ResponseBuilderShould
     {
-        private readonly ResponseBuilder _builder;
-
         private static readonly TestResponse Expected = new TestResponse {Message = "testing"};
+        private readonly ResponseBuilder _builder;
 
         public ResponseBuilderShould() => _builder = new ResponseBuilder();
 
@@ -36,8 +35,7 @@ namespace Dwolla.Client.Tests.Rest
 
             var actual = await _builder.Build<TestResponse>(response);
 
-            Assert.Equal("Exception parsing JSON, StatusCode=OK, Content='{'",
-                actual.Exception.Message);
+            Assert.Equal("Exception parsing JSON, StatusCode=OK, Content='{'", actual.Exception.Message);
             Assert.Null(actual.Content);
             Assert.Equal(response, actual.Response);
         }
@@ -61,7 +59,7 @@ namespace Dwolla.Client.Tests.Rest
                 Content = new StringContent(JsonConvert.SerializeObject(Expected), Encoding.UTF8)
             };
 
-        public class TestResponse
+        private class TestResponse
         {
             public string Message { get; set; }
         }

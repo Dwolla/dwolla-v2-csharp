@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Dwolla.Client.Models;
+using Dwolla.Client.Models.Responses;
 using Dwolla.Client.Rest;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -51,9 +52,19 @@ namespace Dwolla.Client
 
         private async Task<RestResponse<TRes>> SendAsync<TRes>(HttpRequestMessage request)
         {
-            var response = await _client.SendAsync<TRes>(request);
-            if (response.Exception != null) throw CreateException(response);
-            return response;
+            var r = await _client.SendAsync<TRes>(request);
+            if (r.Exception == null) return r;
+
+            var e = CreateException(r);
+            try
+            {
+                e.Error = JsonConvert.DeserializeObject<ErrorResponse>(r.Exception.Content);
+            }
+            catch (Exception)
+            {
+                throw e;
+            }
+            throw e;
         }
 
         private static HttpRequestMessage CreatePostRequest<TReq>(
@@ -85,7 +96,7 @@ namespace Dwolla.Client
         internal static HttpClient CreateHttpClient()
         {
             var client = new HttpClient(new HttpClientHandler {SslProtocols = SslProtocols.Tls12});
-            client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("dwolla-v2-csharp", "1.0.0"));
+            client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("dwolla-v2-csharp", "1.0.1"));
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(ContentType));
             return client;
         }

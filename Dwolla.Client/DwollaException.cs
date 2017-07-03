@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using Dwolla.Client.Models.Responses;
 using Dwolla.Client.Rest;
 
 namespace Dwolla.Client
@@ -12,6 +13,7 @@ namespace Dwolla.Client
         public string Content { get; }
         public string Resource { get; }
         public string RequestId { get; }
+        public ErrorResponse Error { get; set; }
 
         public DwollaException(HttpResponseMessage response, RestException innerException = null)
             : base("Dwolla API Error", innerException)

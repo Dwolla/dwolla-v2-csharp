@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using Dwolla.Client.Models;
+using Dwolla.Client.Models.Responses;
 using Dwolla.Client.Rest;
 using Moq;
 using Newtonsoft.Json;
@@ -14,7 +15,7 @@ namespace Dwolla.Client.Tests
     {
         private const string JsonV1 = "application/vnd.dwolla.v1.hal+json";
         private const string RequestId = "some-id";
-        private const string UserAgent = "dwolla-v2-csharp/1.0.0";
+        private const string UserAgent = "dwolla-v2-csharp/1.0.1";
         private static readonly Uri RequestUri = new Uri("https://api-sandbox.dwolla.com/foo");
         private static readonly Uri AuthRequestUri = new Uri("https://sandbox.dwolla.com/oauth/v2/foo");
         private static readonly Headers Headers = new Headers {{"key1", "value1"}, {"key2", "value2"}};
@@ -66,6 +67,7 @@ namespace Dwolla.Client.Tests
             Assert.Equal(GetMessage(response.Response), ex.Message);
             Assert.Equal(e.Content, ex.Content);
             Assert.Equal(response.Response, ex.Response);
+            Assert.Null(ex.Error);
         }
 
         [Fact]
@@ -92,6 +94,7 @@ namespace Dwolla.Client.Tests
             Assert.Equal(GetMessage(response.Response), ex.Message);
             Assert.Equal(e.Content, ex.Content);
             Assert.Equal(response.Response, ex.Response);
+            Assert.Null(ex.Error);
         }
 
         [Fact]
@@ -118,6 +121,25 @@ namespace Dwolla.Client.Tests
             Assert.Equal(GetMessage(response.Response), ex.Message);
             Assert.Equal(e.Content, ex.Content);
             Assert.Equal(response.Response, ex.Response);
+            Assert.Null(ex.Error);
+        }
+
+        [Fact]
+        public async void DeserializeError()
+        {
+            var error = new ErrorResponse {Code = "ExpiredAccessToken", Message = "Access token expired."};
+            var e = CreateRestException(JsonConvert.SerializeObject(error));
+            var response = CreateRestResponse(HttpMethod.Get, null, e);
+            SetupForGet(CreateRequest(HttpMethod.Get), response);
+
+            var ex = await Assert.ThrowsAsync<DwollaException>(
+                () => _client.GetAsync<TestResponse>(RequestUri, Headers));
+
+            Assert.Equal(GetMessage(response.Response), ex.Message);
+            Assert.Equal(e.Content, ex.Content);
+            Assert.Equal(response.Response, ex.Response);
+            Assert.Equal(error.Code, ex.Error.Code);
+            Assert.Equal(error.Message, ex.Error.Message);
         }
 
         private static HttpRequestMessage CreatePostRequest()
@@ -129,9 +151,9 @@ namespace Dwolla.Client.Tests
 
         private static HttpRequestMessage CreateRequest(HttpMethod method)
         {
-            var request = new HttpRequestMessage(method, RequestUri);
-            foreach (var header in Headers) request.Headers.Add(header.Key, header.Value);
-            return request;
+            var r = new HttpRequestMessage(method, RequestUri);
+            foreach (var header in Headers) r.Headers.Add(header.Key, header.Value);
+            return r;
         }
 
         private static RestResponse<TestResponse> CreateRestResponse(
@@ -139,12 +161,12 @@ namespace Dwolla.Client.Tests
             TestResponse content = null,
             RestException ex = null)
         {
-            var response = new HttpResponseMessage
+            var r = new HttpResponseMessage
             {
                 RequestMessage = new HttpRequestMessage {RequestUri = RequestUri, Method = method}
             };
-            response.Headers.Add("x-request-id", RequestId);
-            return new RestResponse<TestResponse>(response, content, ex);
+            r.Headers.Add("x-request-id", RequestId);
+            return new RestResponse<TestResponse>(r, content, ex);
         }
 
         private static HttpRequestMessage CreateAuthHttpRequest()
@@ -155,8 +177,8 @@ namespace Dwolla.Client.Tests
             };
         }
 
-        private static RestException CreateRestException() =>
-            new RestException("RestMessage", null, HttpStatusCode.InternalServerError, "Content");
+        private static RestException CreateRestException(string content = "Content") =>
+            new RestException("RestMessage", null, HttpStatusCode.InternalServerError, content);
 
         private void SetupForGet(HttpRequestMessage req, RestResponse<TestResponse> res) =>
             _restClient.Setup(x => x.SendAsync<TestResponse>(It.IsAny<HttpRequestMessage>()))

@@ -34,9 +34,8 @@ namespace Dwolla.Client.Tests.Rest
             Assert.Equal(1, _handler.Requests.Count);
         }
 
-        public class TestResponse
+        private class TestResponse
         {
-            public string Message { get; set; }
         }
     }
 }

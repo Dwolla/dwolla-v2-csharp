@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace Dwolla.Client.Models.Responses
 {
-    public class GetCustomerResponse
+    public class Customer
     {
         [JsonProperty(PropertyName = "_links")]
         public Dictionary<string, Link> Links { get; set; }

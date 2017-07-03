@@ -3,9 +3,9 @@
     <TargetFramework>netstandard1.3</TargetFramework>
     <Company>Dwolla, Inc.</Company>
     <!-- Also update UserAgent version in DwollaClient.cs -->
-    <AssemblyVersion>1.0.0</AssemblyVersion>
-    <FileVersion>1.0.0</FileVersion>
-    <Version>1.0.0</Version>
+    <AssemblyVersion>1.0.1</AssemblyVersion>
+    <FileVersion>1.0.1</FileVersion>
+    <Version>1.0.1</Version>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
