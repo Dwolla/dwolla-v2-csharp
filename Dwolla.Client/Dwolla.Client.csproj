@@ -3,9 +3,15 @@
     <TargetFramework>netstandard1.3</TargetFramework>
     <Company>Dwolla, Inc.</Company>
     <!-- Also update UserAgent version in DwollaClient.cs -->
-    <AssemblyVersion>1.0.1</AssemblyVersion>
-    <FileVersion>1.0.1</FileVersion>
-    <Version>1.0.1</Version>
+    <AssemblyVersion>1.0.2</AssemblyVersion>
+    <FileVersion>1.0.2</FileVersion>
+    <Version>1.0.2</Version>
+    <Authors>Dwolla, Inc</Authors>
+    <Description>Official C# Wrapper for Dwolla's API v2</Description>
+    <Copyright>Copyright © 2017 Dwolla, Inc</Copyright>
+    <PackageProjectUrl>https://github.com/Dwolla/dwolla-v2-csharp</PackageProjectUrl>
+    <PackageIconUrl>https://dashboard.dwolla.com/static/icons/android-chrome-192x192.png</PackageIconUrl>
+    <PackageTags>dwolla api payments bank transfers money ach sdk</PackageTags>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
