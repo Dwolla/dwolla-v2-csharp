@@ -25,5 +25,6 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/Dwolla
 
 ## Changelog
 
+- **1.0.2** Lower VisualStudioVersion, add more properties to Customer
 - **1.0.1** Include deserialized error in DwollaException
 - **1.0.0** Initial release

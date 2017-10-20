@@ -46,8 +46,7 @@ namespace ExampleApp
             return response.Response.Headers.Location;
         }
 
-        public async Task<Customer> GetCustomerAsync(Uri uri) =>
-            (await GetAsync<Customer>(uri)).Content;
+        public async Task<Customer> GetCustomer(Uri uri) => (await GetAsync<Customer>(uri)).Content;
 
         public async Task<GetBusinessClassificationsResponse> GetBusinessClassificationsAsync() =>
             (await GetAsync<GetBusinessClassificationsResponse>(new Uri($"{_client.ApiBaseAddress}/business-classifications"))).Content;

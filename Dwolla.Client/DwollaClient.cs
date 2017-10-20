@@ -31,7 +31,7 @@ namespace Dwolla.Client
         public string ApiBaseAddress { get; }
         public string AuthBaseAddress { get; }
 
-        public static readonly JsonSerializerSettings JsonSettings =
+        private static readonly JsonSerializerSettings JsonSettings =
             new JsonSerializerSettings {ContractResolver = new CamelCasePropertyNamesContractResolver()};
 
         private const string AuthContentType = "application/json";
@@ -96,7 +96,7 @@ namespace Dwolla.Client
         internal static HttpClient CreateHttpClient()
         {
             var client = new HttpClient(new HttpClientHandler {SslProtocols = SslProtocols.Tls12});
-            client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("dwolla-v2-csharp", "1.0.1"));
+            client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("dwolla-v2-csharp", "1.0.2"));
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(ContentType));
             return client;
         }
