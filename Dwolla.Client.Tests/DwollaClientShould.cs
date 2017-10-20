@@ -15,7 +15,7 @@ namespace Dwolla.Client.Tests
     {
         private const string JsonV1 = "application/vnd.dwolla.v1.hal+json";
         private const string RequestId = "some-id";
-        private const string UserAgent = "dwolla-v2-csharp/1.0.1";
+        private const string UserAgent = "dwolla-v2-csharp/1.0.2";
         private static readonly Uri RequestUri = new Uri("https://api-sandbox.dwolla.com/foo");
         private static readonly Uri AuthRequestUri = new Uri("https://sandbox.dwolla.com/oauth/v2/foo");
         private static readonly Headers Headers = new Headers {{"key1", "value1"}, {"key2", "value2"}};
@@ -169,13 +169,10 @@ namespace Dwolla.Client.Tests
             return new RestResponse<TestResponse>(r, content, ex);
         }
 
-        private static HttpRequestMessage CreateAuthHttpRequest()
+        private static HttpRequestMessage CreateAuthHttpRequest() => new HttpRequestMessage(HttpMethod.Post, AuthRequestUri)
         {
-            return new HttpRequestMessage(HttpMethod.Post, AuthRequestUri)
-            {
-                Content = new StringContent(JsonConvert.SerializeObject(Request), Encoding.UTF8, "application/json")
-            };
-        }
+            Content = new StringContent(JsonConvert.SerializeObject(Request), Encoding.UTF8, "application/json")
+        };
 
         private static RestException CreateRestException(string content = "Content") =>
             new RestException("RestMessage", null, HttpStatusCode.InternalServerError, content);
