@@ -3,19 +3,20 @@ using Newtonsoft.Json;
 
 namespace Dwolla.Client.Models.Responses
 {
-    public class GetCustomersResponse
+    public class GetBusinessClassificationsResponse
     {
         [JsonProperty(PropertyName = "_links")]
         public Dictionary<string, Link> Links { get; set; }
 
         [JsonProperty(PropertyName = "_embedded")]
-        public CustomersEmbed Embedded { get; set; }
+        public BusinessClassificationsEmbed Embedded { get; set; }
 
         public int Total { get; set; }
     }
 
-    public class CustomersEmbed
+    public class BusinessClassificationsEmbed
     {
-        public List<Customer> Customers { get; set; }
+        [JsonProperty(PropertyName = "business-classifications")]
+        public List<BusinessClassification> BusinessClassifications { get; set; }
     }
 }

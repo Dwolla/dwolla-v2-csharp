@@ -96,7 +96,7 @@ namespace Dwolla.Client
         internal static HttpClient CreateHttpClient()
         {
             var client = new HttpClient(new HttpClientHandler {SslProtocols = SslProtocols.Tls12});
-            client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("dwolla-v2-csharp", "1.0.2"));
+            client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("dwolla-v2-csharp", "2.0.3"));
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(ContentType));
             return client;
         }

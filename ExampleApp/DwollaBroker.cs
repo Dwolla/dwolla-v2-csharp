@@ -21,11 +21,15 @@ namespace ExampleApp
                 new Uri($"{_client.AuthBaseAddress}/token"), new AppTokenRequest {Key = key, Secret = secret});
 
             // TODO: Securely store token in database for reuse
-            _headers.Add("Authorization", $"Bearer {response.Content.Token}");
+            if (!_headers.ContainsKey("Authorization"))
+                _headers.Add("Authorization", $"Bearer {response.Content.Token}");
+            else
+                _headers["Authorization"] = $"Bearer {response.Content.Token}";
+
             return response.Content;
         }
 
-        public async Task<RootResponse> GetRoot() =>
+        public async Task<RootResponse> GetRootAsync() =>
             (await GetAsync<RootResponse>(new Uri(_client.ApiBaseAddress))).Content;
 
         public async Task<Uri> CreateCustomerAsync(Uri uri, string firstName, string lastName, string email)
@@ -39,7 +43,11 @@ namespace ExampleApp
             return response.Response.Headers.Location;
         }
 
-        public async Task<Customer> GetCustomer(Uri uri) => (await GetAsync<Customer>(uri)).Content;
+        public async Task<Customer> GetCustomerAsync(Uri uri) => (await GetAsync<Customer>(uri)).Content;
+
+        public async Task<GetBusinessClassificationsResponse> GetBusinessClassificationsAsync() =>
+        (await GetAsync<GetBusinessClassificationsResponse>(
+            new Uri($"{_client.ApiBaseAddress}/business-classifications"))).Content;
 
         private async Task<RestResponse<TRes>> GetAsync<TRes>(Uri uri)
         {

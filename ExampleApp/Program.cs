@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Dwolla.Client;
+using static System.Console;
 
 namespace ExampleApp
 {
@@ -11,29 +12,77 @@ namespace ExampleApp
 
         static void Main()
         {
-            var broker = new DwollaBroker(DwollaClient.Create(isSandbox: true));
             var key = Environment.GetEnvironmentVariable("DWOLLA_APP_KEY");
             var secret = Environment.GetEnvironmentVariable("DWOLLA_APP_SECRET");
 
             if (string.IsNullOrWhiteSpace(key) || string.IsNullOrWhiteSpace(secret))
             {
-                Console.WriteLine("Set DWOLLA_APP_KEY and DWOLLA_APP_SECRET env vars and restart IDE. Exiting...");
-                Environment.Exit(1);
+                WriteLine("Set DWOLLA_APP_KEY and DWOLLA_APP_SECRET env vars and restart IDE. Press any key to exit..");
+                ReadLine();
             }
-
-            Task.Run(async () =>
+            else
             {
-                await broker.SetAuthroizationHeader(key, secret);
+                var running = true;
+                var broker = new DwollaBroker(DwollaClient.Create(isSandbox: true));
 
-                var rootRes = await broker.GetRoot();
-                foreach (var kvp in rootRes.Links) Console.WriteLine($"{kvp.Key}: {kvp.Value.Href}");
+                Task.Run(async () => await broker.SetAuthroizationHeader(key, secret)).Wait();
 
-                var createdCustomerUri = await broker.CreateCustomerAsync(
-                    rootRes.Links["customers"].Href, "night", "man", $"{RandomString(20)}@example.com");
+                while (running)
+                {
+                    Write("What would you like to do? (Press ? for options): ");
+                    var input = ReadLine();
 
-                var customer = await broker.GetCustomer(createdCustomerUri);
-                Console.WriteLine($"Created {customer.FirstName} {customer.LastName} with email={customer.Email}");
-            }).GetAwaiter().GetResult();
+                    switch (input.ToLower().Trim())
+                    {
+                        case "?":
+                            WriteLine(@"Options:
+ - Quit (q)
+ - Help (?)
+ - Get root (gr)
+ - Create a Customer (cc)
+ - Get Business Classifications (gbc)");
+                            break;
+                        case "quit":
+                        case "q":
+                        case "exit":
+                            running = false;
+                            break;
+                        case "gr":
+                            Task.Run(async () => await GetRoot(broker)).Wait();
+                            break;
+                        case "cc":
+                            Task.Run(async () => await CreateCustomer(broker)).Wait();
+                            break;
+                        case "gbc":
+                            Task.Run(async () => await GetBusinessClassifications(broker)).Wait();
+                            break;
+                    }
+                }
+            }
+        }
+
+        private static async Task GetRoot(DwollaBroker broker)
+        {
+            var res = await broker.GetRootAsync();
+            foreach (var kvp in res.Links) WriteLine($"{kvp.Key}: {kvp.Value.Href}");
+        }
+
+        private static async Task CreateCustomer(DwollaBroker broker)
+        {
+            var rootRes = await broker.GetRootAsync();
+            var createdCustomerUri = await broker.CreateCustomerAsync(
+                rootRes.Links["customers"].Href, "night", "man", $"{RandomString(20)}@example.com");
+
+            var customer = await broker.GetCustomerAsync(createdCustomerUri);
+            WriteLine($"Created {customer.FirstName} {customer.LastName} with email={customer.Email}");
+        }
+
+        private static async Task GetBusinessClassifications(DwollaBroker broker)
+        {
+            var res = await broker.GetBusinessClassificationsAsync();
+            res.Embedded.BusinessClassifications
+                .ForEach(bc => bc.Embedded.IndustryClassifications
+                    .ForEach(ic => WriteLine($"{bc.Name} - {ic.Name}")));
         }
 
         private static string RandomString(int length)
