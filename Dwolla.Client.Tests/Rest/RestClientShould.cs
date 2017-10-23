@@ -31,7 +31,7 @@ namespace Dwolla.Client.Tests.Rest
             var actual = await _restClient.SendAsync<TestResponse>(request);
 
             Assert.Equal(expected, actual);
-            Assert.Equal(1, _handler.Requests.Count);
+            Assert.Single(_handler.Requests);
         }
 
         private class TestResponse

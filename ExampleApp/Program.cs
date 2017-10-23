@@ -2,13 +2,14 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Dwolla.Client;
+using static System.Console;
 
 namespace ExampleApp
 {
     public class Program
     {
         private static readonly Random Random = new Random();
-        
+
         static void Main()
         {
             var key = Environment.GetEnvironmentVariable("DWOLLA_APP_KEY");
@@ -16,74 +17,72 @@ namespace ExampleApp
 
             if (string.IsNullOrWhiteSpace(key) || string.IsNullOrWhiteSpace(secret))
             {
-                Console.WriteLine("Set DWOLLA_APP_KEY and DWOLLA_APP_SECRET env vars and restart IDE. Press any key to close...");
-                Console.ReadLine();
+                WriteLine("Set DWOLLA_APP_KEY and DWOLLA_APP_SECRET env vars and restart IDE. Press any key to exit..");
+                ReadLine();
             }
             else
             {
-                bool running = true;
+                var running = true;
                 var broker = new DwollaBroker(DwollaClient.Create(isSandbox: true));
 
                 Task.Run(async () => await broker.SetAuthroizationHeader(key, secret)).Wait();
 
                 while (running)
                 {
-                    Console.Write("What would you like to do? (Press ? for options): ");
-                    var input = Console.ReadLine();
+                    Write("What would you like to do? (Press ? for options): ");
+                    var input = ReadLine();
 
                     switch (input.ToLower().Trim())
                     {
                         case "?":
-                            Console.WriteLine(@"Options:
+                            WriteLine(@"Options:
  - Quit (q)
  - Help (?)
+ - Get root (gr)
  - Create a Customer (cc)
- - See all Business Classifications (bcs)");
+ - Get Business Classifications (gbc)");
                             break;
                         case "quit":
                         case "q":
                         case "exit":
                             running = false;
                             break;
-
+                        case "gr":
+                            Task.Run(async () => await GetRoot(broker)).Wait();
+                            break;
                         case "cc":
                             Task.Run(async () => await CreateCustomer(broker)).Wait();
                             break;
-                        case "bcs":
+                        case "gbc":
                             Task.Run(async () => await GetBusinessClassifications(broker)).Wait();
                             break;
                     }
                 }
-
-                
             }
-#if DEBUG
-#endif
+        }
+
+        private static async Task GetRoot(DwollaBroker broker)
+        {
+            var res = await broker.GetRootAsync();
+            foreach (var kvp in res.Links) WriteLine($"{kvp.Key}: {kvp.Value.Href}");
         }
 
         private static async Task CreateCustomer(DwollaBroker broker)
         {
-            var rootRes = await broker.GetRoot();
-            foreach (var kvp in rootRes.Links) Console.WriteLine($"{kvp.Key}: {kvp.Value.Href}");
-
+            var rootRes = await broker.GetRootAsync();
             var createdCustomerUri = await broker.CreateCustomerAsync(
                 rootRes.Links["customers"].Href, "night", "man", $"{RandomString(20)}@example.com");
 
             var customer = await broker.GetCustomerAsync(createdCustomerUri);
-            Console.WriteLine($"Created {customer.FirstName} {customer.LastName} with email={customer.Email}");
+            WriteLine($"Created {customer.FirstName} {customer.LastName} with email={customer.Email}");
         }
 
         private static async Task GetBusinessClassifications(DwollaBroker broker)
         {
-            var bcResponse = await broker.GetBusinessClassificationsAsync();
-
-            foreach (var bc in bcResponse.Embedded.BusinessClassifications)
-            {
-                foreach (var ic in bc.Embedded.IndustryClassifications)
-                {
-                    Console.WriteLine($"{bc.Name} - {ic.Name}");
-                }
-            }
+            var res = await broker.GetBusinessClassificationsAsync();
+            res.Embedded.BusinessClassifications
+                .ForEach(bc => bc.Embedded.IndustryClassifications
+                    .ForEach(ic => WriteLine($"{bc.Name} - {ic.Name}")));
         }
 
         private static string RandomString(int length)

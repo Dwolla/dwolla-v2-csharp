@@ -9,12 +9,12 @@ namespace Dwolla.Client.Models.Responses
         public Dictionary<string, Link> Links { get; set; }
 
         [JsonProperty(PropertyName = "_embedded")]
-        public CustomerEmbed Embedded { get; set; }
+        public CustomersEmbed Embedded { get; set; }
 
         public int Total { get; set; }
     }
 
-    public class CustomerEmbed
+    public class CustomersEmbed
     {
         public List<Customer> Customers { get; set; }
     }
