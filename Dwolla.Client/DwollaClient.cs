@@ -23,6 +23,7 @@ namespace Dwolla.Client
         Task<RestResponse<TRes>> PostAuthAsync<TReq, TRes>(Uri uri, TReq content);
         Task<RestResponse<TRes>> GetAsync<TRes>(Uri uri, Headers headers);
         Task<RestResponse<TRes>> PostAsync<TReq, TRes>(Uri uri, TReq content, Headers headers);
+        Task<RestResponse> DeleteAsync<TReq>(Uri uri, TReq content, Headers headers);
     }
 
     public class DwollaClient : IDwollaClient
@@ -50,6 +51,26 @@ namespace Dwolla.Client
         public async Task<RestResponse<TRes>> PostAsync<TReq, TRes>(Uri uri, TReq content, Headers headers) =>
             await SendAsync<TRes>(CreatePostRequest(uri, content, headers));
 
+        public async Task<RestResponse> DeleteAsync<TReq>(Uri uri, TReq content, Headers headers) =>
+            await SendAsync(CreateDeleteRequest(uri, content, headers));
+
+        private async Task<RestResponse> SendAsync(HttpRequestMessage request)
+        {
+            var r = await _client.SendAsync(request);
+            if (r.Exception == null) return r;
+
+            var e = CreateException(r);
+            try
+            {
+                e.Error = JsonConvert.DeserializeObject<ErrorResponse>(r.Exception.Content);
+            }
+            catch (Exception)
+            {
+                throw e;
+            }
+            throw e;
+        }
+
         private async Task<RestResponse<TRes>> SendAsync<TRes>(HttpRequestMessage request)
         {
             var r = await _client.SendAsync<TRes>(request);
@@ -65,6 +86,15 @@ namespace Dwolla.Client
                 throw e;
             }
             throw e;
+        }
+
+        private static HttpRequestMessage CreateDeleteRequest<TReq>(
+            Uri requestUri, TReq content, Headers headers, string contentType = ContentType)
+        {
+            var r = CreateRequest(HttpMethod.Delete, requestUri, headers);
+            r.Content = new StringContent(
+                content != null ? JsonConvert.SerializeObject(content, JsonSettings) : null, Encoding.UTF8, contentType);
+            return r;
         }
 
         private static HttpRequestMessage CreatePostRequest<TReq>(
@@ -83,7 +113,7 @@ namespace Dwolla.Client
             return r;
         }
 
-        private static DwollaException CreateException<T>(RestResponse<T> response) =>
+        private static DwollaException CreateException(RestResponse response) =>
             new DwollaException(response.Response, response.Exception);
 
         internal DwollaClient(IRestClient client, bool isSandbox)

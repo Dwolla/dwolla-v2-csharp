@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Dwolla.Client;
 using static System.Console;
+using Dwolla.Client.Models.Responses;
 
 namespace ExampleApp
 {
@@ -40,7 +41,10 @@ namespace ExampleApp
  - Help (?)
  - Get root (gr)
  - Create a Customer (cc)
- - Get Business Classifications (gbc)");
+ - Get Webhook Subscriptions (gws)
+ - Create a Webhook Subscription (cws)
+ - Delete a Webhook Subscription (dws)
+ - Get Business Classifications (gb/.. mnjhnihn jnnnnc)");
                             break;
                         case "quit":
                         case "q":
@@ -55,6 +59,15 @@ namespace ExampleApp
                             break;
                         case "gbc":
                             Task.Run(async () => await GetBusinessClassifications(broker)).Wait();
+                            break;
+                        case "gws":
+                            Task.Run(async () => await GetWebhookSubscriptions(broker)).Wait();
+                            break;
+                        case "cws":
+                            Task.Run(async () => await CreateWebhookSubscription(broker)).Wait();
+                            break;
+                        case "dws":
+                            Task.Run(async () => await DeleteWebhookSubscription(broker)).Wait();
                             break;
                     }
                 }
@@ -75,6 +88,36 @@ namespace ExampleApp
 
             var customer = await broker.GetCustomerAsync(createdCustomerUri);
             WriteLine($"Created {customer.FirstName} {customer.LastName} with email={customer.Email}");
+        }
+
+        private static async Task GetWebhookSubscriptions(DwollaBroker broker)
+        {
+            var rootRes = await broker.GetRootAsync();
+            var res = await broker.GetWebhookSubscriptionsAsync(rootRes.Links["webhook-subscriptions"].Href);
+            res.Embedded.WebhookSubscriptions
+                .ForEach(ws => WriteLine($" - {ws.Id}: {ws.Url}{(ws.Paused ? " PAUSED" : null)}"));
+        }
+
+        private static async Task<WebhookSubscription> CreateWebhookSubscription(DwollaBroker broker)
+        {
+            var rootRes = await broker.GetRootAsync();
+            var createdSubscriptionUri = await broker.CreateWebhookSubscriptionAsync(
+                rootRes.Links["webhook-subscriptions"].Href, $"http://example.com/webhooks/{RandomString(10)}", RandomString(10));
+
+            var subscription = await broker.GetWebhookSubscriptionAsync(createdSubscriptionUri);
+            WriteLine($"Created Subscription {subscription.Id} with url={subscription.Url}");
+
+            return subscription;
+        }
+
+        private static async Task DeleteWebhookSubscription(DwollaBroker broker)
+        {
+            Write("Please enter the ID of the webhook subscription to delete: ");
+            var input = ReadLine();
+
+            var rootRes = await broker.GetRootAsync();
+            await broker.DeleteWebhookSubscriptionAsync(new Uri(rootRes.Links["webhook-subscriptions"].Href + "/" + input));
+            WriteLine($"Deleted Subscription {input}");
         }
 
         private static async Task GetBusinessClassifications(DwollaBroker broker)
