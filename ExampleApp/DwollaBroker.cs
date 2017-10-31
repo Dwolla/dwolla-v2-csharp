@@ -45,6 +45,10 @@ namespace ExampleApp
 
         public async Task<Customer> GetCustomerAsync(Uri uri) => (await GetAsync<Customer>(uri)).Content;
 
+        public async Task<GetCustomersResponse> GetCustomersAsync(Uri uri) => (await GetAsync<GetCustomersResponse>(uri)).Content;
+
+        public async Task<GetFundingSourcesResponse> GetCustomerFundingSourcesAsync(Uri customerUri) => (await GetAsync<GetFundingSourcesResponse>(new Uri(customerUri.AbsoluteUri + "/funding-sources"))).Content;
+
         public async Task<Uri> CreateWebhookSubscriptionAsync(Uri uri, string url, string secret)
         {
             var response = await PostAsync<CreateWebhookSubscriptionRequest, object>(uri, new CreateWebhookSubscriptionRequest

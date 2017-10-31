@@ -4,11 +4,8 @@ using Newtonsoft.Json;
 
 namespace Dwolla.Client.Models.Responses
 {
-    public class BusinessClassification
+    public class BusinessClassification : BaseResponse
     {
-        [JsonProperty(PropertyName = "_links")]
-        public Dictionary<string, Link> Links { get; set; }
-
         [JsonProperty(PropertyName = "_embedded")]
         public IndustryClassificationsEmbed Embedded { get; set; }
 
@@ -16,9 +13,14 @@ namespace Dwolla.Client.Models.Responses
         public string Name { get; set; }
     }
 
-    public class IndustryClassificationsEmbed
+    public class IndustryClassificationsEmbed : Embed<IndustryClassification>
     {
         [JsonProperty(PropertyName = "industry-classifications")]
         public List<IndustryClassification> IndustryClassifications { get; set; }
+
+        public override List<IndustryClassification> Results()
+        {
+            return IndustryClassifications;
+        }
     }
 }

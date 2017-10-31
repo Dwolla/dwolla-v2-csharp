@@ -3,20 +3,20 @@ using Newtonsoft.Json;
 
 namespace Dwolla.Client.Models.Responses
 {
-    public class GetWebhookSubscriptionsResponse
+    public class GetWebhookSubscriptionsResponse : BaseGetResponse<WebhookSubscription>
     {
-        [JsonProperty(PropertyName = "_links")]
-        public Dictionary<string, Link> Links { get; set; }
-
         [JsonProperty(PropertyName = "_embedded")]
-        public WebhookSubscriptionsEmbed Embedded { get; set; }
-
-        public int Total { get; set; }
+        public new WebhookSubscriptionsEmbed Embedded { get; set; }
     }
 
-    public class WebhookSubscriptionsEmbed
+    public class WebhookSubscriptionsEmbed : Embed<WebhookSubscription>
     {
         [JsonProperty(PropertyName = "webhook-subscriptions")]
         public List<WebhookSubscription> WebhookSubscriptions { get; set; }
+
+        public override List<WebhookSubscription> Results()
+        {
+            return WebhookSubscriptions;
+        }
     }
 }

@@ -40,11 +40,13 @@ namespace ExampleApp
  - Quit (q)
  - Help (?)
  - Get root (gr)
+ - Get Customers (gc)
  - Create a Customer (cc)
+ - Get a Customer's Funding Sources (gcfs)
  - Get Webhook Subscriptions (gws)
  - Create a Webhook Subscription (cws)
  - Delete a Webhook Subscription (dws)
- - Get Business Classifications (gb/.. mnjhnihn jnnnnc)");
+ - Get Business Classifications (gbc)");
                             break;
                         case "quit":
                         case "q":
@@ -54,12 +56,21 @@ namespace ExampleApp
                         case "gr":
                             Task.Run(async () => await GetRoot(broker)).Wait();
                             break;
+
+                        case "gc":
+                            Task.Run(async () => await GetCustomers(broker)).Wait();
+                            break;
                         case "cc":
                             Task.Run(async () => await CreateCustomer(broker)).Wait();
                             break;
+                        case "gcfs":
+                            Task.Run(async () => await GetCustomerFundingSources(broker)).Wait();
+                            break;
+
                         case "gbc":
                             Task.Run(async () => await GetBusinessClassifications(broker)).Wait();
                             break;
+
                         case "gws":
                             Task.Run(async () => await GetWebhookSubscriptions(broker)).Wait();
                             break;
@@ -79,6 +90,16 @@ namespace ExampleApp
             var res = await broker.GetRootAsync();
             foreach (var kvp in res.Links) WriteLine($"{kvp.Key}: {kvp.Value.Href}");
         }
+        
+        #region Customers
+
+        private static async Task GetCustomers(DwollaBroker broker)
+        {
+            var rootRes = await broker.GetRootAsync();
+            var res = await broker.GetCustomersAsync(rootRes.Links["customers"].Href);
+            res.Embedded.Customers
+                .ForEach(c => WriteLine($" - ID:{c.Id}  {c.FirstName} {c.LastName}"));
+        }
 
         private static async Task CreateCustomer(DwollaBroker broker)
         {
@@ -89,6 +110,21 @@ namespace ExampleApp
             var customer = await broker.GetCustomerAsync(createdCustomerUri);
             WriteLine($"Created {customer.FirstName} {customer.LastName} with email={customer.Email}");
         }
+
+        private static async Task GetCustomerFundingSources(DwollaBroker broker)
+        {
+            Write("Please enter the customer ID for whom you would like to list the funding sources: ");
+            var input = ReadLine();
+
+            var rootRes = await broker.GetRootAsync();
+            var res = await broker.GetCustomerFundingSourcesAsync(new Uri($"{rootRes.Links["customers"].Href}/{input}"));
+            res.Embedded.FundingSources
+                .ForEach(fs => WriteLine($" - ID:{fs.Id}  {fs.Name}"));
+        }
+
+        #endregion
+
+        #region Webhook Subscriptions
 
         private static async Task GetWebhookSubscriptions(DwollaBroker broker)
         {
@@ -119,6 +155,8 @@ namespace ExampleApp
             await broker.DeleteWebhookSubscriptionAsync(new Uri(rootRes.Links["webhook-subscriptions"].Href + "/" + input));
             WriteLine($"Deleted Subscription {input}");
         }
+
+        #endregion
 
         private static async Task GetBusinessClassifications(DwollaBroker broker)
         {
