@@ -44,7 +44,7 @@ namespace ExampleApp
  - Get Webhook Subscriptions (gws)
  - Create a Webhook Subscription (cws)
  - Delete a Webhook Subscription (dws)
- - Get Business Classifications (gb/.. mnjhnihn jnnnnc)");
+ - Get Business Classifications (gbc)");
                             break;
                         case "quit":
                         case "q":
