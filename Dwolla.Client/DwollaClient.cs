@@ -23,7 +23,7 @@ namespace Dwolla.Client
         Task<RestResponse<TRes>> PostAuthAsync<TReq, TRes>(Uri uri, TReq content);
         Task<RestResponse<TRes>> GetAsync<TRes>(Uri uri, Headers headers);
         Task<RestResponse<TRes>> PostAsync<TReq, TRes>(Uri uri, TReq content, Headers headers);
-        Task<RestResponse> DeleteAsync<TReq>(Uri uri, TReq content, Headers headers);
+        Task<RestResponse<object>> DeleteAsync<TReq>(Uri uri, TReq content, Headers headers);
     }
 
     public class DwollaClient : IDwollaClient
@@ -51,7 +51,7 @@ namespace Dwolla.Client
         public async Task<RestResponse<TRes>> PostAsync<TReq, TRes>(Uri uri, TReq content, Headers headers) =>
             await SendAsync<TRes>(CreatePostRequest(uri, content, headers));
 
-        public async Task<RestResponse> DeleteAsync<TReq>(Uri uri, TReq content, Headers headers) =>
+        public async Task<RestResponse<object>> DeleteAsync<TReq>(Uri uri, TReq content, Headers headers) =>
             await SendAsync<object>(CreateDeleteRequest(uri, content, headers));
         
         private async Task<RestResponse<TRes>> SendAsync<TRes>(HttpRequestMessage request)
@@ -98,7 +98,7 @@ namespace Dwolla.Client
             return r;
         }
 
-        private static DwollaException CreateException(RestResponse response) =>
+        private static DwollaException CreateException<T>(RestResponse<T> response) =>
             new DwollaException(response.Response, response.Exception);
 
         internal DwollaClient(IRestClient client, bool isSandbox)

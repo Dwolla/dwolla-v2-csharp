@@ -101,7 +101,7 @@ namespace ExampleApp
             }
         }
 
-        private async Task<RestResponse> DeleteAsync<TReq>(Uri uri, TReq request)
+        private async Task<RestResponse<object>> DeleteAsync<TReq>(Uri uri, TReq request)
         {
             try
             {
