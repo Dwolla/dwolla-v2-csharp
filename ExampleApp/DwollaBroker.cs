@@ -34,12 +34,17 @@ namespace ExampleApp
 
         public async Task<Uri> CreateCustomerAsync(Uri uri, string firstName, string lastName, string email)
         {
-            var response = await PostAsync<CreateCustomerRequest, object>(uri, new CreateCustomerRequest
+            return await CreateCustomerAsync(uri, new CreateCustomerRequest
             {
                 FirstName = firstName,
                 LastName = lastName,
                 Email = email
             });
+        }
+
+        public async Task<Uri> CreateCustomerAsync(Uri uri, CreateCustomerRequest request)
+        {
+            var response = await PostAsync<CreateCustomerRequest, object>(uri, request);
             return response.Response.Headers.Location;
         }
 

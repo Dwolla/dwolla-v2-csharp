@@ -19,7 +19,13 @@ namespace ExampleApp.Tasks
 
         private static readonly Random Random = new Random();
 
-        protected  static string RandomString(int length)
+        protected static string RandomNumberString(int length)
+        {
+            const string chars = "0123456789";
+            return new string(Enumerable.Repeat(chars, length).Select(s => s[Random.Next(s.Length)]).ToArray());
+        }
+
+        protected static string RandomString(int length)
         {
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
             return new string(Enumerable.Repeat(chars, length).Select(s => s[Random.Next(s.Length)]).ToArray());
