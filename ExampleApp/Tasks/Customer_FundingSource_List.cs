@@ -16,7 +16,7 @@ namespace ExampleApp.Tasks
             var rootRes = await Broker.GetRootAsync();
             var res = await Broker.GetCustomerFundingSourcesAsync(new Uri($"{rootRes.Links["customers"].Href}/{input}"));
             res.Embedded.FundingSources
-                .ForEach(fs => WriteLine($" - ID:{fs.Id}  {fs.Name}"));
+                .ForEach(fs => WriteLine($" - ID:{fs.Id}  Name:{fs.Name} Type:{fs.Type}"));
         }
     }
 }

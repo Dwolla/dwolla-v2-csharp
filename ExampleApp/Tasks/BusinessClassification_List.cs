@@ -13,7 +13,7 @@ namespace ExampleApp.Tasks
             var res = await Broker.GetBusinessClassificationsAsync();
             res.Embedded.BusinessClassifications
                 .ForEach(bc => bc.Embedded.IndustryClassifications
-                    .ForEach(ic => WriteLine($"{bc.Name} - {ic.Name}")));
+                    .ForEach(ic => WriteLine($"{bc.Id}:{bc.Name} - {ic.Id}:{ic.Name}")));
         }
     }
 }
