@@ -56,7 +56,7 @@ namespace Dwolla.Client.Tests
         public async void ThrowOnPostAuthAsyncException()
         {
             var e = CreateRestException();
-            var response = CreateRestResponse(HttpMethod.Post, null, e);
+            var response = CreateRestResponse<TestResponse>(HttpMethod.Post, null, e);
             var httpRequest = CreateAuthHttpRequest();
             _restClient.Setup(x => x.SendAsync<TestResponse>(It.IsAny<HttpRequestMessage>()))
                 .Callback<HttpRequestMessage>(y => AppTokenCallback(httpRequest, y)).ReturnsAsync(response);
@@ -85,7 +85,7 @@ namespace Dwolla.Client.Tests
         public async void ThrowOnGetAsyncException()
         {
             var e = CreateRestException();
-            var response = CreateRestResponse(HttpMethod.Get, null, e);
+            var response = CreateRestResponse<TestResponse>(HttpMethod.Get, null, e);
             SetupForGet(CreateRequest(HttpMethod.Get), response);
 
             var ex = await Assert.ThrowsAsync<DwollaException>(
@@ -112,7 +112,7 @@ namespace Dwolla.Client.Tests
         public async void ThrowOnPostAsyncException()
         {
             var e = CreateRestException();
-            var response = CreateRestResponse(HttpMethod.Post, null, e);
+            var response = CreateRestResponse<TestResponse>(HttpMethod.Post, null, e);
             SetupForPost(CreatePostRequest(), response);
 
             var ex = await Assert.ThrowsAsync<DwollaException>(() =>
@@ -125,11 +125,49 @@ namespace Dwolla.Client.Tests
         }
 
         [Fact]
+        public async void CreateDeleteRequestAndPassToClient()
+        {
+            var response = CreateRestResponse<object>(HttpMethod.Delete);
+            SetupForDelete(CreateDeleteRequest(Request), response);
+
+            var actual = await _client.DeleteAsync<TestRequest>(RequestUri, Request, Headers);
+
+            Assert.Equal(response, actual);
+        }
+
+        [Fact]
+        public async void CreateNoContentDeleteRequestAndPassToClient()
+        {
+            var response = CreateRestResponse<object>(HttpMethod.Delete);
+            SetupForDelete(CreateDeleteRequest(null), response);
+
+            var actual = await _client.DeleteAsync<object>(RequestUri, null, Headers);
+
+            Assert.Equal(response, actual);
+        }
+
+        [Fact]
+        public async void ThrowOnDeleteAsyncException()
+        {
+            var e = CreateRestException();
+            var response = CreateRestResponse<object>(HttpMethod.Delete, null, e);
+            SetupForDelete(CreateDeleteRequest(Request), response);
+
+            var ex = await Assert.ThrowsAsync<DwollaException>(() =>
+                _client.DeleteAsync<TestRequest>(RequestUri, Request, Headers));
+
+            Assert.Equal(GetMessage(response.Response), ex.Message);
+            Assert.Equal(e.Content, ex.Content);
+            Assert.Equal(response.Response, ex.Response);
+            Assert.Null(ex.Error);
+        }
+
+        [Fact]
         public async void DeserializeError()
         {
             var error = new ErrorResponse {Code = "ExpiredAccessToken", Message = "Access token expired."};
             var e = CreateRestException(JsonConvert.SerializeObject(error));
-            var response = CreateRestResponse(HttpMethod.Get, null, e);
+            var response = CreateRestResponse<TestResponse>(HttpMethod.Get, null, e);
             SetupForGet(CreateRequest(HttpMethod.Get), response);
 
             var ex = await Assert.ThrowsAsync<DwollaException>(
@@ -144,11 +182,21 @@ namespace Dwolla.Client.Tests
 
         private static HttpRequestMessage CreatePostRequest()
         {
-            var r = CreateRequest(HttpMethod.Post);
-            r.Content = new StringContent(JsonConvert.SerializeObject(Request), Encoding.UTF8, JsonV1);
-            return r;
+            return CreateContentRequest(HttpMethod.Post, Request);
         }
 
+        private static HttpRequestMessage CreateDeleteRequest(TestRequest content)
+        {
+            return CreateContentRequest(HttpMethod.Delete, content);
+        }
+
+        private static HttpRequestMessage CreateContentRequest(HttpMethod method, TestRequest content)
+        {
+            var r = CreateRequest(method);
+            r.Content = content != null ? new StringContent(JsonConvert.SerializeObject(content), Encoding.UTF8, JsonV1) : null;
+            return r;
+        }
+        
         private static HttpRequestMessage CreateRequest(HttpMethod method)
         {
             var r = new HttpRequestMessage(method, RequestUri);
@@ -156,17 +204,15 @@ namespace Dwolla.Client.Tests
             return r;
         }
 
-        private static RestResponse<TestResponse> CreateRestResponse(
-            HttpMethod method,
-            TestResponse content = null,
-            RestException ex = null)
+        private static RestResponse<T> CreateRestResponse<T>(HttpMethod method, T content = null, RestException ex = null)
+            where T : class
         {
             var r = new HttpResponseMessage
             {
                 RequestMessage = new HttpRequestMessage {RequestUri = RequestUri, Method = method}
             };
             r.Headers.Add("x-request-id", RequestId);
-            return new RestResponse<TestResponse>(r, content, ex);
+            return new RestResponse<T>(r, content, ex);
         }
 
         private static HttpRequestMessage CreateAuthHttpRequest() =>
@@ -186,12 +232,20 @@ namespace Dwolla.Client.Tests
             _restClient.Setup(x => x.SendAsync<TestResponse>(It.IsAny<HttpRequestMessage>()))
                 .Callback<HttpRequestMessage>(y => PostCallback(req, y)).ReturnsAsync(res);
 
+        private void SetupForDelete(HttpRequestMessage req, RestResponse<object> res) =>
+            _restClient.Setup(x => x.SendAsync<object>(It.IsAny<HttpRequestMessage>()))
+                .Callback<HttpRequestMessage>(y => DeleteCallback(req, y)).ReturnsAsync(res);
+        
         private static async void PostCallback(HttpRequestMessage expected, HttpRequestMessage actual)
         {
             GetCallback(expected, actual);
             Assert.Equal("{\"message\":\"requestTest\"}", await actual.Content.ReadAsStringAsync());
-            Assert.Equal("application/vnd.dwolla.v1.hal+json; charset=utf-8",
-                actual.Content.Headers.ContentType.ToString());
+            Assert.Equal("application/vnd.dwolla.v1.hal+json; charset=utf-8", actual.Content.Headers.ContentType.ToString());
+        }
+
+        private static void DeleteCallback(HttpRequestMessage expected, HttpRequestMessage actual)
+        {
+            GetCallback(expected, actual);
         }
 
         private static void GetCallback(HttpRequestMessage expected, HttpRequestMessage actual)

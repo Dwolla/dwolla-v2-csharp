@@ -23,7 +23,7 @@ namespace Dwolla.Client
         Task<RestResponse<TRes>> PostAuthAsync<TReq, TRes>(Uri uri, TReq content);
         Task<RestResponse<TRes>> GetAsync<TRes>(Uri uri, Headers headers);
         Task<RestResponse<TRes>> PostAsync<TReq, TRes>(Uri uri, TReq content, Headers headers);
-        Task<RestResponse> DeleteAsync<TReq>(Uri uri, TReq content, Headers headers);
+        Task<RestResponse<object>> DeleteAsync<TReq>(Uri uri, TReq content, Headers headers);
     }
 
     public class DwollaClient : IDwollaClient
@@ -51,26 +51,9 @@ namespace Dwolla.Client
         public async Task<RestResponse<TRes>> PostAsync<TReq, TRes>(Uri uri, TReq content, Headers headers) =>
             await SendAsync<TRes>(CreatePostRequest(uri, content, headers));
 
-        public async Task<RestResponse> DeleteAsync<TReq>(Uri uri, TReq content, Headers headers) =>
-            await SendAsync(CreateDeleteRequest(uri, content, headers));
-
-        private async Task<RestResponse> SendAsync(HttpRequestMessage request)
-        {
-            var r = await _client.SendAsync(request);
-            if (r.Exception == null) return r;
-
-            var e = CreateException(r);
-            try
-            {
-                e.Error = JsonConvert.DeserializeObject<ErrorResponse>(r.Exception.Content);
-            }
-            catch (Exception)
-            {
-                throw e;
-            }
-            throw e;
-        }
-
+        public async Task<RestResponse<object>> DeleteAsync<TReq>(Uri uri, TReq content, Headers headers) =>
+            await SendAsync<object>(CreateDeleteRequest(uri, content, headers));
+        
         private async Task<RestResponse<TRes>> SendAsync<TRes>(HttpRequestMessage request)
         {
             var r = await _client.SendAsync<TRes>(request);
@@ -91,28 +74,31 @@ namespace Dwolla.Client
         private static HttpRequestMessage CreateDeleteRequest<TReq>(
             Uri requestUri, TReq content, Headers headers, string contentType = ContentType)
         {
-            var r = CreateRequest(HttpMethod.Delete, requestUri, headers);
-            r.Content = content != null ? new StringContent(JsonConvert.SerializeObject(content, JsonSettings), Encoding.UTF8, contentType) : null;
-            return r;
+            return CreateContentRequest(HttpMethod.Delete, requestUri, headers, content, contentType);
         }
 
         private static HttpRequestMessage CreatePostRequest<TReq>(
             Uri requestUri, TReq content, Headers headers, string contentType = ContentType)
         {
-            var r = CreateRequest(HttpMethod.Post, requestUri, headers);
-            r.Content = new StringContent(
-                JsonConvert.SerializeObject(content, JsonSettings), Encoding.UTF8, contentType);
+            return CreateContentRequest(HttpMethod.Post, requestUri, headers, content, contentType);
+        }
+
+        private static HttpRequestMessage CreateContentRequest<TReq>(HttpMethod method, Uri requestUri, Headers headers, TReq content, string contentType)
+        {
+            var r = CreateRequest(method, requestUri, headers);
+            r.Content = content != null ? new StringContent(JsonConvert.SerializeObject(content, JsonSettings), Encoding.UTF8, contentType) : null;
             return r;
         }
 
         private static HttpRequestMessage CreateRequest(HttpMethod method, Uri requestUri, Headers headers)
         {
             var r = new HttpRequestMessage(method, requestUri);
-            foreach (var header in headers) r.Headers.Add(header.Key, header.Value);
+            foreach (var header in headers)
+                r.Headers.Add(header.Key, header.Value);
             return r;
         }
 
-        private static DwollaException CreateException(RestResponse response) =>
+        private static DwollaException CreateException<T>(RestResponse<T> response) =>
             new DwollaException(response.Response, response.Exception);
 
         internal DwollaClient(IRestClient client, bool isSandbox)

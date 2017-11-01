@@ -2,25 +2,16 @@
 
 namespace Dwolla.Client.Rest
 {
-    public class RestResponse
+    public class RestResponse<T>
     {
         public HttpResponseMessage Response { get; }
+        public T Content { get; }
         public RestException Exception { get; }
 
-        public RestResponse(HttpResponseMessage resposne, RestException exception = null)
-        {
-            Response = resposne;
-            Exception = exception;
-        }
-    }
-
-    public class RestResponse<T> : RestResponse
-    {
-        public T Content { get; }
-
         public RestResponse(HttpResponseMessage response, T content, RestException exception = null)
-            : base(response, exception)
         {
+            Response = response;
+            Exception = exception;
             Content = content;
         }
     }
