@@ -29,6 +29,8 @@ namespace ExampleApp
 
                 Task.Run(async () => await broker.SetAuthroizationHeader(key, secret)).Wait();
 
+                WriteHelp();
+
                 while (running)
                 {
                     Write("What would you like to do? (Press ? for options): ");
@@ -37,10 +39,7 @@ namespace ExampleApp
                     switch (input.ToLower().Trim())
                     {
                         case "?":
-                            WriteLine(@"Options:
- - Quit (q)
- - Help (?)");
-                            GetTasks().ForEach(ta => WriteLine($" - {ta.Description} ({ta.Command})"));
+                            WriteHelp();
                             break;
 
                         case "quit":
@@ -55,6 +54,14 @@ namespace ExampleApp
                     }
                 }
             }
+        }
+
+        private static void WriteHelp()
+        {
+            WriteLine(@"Options:
+ - Quit (q)
+ - Help (?)");
+            GetTasks().ForEach(ta => WriteLine($" - {ta.Description} ({ta.Command})"));
         }
 
         private static Dictionary<string, Type> _tasks = null;
