@@ -57,6 +57,9 @@ namespace ExampleApp
         public async Task<GetFundingSourcesResponse> GetCustomerFundingSourcesAsync(Uri customerUri) => 
             (await GetAsync<GetFundingSourcesResponse>(new Uri(customerUri.AbsoluteUri + "/funding-sources"))).Content;
 
+        public async Task<IavTokenResponse> GetCustomerIavToken(Uri customerUri) =>
+            (await PostAsync<object, IavTokenResponse>(new Uri(customerUri.AbsoluteUri + "/iav-token"), null)).Content;
+
         public async Task<Uri> CreateWebhookSubscriptionAsync(Uri uri, string url, string secret)
         {
             var response = await PostAsync<CreateWebhookSubscriptionRequest, object>(uri,
