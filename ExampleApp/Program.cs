@@ -102,7 +102,8 @@ namespace ExampleApp
         {
             var rootRes = await broker.GetRootAsync();
             var createdSubscriptionUri = await broker.CreateWebhookSubscriptionAsync(
-                rootRes.Links["webhook-subscriptions"].Href, $"http://example.com/webhooks/{RandomString(10)}", RandomString(10));
+                rootRes.Links["webhook-subscriptions"].Href, $"http://example.com/webhooks/{RandomString(10)}",
+                RandomString(10));
 
             var subscription = await broker.GetWebhookSubscriptionAsync(createdSubscriptionUri);
             WriteLine($"Created Subscription {subscription.Id} with url={subscription.Url}");
@@ -116,7 +117,8 @@ namespace ExampleApp
             var input = ReadLine();
 
             var rootRes = await broker.GetRootAsync();
-            await broker.DeleteWebhookSubscriptionAsync(new Uri(rootRes.Links["webhook-subscriptions"].Href + "/" + input));
+            await broker.DeleteWebhookSubscriptionAsync(
+                new Uri(rootRes.Links["webhook-subscriptions"].Href + "/" + input));
             WriteLine($"Deleted Subscription {input}");
         }
 

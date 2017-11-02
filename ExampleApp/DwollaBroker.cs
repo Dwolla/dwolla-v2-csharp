@@ -47,11 +47,12 @@ namespace ExampleApp
 
         public async Task<Uri> CreateWebhookSubscriptionAsync(Uri uri, string url, string secret)
         {
-            var response = await PostAsync<CreateWebhookSubscriptionRequest, object>(uri, new CreateWebhookSubscriptionRequest
-            {
-                Url = url,
-                Secret = secret
-            });
+            var response = await PostAsync<CreateWebhookSubscriptionRequest, object>(uri,
+                new CreateWebhookSubscriptionRequest
+                {
+                    Url = url,
+                    Secret = secret
+                });
             return response.Response.Headers.Location;
         }
 
@@ -60,9 +61,11 @@ namespace ExampleApp
             await DeleteAsync<object>(uri, null);
         }
 
-        public async Task<WebhookSubscription> GetWebhookSubscriptionAsync(Uri uri) => (await GetAsync<WebhookSubscription>(uri)).Content;
+        public async Task<WebhookSubscription> GetWebhookSubscriptionAsync(Uri uri) =>
+            (await GetAsync<WebhookSubscription>(uri)).Content;
 
-        public async Task<GetWebhookSubscriptionsResponse> GetWebhookSubscriptionsAsync(Uri uri) => (await GetAsync<GetWebhookSubscriptionsResponse>(uri)).Content;
+        public async Task<GetWebhookSubscriptionsResponse> GetWebhookSubscriptionsAsync(Uri uri) =>
+            (await GetAsync<GetWebhookSubscriptionsResponse>(uri)).Content;
 
         public async Task<GetBusinessClassificationsResponse> GetBusinessClassificationsAsync() =>
         (await GetAsync<GetBusinessClassificationsResponse>(
@@ -105,7 +108,7 @@ namespace ExampleApp
         {
             try
             {
-                return await _client.DeleteAsync<TReq>(uri, request, _headers);
+                return await _client.DeleteAsync(uri, request, _headers);
             }
             catch (DwollaException e)
             {
