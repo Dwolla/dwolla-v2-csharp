@@ -16,7 +16,7 @@ namespace Dwolla.Client.Rest
         public RestClient(HttpClient client) : this(client, new ResponseBuilder())
         {
         }
-        
+
         public async Task<RestResponse<T>> SendAsync<T>(HttpRequestMessage request)
         {
             using (var response = await _client.SendAsync(request))

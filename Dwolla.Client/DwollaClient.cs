@@ -53,7 +53,7 @@ namespace Dwolla.Client
 
         public async Task<RestResponse<object>> DeleteAsync<TReq>(Uri uri, TReq content, Headers headers) =>
             await SendAsync<object>(CreateDeleteRequest(uri, content, headers));
-        
+
         private async Task<RestResponse<TRes>> SendAsync<TRes>(HttpRequestMessage request)
         {
             var r = await _client.SendAsync<TRes>(request);
@@ -83,10 +83,13 @@ namespace Dwolla.Client
             return CreateContentRequest(HttpMethod.Post, requestUri, headers, content, contentType);
         }
 
-        private static HttpRequestMessage CreateContentRequest<TReq>(HttpMethod method, Uri requestUri, Headers headers, TReq content, string contentType)
+        private static HttpRequestMessage CreateContentRequest<TReq>(HttpMethod method, Uri requestUri, Headers headers,
+            TReq content, string contentType)
         {
             var r = CreateRequest(method, requestUri, headers);
-            r.Content = content != null ? new StringContent(JsonConvert.SerializeObject(content, JsonSettings), Encoding.UTF8, contentType) : null;
+            r.Content = content != null
+                ? new StringContent(JsonConvert.SerializeObject(content, JsonSettings), Encoding.UTF8, contentType)
+                : null;
             return r;
         }
 
@@ -111,7 +114,7 @@ namespace Dwolla.Client
         internal static HttpClient CreateHttpClient()
         {
             var client = new HttpClient(new HttpClientHandler {SslProtocols = SslProtocols.Tls12});
-            client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("dwolla-v2-csharp", "2.0.3"));
+            client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("dwolla-v2-csharp", "2.0.4"));
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(ContentType));
             return client;
         }

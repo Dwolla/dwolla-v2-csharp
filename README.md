@@ -25,6 +25,7 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/Dwolla
 
 ## Changelog
 
+- **2.0.4** Add Webhook Subscription models
 - **2.0.3** Breaking change: CustomerEmbed -> CustomersEmbed. Thanks to @ithielnor for adding Business Classification models and a CLI
 - **1.0.2** Lower VisualStudioVersion, add more properties to Customer
 - **1.0.1** Include deserialized error in DwollaException
