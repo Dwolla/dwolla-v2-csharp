@@ -11,8 +11,8 @@ namespace Dwolla.Client.Rest
         public RestResponse(HttpResponseMessage response, T content, RestException exception = null)
         {
             Response = response;
-            Content = content;
             Exception = exception;
+            Content = content;
         }
     }
 }

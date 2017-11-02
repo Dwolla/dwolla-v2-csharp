@@ -33,7 +33,7 @@ namespace Dwolla.Client.Rest
                 return Error<T>(response, "Exception parsing JSON", ex, contentAsString);
             }
         }
-
+        
         private static RestResponse<T> Error<T>(
             HttpResponseMessage response,
             string message,

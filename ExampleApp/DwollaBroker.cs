@@ -45,6 +45,25 @@ namespace ExampleApp
 
         public async Task<Customer> GetCustomerAsync(Uri uri) => (await GetAsync<Customer>(uri)).Content;
 
+        public async Task<Uri> CreateWebhookSubscriptionAsync(Uri uri, string url, string secret)
+        {
+            var response = await PostAsync<CreateWebhookSubscriptionRequest, object>(uri, new CreateWebhookSubscriptionRequest
+            {
+                Url = url,
+                Secret = secret
+            });
+            return response.Response.Headers.Location;
+        }
+
+        public async Task DeleteWebhookSubscriptionAsync(Uri uri)
+        {
+            await DeleteAsync<object>(uri, null);
+        }
+
+        public async Task<WebhookSubscription> GetWebhookSubscriptionAsync(Uri uri) => (await GetAsync<WebhookSubscription>(uri)).Content;
+
+        public async Task<GetWebhookSubscriptionsResponse> GetWebhookSubscriptionsAsync(Uri uri) => (await GetAsync<GetWebhookSubscriptionsResponse>(uri)).Content;
+
         public async Task<GetBusinessClassificationsResponse> GetBusinessClassificationsAsync() =>
         (await GetAsync<GetBusinessClassificationsResponse>(
             new Uri($"{_client.ApiBaseAddress}/business-classifications"))).Content;
@@ -73,6 +92,20 @@ namespace ExampleApp
             try
             {
                 return await _client.PostAsync<TReq, TRes>(uri, request, _headers);
+            }
+            catch (DwollaException e)
+            {
+                // TODO: Handle error
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
+        private async Task<RestResponse<object>> DeleteAsync<TReq>(Uri uri, TReq request)
+        {
+            try
+            {
+                return await _client.DeleteAsync<TReq>(uri, request, _headers);
             }
             catch (DwollaException e)
             {
