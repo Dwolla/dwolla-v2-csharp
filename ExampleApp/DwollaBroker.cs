@@ -32,14 +32,15 @@ namespace ExampleApp
         public async Task<RootResponse> GetRootAsync() =>
             (await GetAsync<RootResponse>(new Uri(_client.ApiBaseAddress))).Content;
 
-        public async Task<Uri> CreateCustomerAsync(Uri uri, string firstName, string lastName, string email)
+        public async Task<Uri> CreateCustomerAsync(Uri uri, string firstName, string lastName, string email, DateTime? dateOfBirth = null)
         {
             return await CreateCustomerAsync(uri, 
                 new CreateCustomerRequest
                 {
                     FirstName = firstName,
                     LastName = lastName,
-                    Email = email
+                    Email = email,
+                    DateOfBirth = dateOfBirth
                 });
         }
 

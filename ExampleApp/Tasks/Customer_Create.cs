@@ -12,7 +12,7 @@ namespace ExampleApp.Tasks
         {
             var rootRes = await Broker.GetRootAsync();
             var createdCustomerUri = await Broker.CreateCustomerAsync(
-                rootRes.Links["customers"].Href, "night", "man", $"{RandomString(20)}@example.com");
+                rootRes.Links["customers"].Href, "night", $"man-{RandomString(5)}", $"{RandomString(20)}@example.com", new DateTime(1980, 1, 1));
 
             var customer = await Broker.GetCustomerAsync(createdCustomerUri);
             WriteLine($"Created {customer.FirstName} {customer.LastName} with email={customer.Email}");

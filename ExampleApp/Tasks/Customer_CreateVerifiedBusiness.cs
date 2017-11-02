@@ -22,7 +22,7 @@ namespace ExampleApp.Tasks
 	            City = "SmallTown",
 	            State = "VA",
 	            PostalCode = "22222",
-	            DateOfBirth = "1980-01-01",
+	            DateOfBirth = new DateTime(1980, 1, 1),
 	            Ssn = RandomNumberString(4),
 	            Phone = "1234567890",
 	            BusinessName = "Test Business",
