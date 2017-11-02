@@ -14,7 +14,8 @@ namespace ExampleApp.Tasks
             var input = ReadLine();
 
             var rootRes = await Broker.GetRootAsync();
-            await Broker.DeleteWebhookSubscriptionAsync(new Uri(rootRes.Links["webhook-subscriptions"].Href + "/" + input));
+            await Broker.DeleteWebhookSubscriptionAsync(
+                new Uri(rootRes.Links["webhook-subscriptions"].Href + "/" + input));
             WriteLine($"Deleted Subscription {input}");
         }
     }

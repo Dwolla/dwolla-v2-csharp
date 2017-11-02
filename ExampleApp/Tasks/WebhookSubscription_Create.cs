@@ -12,7 +12,8 @@ namespace ExampleApp.Tasks
         {
             var rootRes = await Broker.GetRootAsync();
             var createdSubscriptionUri = await Broker.CreateWebhookSubscriptionAsync(
-                rootRes.Links["webhook-subscriptions"].Href, $"http://example.com/webhooks/{RandomString(10)}", RandomString(10));
+                rootRes.Links["webhook-subscriptions"].Href, $"http://example.com/webhooks/{RandomString(10)}", 
+                RandomString(10));
 
             var subscription = await Broker.GetWebhookSubscriptionAsync(createdSubscriptionUri);
             WriteLine($"Created Subscription {subscription.Id} with url={subscription.Url}");
