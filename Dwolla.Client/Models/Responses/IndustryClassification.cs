@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Newtonsoft.Json;
-
-namespace Dwolla.Client.Models.Responses
+﻿namespace Dwolla.Client.Models.Responses
 {
     public class IndustryClassification
     {

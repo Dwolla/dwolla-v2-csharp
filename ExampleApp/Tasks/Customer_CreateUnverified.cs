@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace ExampleApp.Tasks
 {
@@ -12,7 +9,8 @@ namespace ExampleApp.Tasks
         {
             var rootRes = await Broker.GetRootAsync();
             var createdCustomerUri = await Broker.CreateCustomerAsync(
-                rootRes.Links["customers"].Href, "night", $"man-{RandomAlphaNumericString(5)}", $"{RandomAlphaNumericString(20)}@example.com");
+                rootRes.Links["customers"].Href, "night", $"man-{RandomAlphaNumericString(5)}",
+                $"{RandomAlphaNumericString(20)}@example.com");
 
             var customer = await Broker.GetCustomerAsync(createdCustomerUri);
             WriteLine($"Created {customer.FirstName} {customer.LastName} with email={customer.Email}");

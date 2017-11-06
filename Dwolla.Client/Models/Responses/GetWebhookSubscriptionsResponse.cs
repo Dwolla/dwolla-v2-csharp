@@ -14,9 +14,6 @@ namespace Dwolla.Client.Models.Responses
         [JsonProperty(PropertyName = "webhook-subscriptions")]
         public List<WebhookSubscription> WebhookSubscriptions { get; set; }
 
-        public override List<WebhookSubscription> Results()
-        {
-            return WebhookSubscriptions;
-        }
+        public override List<WebhookSubscription> Results() => WebhookSubscriptions;
     }
 }
