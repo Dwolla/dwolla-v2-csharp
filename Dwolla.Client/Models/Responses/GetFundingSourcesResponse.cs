@@ -14,9 +14,6 @@ namespace Dwolla.Client.Models.Responses
         [JsonProperty(PropertyName = "funding-sources")]
         public List<FundingSource> FundingSources { get; set; }
 
-        public override List<FundingSource> Results()
-        {
-            return FundingSources;
-        }
+        public override List<FundingSource> Results() => FundingSources;
     }
 }

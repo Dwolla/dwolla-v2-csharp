@@ -13,9 +13,6 @@ namespace Dwolla.Client.Models.Responses
     {
         public List<Customer> Customers { get; set; }
 
-        public override List<Customer> Results()
-        {
-            return Customers;
-        }
+        public override List<Customer> Results() => Customers;
     }
 }

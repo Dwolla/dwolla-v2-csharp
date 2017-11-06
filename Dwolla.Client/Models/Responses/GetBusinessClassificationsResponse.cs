@@ -14,9 +14,6 @@ namespace Dwolla.Client.Models.Responses
         [JsonProperty(PropertyName = "business-classifications")]
         public List<BusinessClassification> BusinessClassifications { get; set; }
 
-        public override List<BusinessClassification> Results()
-        {
-            return BusinessClassifications;
-        }
+        public override List<BusinessClassification> Results() => BusinessClassifications;
     }
 }
