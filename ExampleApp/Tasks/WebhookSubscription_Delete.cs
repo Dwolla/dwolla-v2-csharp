@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ExampleApp.Tasks
@@ -10,7 +8,7 @@ namespace ExampleApp.Tasks
     {
         public override async Task Run()
         {
-            Write("Please enter the ID of the webhook subscription to delete: ");
+            Write("Webhook subscription ID to delete: ");
             var input = ReadLine();
 
             var rootRes = await Broker.GetRootAsync();

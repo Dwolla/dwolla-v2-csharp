@@ -25,6 +25,7 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/Dwolla
 
 ## Changelog
 
+- **3.0.5** Breaking change: CreateCustomerRequest.DateOfBirth `string` -> `DateTime?`. Create base responses, refactor ExampleApp to tasks, add Funding Source models
 - **2.0.4** Add Webhook Subscription models
 - **2.0.3** Breaking change: CustomerEmbed -> CustomersEmbed. Thanks to @ithielnor for adding Business Classification models and a CLI
 - **1.0.2** Lower VisualStudioVersion, add more properties to Customer

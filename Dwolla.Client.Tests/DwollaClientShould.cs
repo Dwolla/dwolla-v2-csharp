@@ -15,7 +15,7 @@ namespace Dwolla.Client.Tests
     {
         private const string JsonV1 = "application/vnd.dwolla.v1.hal+json";
         private const string RequestId = "some-id";
-        private const string UserAgent = "dwolla-v2-csharp/2.0.4";
+        private const string UserAgent = "dwolla-v2-csharp/3.0.5";
         private static readonly Uri RequestUri = new Uri("https://api-sandbox.dwolla.com/foo");
         private static readonly Uri AuthRequestUri = new Uri("https://sandbox.dwolla.com/oauth/v2/foo");
         private static readonly Headers Headers = new Headers {{"key1", "value1"}, {"key2", "value2"}};

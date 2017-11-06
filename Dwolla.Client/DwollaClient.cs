@@ -112,7 +112,9 @@ namespace Dwolla.Client
             AuthBaseAddress = isSandbox ? "https://sandbox.dwolla.com/oauth/v2" : "https://www.dwolla.com/oauth/v2";
         }
 
-        internal static string ClientVersion = typeof(DwollaClient).GetTypeInfo().Assembly.GetCustomAttribute<AssemblyFileVersionAttribute>().Version;
+        internal static string ClientVersion = typeof(DwollaClient).GetTypeInfo().Assembly
+            .GetCustomAttribute<AssemblyFileVersionAttribute>().Version;
+
         internal static HttpClient CreateHttpClient()
         {
             var client = new HttpClient(new HttpClientHandler {SslProtocols = SslProtocols.Tls12});
