@@ -11,7 +11,7 @@ namespace ExampleApp.Tasks
     {
         public override async Task Run()
         {
-            Write("Please enter the customer ID for whom you would like to retrieve the balance: ");
+            Write("Customer ID for whom to get the balance: ");
             var input = ReadLine();
 
             var rootRes = await Broker.GetRootAsync();
