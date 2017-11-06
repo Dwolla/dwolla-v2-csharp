@@ -56,6 +56,9 @@ namespace ExampleApp
         public async Task<GetFundingSourcesResponse> GetCustomerFundingSourcesAsync(Uri customerUri) => 
             (await GetAsync<GetFundingSourcesResponse>(new Uri(customerUri.AbsoluteUri + "/funding-sources"))).Content;
 
+        public async Task<BalanceResponse> GetFundingSourceBalance(Uri balanceUri) =>
+            (await GetAsync<BalanceResponse>(balanceUri)).Content;
+
         public async Task<IavTokenResponse> GetCustomerIavToken(Uri customerUri) =>
             (await PostAsync<object, IavTokenResponse>(new Uri(customerUri.AbsoluteUri + "/iav-token"), null)).Content;
 
