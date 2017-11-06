@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using static System.Console;
 
 namespace ExampleApp.Tasks
 {
@@ -19,16 +16,21 @@ namespace ExampleApp.Tasks
 
         private static readonly Random Random = new Random();
 
-        protected static string RandomNumberString(int length)
+        protected static string RandomNumericString(int length)
         {
             const string chars = "0123456789";
-            return new string(Enumerable.Repeat(chars, length).Select(s => s[Random.Next(s.Length)]).ToArray());
+            return RandomString(chars, length);
         }
 
-        protected static string RandomString(int length)
+        protected static string RandomAlphaNumericString(int length)
         {
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            return new string(Enumerable.Repeat(chars, length).Select(s => s[Random.Next(s.Length)]).ToArray());
+            return RandomString(chars, length);
+        }
+
+        private static string RandomString(string charset, int length)
+        {
+            return new string(Enumerable.Repeat(charset, length).Select(s => s[Random.Next(s.Length)]).ToArray());
         }
     }
 }
