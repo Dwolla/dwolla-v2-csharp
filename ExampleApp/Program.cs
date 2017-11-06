@@ -6,7 +6,6 @@ using static System.Console;
 using ExampleApp.Tasks;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Reflection.Metadata;
 
 namespace ExampleApp
 {
@@ -64,13 +63,16 @@ namespace ExampleApp
             GetTasks().ForEach(ta => WriteLine($" - {ta.Description} ({ta.Command})"));
         }
 
-        private static Dictionary<string, Type> _tasks = null;
+        private static Dictionary<string, Type> _tasks;
+
         private static List<TaskAttribute> GetTasks()
         {
             if (_tasks == null)
             {
                 _tasks = Assembly.GetEntryAssembly().GetTypes()
-                    .Where(x => typeof(BaseTask).IsAssignableFrom(x) && !x.GetTypeInfo().IsAbstract && x.GetTypeInfo().GetCustomAttribute<TaskAttribute>() != null)
+                    .Where(x => typeof(BaseTask).IsAssignableFrom(x) &&
+                                !x.GetTypeInfo().IsAbstract &&
+                                x.GetTypeInfo().GetCustomAttribute<TaskAttribute>() != null)
                     .ToDictionary(x => x.GetTypeInfo().GetCustomAttribute<TaskAttribute>().Command);
             }
 
@@ -84,12 +86,12 @@ namespace ExampleApp
         {
             if (!_tasks.ContainsKey(command))
             {
-                WriteLine("That option is not recognized as a valid option");
+                WriteLine("Unrecognized option");
             }
             else
             {
                 var type = _tasks[command];
-                BaseTask task = (BaseTask)type.GetConstructor(new Type[0]).Invoke(new object[0]);
+                var task = (BaseTask) type.GetConstructor(new Type[0]).Invoke(new object[0]);
                 task.Broker = broker;
                 Task.Run(async () => await task.Run()).Wait();
             }

@@ -34,13 +34,12 @@ namespace ExampleApp
 
         public async Task<Uri> CreateCustomerAsync(Uri uri, string firstName, string lastName, string email)
         {
-            return await CreateCustomerAsync(uri, 
-                new CreateCustomerRequest
-                {
-                    FirstName = firstName,
-                    LastName = lastName,
-                    Email = email
-                });
+            return await CreateCustomerAsync(uri, new CreateCustomerRequest
+            {
+                FirstName = firstName,
+                LastName = lastName,
+                Email = email
+            });
         }
 
         public async Task<Uri> CreateCustomerAsync(Uri uri, CreateCustomerRequest request)
@@ -51,9 +50,10 @@ namespace ExampleApp
 
         public async Task<Customer> GetCustomerAsync(Uri uri) => (await GetAsync<Customer>(uri)).Content;
 
-        public async Task<GetCustomersResponse> GetCustomersAsync(Uri uri) => (await GetAsync<GetCustomersResponse>(uri)).Content;
+        public async Task<GetCustomersResponse> GetCustomersAsync(Uri uri) =>
+            (await GetAsync<GetCustomersResponse>(uri)).Content;
 
-        public async Task<GetFundingSourcesResponse> GetCustomerFundingSourcesAsync(Uri customerUri) => 
+        public async Task<GetFundingSourcesResponse> GetCustomerFundingSourcesAsync(Uri customerUri) =>
             (await GetAsync<GetFundingSourcesResponse>(new Uri(customerUri.AbsoluteUri + "/funding-sources"))).Content;
 
         public async Task<IavTokenResponse> GetCustomerIavToken(Uri customerUri) =>

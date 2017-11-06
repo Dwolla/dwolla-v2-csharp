@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-
-namespace Dwolla.Client.Models.Responses
+﻿namespace Dwolla.Client.Models.Responses
 {
     public class IavTokenResponse : RootResponse
     {
