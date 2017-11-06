@@ -1,4 +1,6 @@
-﻿namespace Dwolla.Client.Models.Requests
+﻿using System;
+
+namespace Dwolla.Client.Models.Requests
 {
     public class CreateCustomerRequest
     {
@@ -13,7 +15,7 @@
         public string City { get; set; }
         public string State { get; set; }
         public string PostalCode { get; set; }
-        public string DateOfBirth { get; set; }
+        public DateTime? DateOfBirth { get; set; }
         public string Ssn { get; set; }
         public string Phone { get; set; }
         public string BusinessName { get; set; }

@@ -3,9 +3,7 @@ using Newtonsoft.Json;
 
 namespace Dwolla.Client.Models.Responses
 {
-    public class RootResponse
+    public class RootResponse : BaseResponse
     {
-        [JsonProperty(PropertyName = "_links")]
-        public Dictionary<string, Link> Links { get; set; }
     }
 }
