@@ -13,7 +13,7 @@ namespace Dwolla.Client.Models.Responses
         public string Name { get; set; }
         public DateTime Created { get; set; }
         public bool Removed { get; set; }
-        public string[] Channels { get; set; }
+        public List<string> Channels { get; set; }
         public string BankName { get; set; }
         public IavAccountHolders IavAccountHolders { get; set; }
         public string Fingerprint { get; set; }
