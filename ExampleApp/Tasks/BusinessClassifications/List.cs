@@ -1,9 +1,9 @@
 ﻿using System.Threading.Tasks;
 
-namespace ExampleApp.Tasks
+namespace ExampleApp.Tasks.BusinessClassifications
 {
     [Task("lbc", "List Business Classifications")]
-    class BusinessClassification_List : BaseTask
+    class List : BaseTask
     {
         public override async Task Run()
         {

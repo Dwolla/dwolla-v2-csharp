@@ -1,9 +1,9 @@
 ﻿using System.Threading.Tasks;
 
-namespace ExampleApp.Tasks
+namespace ExampleApp.Tasks.Root
 {
     [Task("gr", "Get root")]
-    class RootResources_Get : BaseTask
+    class Get : BaseTask
     {
         public override async Task Run()
         {

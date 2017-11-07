@@ -1,11 +1,11 @@
-﻿using Dwolla.Client.Models.Requests;
-using System;
+﻿using System;
 using System.Threading.Tasks;
+using Dwolla.Client.Models.Requests;
 
-namespace ExampleApp.Tasks
+namespace ExampleApp.Tasks.Customers
 {
     [Task("cvbc", "Create a Verified Business Customer")]
-    class Customer_CreateVerifiedBusiness : BaseTask
+    class CreateVerifiedBusiness : BaseTask
     {
         public override async Task Run()
         {

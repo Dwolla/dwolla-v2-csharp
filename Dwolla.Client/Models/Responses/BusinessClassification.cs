@@ -19,4 +19,10 @@ namespace Dwolla.Client.Models.Responses
 
         public override List<IndustryClassification> Results() => IndustryClassifications;
     }
+
+    public class IndustryClassification
+    {
+        public string Id { get; set; }
+        public string Name { get; set; }
+    }
 }

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace ExampleApp.Tasks
+namespace ExampleApp.Tasks.Customers
 {
     [Task("gcit", "Get a Customer IAV Token")]
-    class Customer_IavToken : BaseTask
+    class IavToken : BaseTask
     {
         public override async Task Run()
         {
