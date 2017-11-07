@@ -9,4 +9,10 @@ namespace Dwolla.Client.Models.Responses
         public Balance Balance { get; set; }
         public DateTime LastUpdated { get; set; }
     }
+
+    public class Balance
+    {
+        public decimal Value { get; set; }
+        public string Currency { get; set; }
+    }
 }
