@@ -44,7 +44,7 @@ namespace ExampleApp
 
         public async Task<Uri> CreateCustomerAsync(Uri uri, CreateCustomerRequest request)
         {
-            var response = await PostAsync<CreateCustomerRequest, object>(uri, request);
+            var response = await PostAsync<CreateCustomerRequest>(uri, request);
             return response.Response.Headers.Location;
         }
 
@@ -64,7 +64,7 @@ namespace ExampleApp
 
         public async Task<Uri> CreateWebhookSubscriptionAsync(Uri uri, string url, string secret)
         {
-            var response = await PostAsync<CreateWebhookSubscriptionRequest, object>(uri,
+            var response = await PostAsync<CreateWebhookSubscriptionRequest>(uri,
                 new CreateWebhookSubscriptionRequest
                 {
                     Url = url,
@@ -89,6 +89,7 @@ namespace ExampleApp
             new Uri($"{_client.ApiBaseAddress}/business-classifications"))).Content;
 
         private async Task<RestResponse<TRes>> GetAsync<TRes>(Uri uri)
+            where TRes : IDwollaResponse
         {
             try
             {
@@ -96,7 +97,7 @@ namespace ExampleApp
             }
             catch (DwollaException e)
             {
-                Console.WriteLine(e);
+                HandleError(e);
 
                 // Example error handling. More info: https://docsv2.dwolla.com/#errors
                 if (e.Error?.Code == "ExpiredAccessToken")
@@ -107,7 +108,21 @@ namespace ExampleApp
             }
         }
 
+        private async Task<RestResponse<object>> PostAsync<TReq>(Uri uri, TReq request)
+        {
+            try
+            {
+                return await _client.PostAsync<TReq>(uri, request, _headers);
+            }
+            catch (DwollaException e)
+            {
+                HandleError(e);
+                throw;
+            }
+        }
+
         private async Task<RestResponse<TRes>> PostAsync<TReq, TRes>(Uri uri, TReq request)
+            where TRes : IDwollaResponse
         {
             try
             {
@@ -115,8 +130,7 @@ namespace ExampleApp
             }
             catch (DwollaException e)
             {
-                // TODO: Handle error
-                Console.WriteLine(e);
+                HandleError(e);
                 throw;
             }
         }
@@ -129,10 +143,15 @@ namespace ExampleApp
             }
             catch (DwollaException e)
             {
-                // TODO: Handle error
-                Console.WriteLine(e);
+                HandleError(e);
                 throw;
             }
+        }
+
+        private void HandleError(DwollaException e)
+        {
+            // TODO: Handle error
+            Console.WriteLine(e);
         }
     }
 }
