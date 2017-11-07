@@ -1,9 +1,9 @@
 ﻿using System.Threading.Tasks;
 
-namespace ExampleApp.Tasks
+namespace ExampleApp.Tasks.Customers
 {
     [Task("cuc", "Create an Unverified Customer")]
-    class Customer_CreateUnverified : BaseTask
+    class CreateUnverified : BaseTask
     {
         public override async Task Run()
         {

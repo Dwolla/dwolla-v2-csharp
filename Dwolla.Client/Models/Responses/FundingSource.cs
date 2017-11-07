@@ -17,4 +17,10 @@ namespace Dwolla.Client.Models.Responses
         public IavAccountHolders IavAccountHolders { get; set; }
         public string Fingerprint { get; set; }
     }
+
+    public class IavAccountHolders
+    {
+        public string Selected { get; set; }
+        public List<string> Other { get; set; }
+    }
 }

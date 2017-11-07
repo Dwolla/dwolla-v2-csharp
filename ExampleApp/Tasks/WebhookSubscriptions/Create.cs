@@ -1,9 +1,9 @@
 ﻿using System.Threading.Tasks;
 
-namespace ExampleApp.Tasks
+namespace ExampleApp.Tasks.WebhookSubscriptions
 {
     [Task("cws", "Create a Webhook Subscription")]
-    class WebhookSubscription_Create : BaseTask
+    class Create : BaseTask
     {
         public override async Task Run()
         {

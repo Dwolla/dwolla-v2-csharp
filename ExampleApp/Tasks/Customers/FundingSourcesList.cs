@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace ExampleApp.Tasks
+namespace ExampleApp.Tasks.Customers
 {
     [Task("lcfs", "List a Customer's Funding Sources")]
-    class Customer_FundingSource_List : BaseTask
+    class FundingSourcesList : BaseTask
     {
         public override async Task Run()
         {

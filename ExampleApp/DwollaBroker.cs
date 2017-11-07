@@ -48,6 +48,9 @@ namespace ExampleApp
             return response.Response.Headers.Location;
         }
 
+        public async Task<Customer> UpdateCustomerAsync(Uri uri, UpdateCustomerRequest request) =>
+            (await PostAsync<UpdateCustomerRequest, Customer>(uri, request)).Content;
+
         public async Task<Customer> GetCustomerAsync(Uri uri) => (await GetAsync<Customer>(uri)).Content;
 
         public async Task<GetCustomersResponse> GetCustomersAsync(Uri uri) =>
@@ -56,7 +59,7 @@ namespace ExampleApp
         public async Task<GetFundingSourcesResponse> GetCustomerFundingSourcesAsync(Uri customerUri) =>
             (await GetAsync<GetFundingSourcesResponse>(new Uri(customerUri.AbsoluteUri + "/funding-sources"))).Content;
 
-        public async Task<IavTokenResponse> GetCustomerIavToken(Uri customerUri) =>
+        public async Task<IavTokenResponse> GetCustomerIavTokenAsync(Uri customerUri) =>
             (await PostAsync<object, IavTokenResponse>(new Uri(customerUri.AbsoluteUri + "/iav-token"), null)).Content;
 
         public async Task<Uri> CreateWebhookSubscriptionAsync(Uri uri, string url, string secret)
