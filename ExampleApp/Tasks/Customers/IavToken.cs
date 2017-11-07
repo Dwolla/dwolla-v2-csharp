@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace ExampleApp.Tasks
+namespace ExampleApp.Tasks.Customers
 {
     [Task("gcit", "Get a Customer IAV Token")]
-    class Customer_IavToken : BaseTask
+    class IavToken : BaseTask
     {
         public override async Task Run()
         {
@@ -12,7 +12,7 @@ namespace ExampleApp.Tasks
             var input = ReadLine();
 
             var rootRes = await Broker.GetRootAsync();
-            var res = await Broker.GetCustomerIavToken(new Uri($"{rootRes.Links["customers"].Href}/{input}"));
+            var res = await Broker.GetCustomerIavTokenAsync(new Uri($"{rootRes.Links["customers"].Href}/{input}"));
             WriteLine($"Token created: {res.Token}");
         }
     }

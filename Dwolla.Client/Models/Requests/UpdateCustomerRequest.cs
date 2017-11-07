@@ -2,13 +2,14 @@
 
 namespace Dwolla.Client.Models.Requests
 {
-    public class CreateCustomerRequest
+    public class UpdateCustomerRequest
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }
         public string Type { get; set; }
         public string IpAddress { get; set; }
+        public string Status { get; set; }
         public string Address1 { get; set; }
         public string Address2 { get; set; }
         public string City { get; set; }

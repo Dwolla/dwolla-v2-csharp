@@ -278,7 +278,7 @@ namespace Dwolla.Client.Tests
             public string Message { get; set; }
         }
 
-        private class TestResponse
+        private class TestResponse : IDwollaResponse
         {
             public string Message { get; set; }
         }
