@@ -12,7 +12,7 @@ namespace ExampleApp.Tasks.Customers
             var input = ReadLine();
 
             var rootRes = await Broker.GetRootAsync();
-            var res = await Broker.GetCustomerIavToken(new Uri($"{rootRes.Links["customers"].Href}/{input}"));
+            var res = await Broker.GetCustomerIavTokenAsync(new Uri($"{rootRes.Links["customers"].Href}/{input}"));
             WriteLine($"Token created: {res.Token}");
         }
     }
