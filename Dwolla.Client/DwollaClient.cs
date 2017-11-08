@@ -50,26 +50,9 @@ namespace Dwolla.Client
         public async Task<RestResponse<TRes>> GetAsync<TRes>(Uri uri, Headers headers) where TRes : IDwollaResponse =>
             await SendAsync<TRes>(CreateRequest(HttpMethod.Get, uri, headers));
         
-        /// <summary>
-        /// Send a post request to <paramref name="uri"/> containing <paramref name="content"/>. 
-        /// </summary>
-        /// <typeparam name="TReq">Type of the request content</typeparam>
-        /// <typeparam name="TRes">Type of the response content</typeparam>
-        /// <param name="uri">The resource to which to Post</param>
-        /// <param name="content">The content to send</param>
-        /// <param name="headers">Request headers</param>
-        /// <returns>RestResponse of deserialized content object</returns>
         public async Task<RestResponse<TRes>> PostAsync<TReq, TRes>(Uri uri, TReq content, Headers headers) where TRes : IDwollaResponse =>
             await SendAsync<TRes>(CreatePostRequest(uri, content, headers));
-
-        /// <summary>
-        /// Send a post request to <paramref name="uri"/> containing <paramref name="content"/>. 
-        /// </summary>
-        /// <typeparam name="TReq">Type of the request content</typeparam>
-        /// <param name="uri">The resource to which to Post</param>
-        /// <param name="content">The content to send</param>
-        /// <param name="headers">Request headers</param>
-        /// <returns>RestResponse of non-deserialized content object</returns>
+        
         public async Task<RestResponse<object>> PostAsync<TReq>(Uri uri, TReq content, Headers headers) =>
             await SendAsync<object>(CreatePostRequest(uri, content, headers));
 
