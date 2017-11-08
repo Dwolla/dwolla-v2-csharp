@@ -125,6 +125,33 @@ namespace Dwolla.Client.Tests
         }
 
         [Fact]
+        public async void CreateNoModelResponsePostRequestAndPassToClient()
+        {
+            var response = CreateRestResponse<object>(HttpMethod.Post);
+            SetupForPost(CreatePostRequest(), response);
+
+            var actual = await _client.PostAsync<TestRequest>(RequestUri, Request, Headers);
+
+            Assert.Equal(response, actual);
+        }
+
+        [Fact]
+        public async void ThrowOnNoModelResponsePostAsyncException()
+        {
+            var e = CreateRestException();
+            var response = CreateRestResponse<object>(HttpMethod.Post, null, e);
+            SetupForPost(CreatePostRequest(), response);
+
+            var ex = await Assert.ThrowsAsync<DwollaException>(() =>
+                _client.PostAsync<TestRequest>(RequestUri, Request, Headers));
+
+            Assert.Equal(GetMessage(response.Response), ex.Message);
+            Assert.Equal(e.Content, ex.Content);
+            Assert.Equal(response.Response, ex.Response);
+            Assert.Null(ex.Error);
+        }
+
+        [Fact]
         public async void CreateDeleteRequestAndPassToClient()
         {
             var response = CreateRestResponse<object>(HttpMethod.Delete);
@@ -231,10 +258,10 @@ namespace Dwolla.Client.Tests
             _restClient.Setup(x => x.SendAsync<TestResponse>(It.IsAny<HttpRequestMessage>()))
                 .Callback<HttpRequestMessage>(y => GetCallback(req, y)).ReturnsAsync(res);
 
-        private void SetupForPost(HttpRequestMessage req, RestResponse<TestResponse> res) =>
-            _restClient.Setup(x => x.SendAsync<TestResponse>(It.IsAny<HttpRequestMessage>()))
+        private void SetupForPost<T>(HttpRequestMessage req, RestResponse<T> res) =>
+            _restClient.Setup(x => x.SendAsync<T>(It.IsAny<HttpRequestMessage>()))
                 .Callback<HttpRequestMessage>(y => PostCallback(req, y)).ReturnsAsync(res);
-
+        
         private void SetupForDelete(HttpRequestMessage req, RestResponse<object> res) =>
             _restClient.Setup(x => x.SendAsync<object>(It.IsAny<HttpRequestMessage>()))
                 .Callback<HttpRequestMessage>(y => DeleteCallback(req, y)).ReturnsAsync(res);
