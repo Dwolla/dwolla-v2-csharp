@@ -21,9 +21,10 @@ namespace Dwolla.Client
         string ApiBaseAddress { get; }
         string AuthBaseAddress { get; }
 
-        Task<RestResponse<TRes>> PostAuthAsync<TReq, TRes>(Uri uri, TReq content);
-        Task<RestResponse<TRes>> GetAsync<TRes>(Uri uri, Headers headers);
-        Task<RestResponse<TRes>> PostAsync<TReq, TRes>(Uri uri, TReq content, Headers headers);
+        Task<RestResponse<TRes>> PostAuthAsync<TReq, TRes>(Uri uri, TReq content) where TRes : IDwollaResponse;
+        Task<RestResponse<TRes>> GetAsync<TRes>(Uri uri, Headers headers) where TRes : IDwollaResponse;
+        Task<RestResponse<TRes>> PostAsync<TReq, TRes>(Uri uri, TReq content, Headers headers) where TRes : IDwollaResponse;
+        Task<RestResponse<object>> PostAsync<TReq>(Uri uri, TReq content, Headers headers);
         Task<RestResponse<object>> DeleteAsync<TReq>(Uri uri, TReq content, Headers headers);
     }
 
@@ -43,14 +44,17 @@ namespace Dwolla.Client
         public static DwollaClient Create(bool isSandbox) =>
             new DwollaClient(new RestClient(CreateHttpClient()), isSandbox);
 
-        public async Task<RestResponse<TRes>> PostAuthAsync<TReq, TRes>(Uri uri, TReq content) =>
+        public async Task<RestResponse<TRes>> PostAuthAsync<TReq, TRes>(Uri uri, TReq content) where TRes : IDwollaResponse =>
             await SendAsync<TRes>(CreatePostRequest(uri, content, new Headers(), AuthContentType));
 
-        public async Task<RestResponse<TRes>> GetAsync<TRes>(Uri uri, Headers headers) =>
+        public async Task<RestResponse<TRes>> GetAsync<TRes>(Uri uri, Headers headers) where TRes : IDwollaResponse =>
             await SendAsync<TRes>(CreateRequest(HttpMethod.Get, uri, headers));
-
-        public async Task<RestResponse<TRes>> PostAsync<TReq, TRes>(Uri uri, TReq content, Headers headers) =>
+        
+        public async Task<RestResponse<TRes>> PostAsync<TReq, TRes>(Uri uri, TReq content, Headers headers) where TRes : IDwollaResponse =>
             await SendAsync<TRes>(CreatePostRequest(uri, content, headers));
+        
+        public async Task<RestResponse<object>> PostAsync<TReq>(Uri uri, TReq content, Headers headers) =>
+            await SendAsync<object>(CreatePostRequest(uri, content, headers));
 
         public async Task<RestResponse<object>> DeleteAsync<TReq>(Uri uri, TReq content, Headers headers) =>
             await SendAsync<object>(CreateDeleteRequest(uri, content, headers));

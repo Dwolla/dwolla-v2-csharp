@@ -2,7 +2,7 @@
 
 namespace Dwolla.Client.Models.Responses
 {
-    public class TokenResponse
+    public class TokenResponse : IDwollaResponse
     {
         [JsonProperty(PropertyName = "access_token")]
         public string Token { get; set; }

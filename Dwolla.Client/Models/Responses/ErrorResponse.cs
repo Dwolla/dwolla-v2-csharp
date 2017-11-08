@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace Dwolla.Client.Models.Responses
 {
-    public class ErrorResponse
+    public class ErrorResponse : IDwollaResponse
     {
         public string Code { get; set; }
         public string Message { get; set; }
