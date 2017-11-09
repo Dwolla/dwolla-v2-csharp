@@ -77,7 +77,7 @@ namespace ExampleApp
             }
 
             return _tasks
-                .OrderBy(x => x.Value.Name)
+                .OrderBy(x => x.Value.FullName)
                 .Select(x => x.Value.GetTypeInfo().GetCustomAttribute<TaskAttribute>())
                 .ToList();
         }
