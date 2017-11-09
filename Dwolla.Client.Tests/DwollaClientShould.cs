@@ -15,7 +15,7 @@ namespace Dwolla.Client.Tests
     {
         private const string JsonV1 = "application/vnd.dwolla.v1.hal+json";
         private const string RequestId = "some-id";
-        private const string UserAgent = "dwolla-v2-csharp/3.0.5";
+        private const string UserAgent = "dwolla-v2-csharp/4.0.6";
         private static readonly Uri RequestUri = new Uri("https://api-sandbox.dwolla.com/foo");
         private static readonly Uri AuthRequestUri = new Uri("https://sandbox.dwolla.com/oauth/v2/foo");
         private static readonly Headers Headers = new Headers {{"key1", "value1"}, {"key2", "value2"}};
@@ -130,7 +130,7 @@ namespace Dwolla.Client.Tests
             var response = CreateRestResponse<object>(HttpMethod.Post);
             SetupForPost(CreatePostRequest(), response);
 
-            var actual = await _client.PostAsync<TestRequest>(RequestUri, Request, Headers);
+            var actual = await _client.PostAsync(RequestUri, Request, Headers);
 
             Assert.Equal(response, actual);
         }
@@ -143,7 +143,7 @@ namespace Dwolla.Client.Tests
             SetupForPost(CreatePostRequest(), response);
 
             var ex = await Assert.ThrowsAsync<DwollaException>(() =>
-                _client.PostAsync<TestRequest>(RequestUri, Request, Headers));
+                _client.PostAsync(RequestUri, Request, Headers));
 
             Assert.Equal(GetMessage(response.Response), ex.Message);
             Assert.Equal(e.Content, ex.Content);
@@ -261,7 +261,7 @@ namespace Dwolla.Client.Tests
         private void SetupForPost<T>(HttpRequestMessage req, RestResponse<T> res) =>
             _restClient.Setup(x => x.SendAsync<T>(It.IsAny<HttpRequestMessage>()))
                 .Callback<HttpRequestMessage>(y => PostCallback(req, y)).ReturnsAsync(res);
-        
+
         private void SetupForDelete(HttpRequestMessage req, RestResponse<object> res) =>
             _restClient.Setup(x => x.SendAsync<object>(It.IsAny<HttpRequestMessage>()))
                 .Callback<HttpRequestMessage>(y => DeleteCallback(req, y)).ReturnsAsync(res);

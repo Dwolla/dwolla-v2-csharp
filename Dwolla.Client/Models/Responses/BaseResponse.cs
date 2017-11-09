@@ -6,7 +6,9 @@ namespace Dwolla.Client.Models.Responses
     /// <summary>
     /// Implemented by any model returned by DwollaClient
     /// </summary>
-    public interface IDwollaResponse { }
+    public interface IDwollaResponse
+    {
+    }
 
     public abstract class BaseResponse : IDwollaResponse
     {

@@ -44,7 +44,7 @@ namespace ExampleApp
 
         public async Task<Uri> CreateCustomerAsync(Uri uri, CreateCustomerRequest request)
         {
-            var response = await PostAsync<CreateCustomerRequest>(uri, request);
+            var response = await PostAsync(uri, request);
             return response.Response.Headers.Location;
         }
 
@@ -64,7 +64,7 @@ namespace ExampleApp
 
         public async Task<Uri> CreateWebhookSubscriptionAsync(Uri uri, string url, string secret)
         {
-            var response = await PostAsync<CreateWebhookSubscriptionRequest>(uri,
+            var response = await PostAsync(uri,
                 new CreateWebhookSubscriptionRequest
                 {
                     Url = url,
@@ -83,7 +83,7 @@ namespace ExampleApp
 
         public async Task<GetWebhookSubscriptionsResponse> GetWebhookSubscriptionsAsync(Uri uri) =>
             (await GetAsync<GetWebhookSubscriptionsResponse>(uri)).Content;
-        
+
         public async Task<GetEventsResponse> GetEventsAsync(Uri uri) =>
             (await GetAsync<GetEventsResponse>(uri)).Content;
 
@@ -115,7 +115,7 @@ namespace ExampleApp
         {
             try
             {
-                return await _client.PostAsync<TReq>(uri, request, _headers);
+                return await _client.PostAsync(uri, request, _headers);
             }
             catch (DwollaException e)
             {
