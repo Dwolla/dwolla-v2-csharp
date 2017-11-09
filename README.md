@@ -25,7 +25,7 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/Dwolla
 
 ## Changelog
 
-- [UNPUBLISHED] **4.0.6** Breaking change: Removed CreateCustomerRequest.Status. Add UpdateCustomerRequest
+- **4.0.6** Breaking change: Remove CreateCustomerRequest.Status. Add UpdateCustomerRequest
 - **3.0.5** Breaking change: CreateCustomerRequest.DateOfBirth `string` -> `DateTime?`. Create base responses, refactor ExampleApp to tasks, add Funding Source models
 - **2.0.4** Add Webhook Subscription models
 - **2.0.3** Breaking change: CustomerEmbed -> CustomersEmbed. Thanks to @ithielnor for adding Business Classification models and a CLI
