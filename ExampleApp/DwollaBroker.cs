@@ -83,6 +83,9 @@ namespace ExampleApp
 
         public async Task<GetWebhookSubscriptionsResponse> GetWebhookSubscriptionsAsync(Uri uri) =>
             (await GetAsync<GetWebhookSubscriptionsResponse>(uri)).Content;
+        
+        public async Task<GetEventsResponse> GetEventsAsync(Uri uri) =>
+            (await GetAsync<GetEventsResponse>(uri)).Content;
 
         public async Task<GetBusinessClassificationsResponse> GetBusinessClassificationsAsync() =>
         (await GetAsync<GetBusinessClassificationsResponse>(
