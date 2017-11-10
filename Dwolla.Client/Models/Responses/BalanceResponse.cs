@@ -6,11 +6,12 @@ namespace Dwolla.Client.Models.Responses
 {
     public class BalanceResponse : BaseResponse
     {
-        public Balance Balance { get; set; }
-        public DateTime LastUpdated { get; set; }
+        public Money Balance { get; set; }
+        public DateTime? LastUpdated { get; set; }
+        public string Status { get; set; }
     }
 
-    public class Balance
+    public class Money
     {
         public decimal Value { get; set; }
         public string Currency { get; set; }
