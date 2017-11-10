@@ -10,10 +10,4 @@ namespace Dwolla.Client.Models.Responses
         public DateTime? LastUpdated { get; set; }
         public string Status { get; set; }
     }
-
-    public class Money
-    {
-        public decimal Value { get; set; }
-        public string Currency { get; set; }
-    }
 }
