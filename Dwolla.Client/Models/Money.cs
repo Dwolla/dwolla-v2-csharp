@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Dwolla.Client.Models
+﻿namespace Dwolla.Client.Models
 {
     public class Money
     {
