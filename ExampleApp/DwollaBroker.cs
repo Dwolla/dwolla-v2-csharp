@@ -86,11 +86,8 @@ namespace ExampleApp
         }
 
         public async Task<TransferResponse> GetTransferAsync(string id) =>
-            (await GetTransferAsync(new Uri($"{_client.ApiBaseAddress}/transfers/{id}")));
-
-        public async Task<TransferResponse> GetTransferAsync(Uri uri) =>
-            (await GetAsync<TransferResponse>(uri)).Content;
-
+            (await GetAsync<TransferResponse>(new Uri($"{_client.ApiBaseAddress}/transfers/{id}"))).Content;
+        
         public async Task<Uri> CreateWebhookSubscriptionAsync(Uri uri, string url, string secret)
         {
             var response = await PostAsync(uri,
