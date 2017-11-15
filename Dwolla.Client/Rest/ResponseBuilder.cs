@@ -26,7 +26,7 @@ namespace Dwolla.Client.Rest
 
             try
             {
-                return new RestResponse<T>(response, JsonConvert.DeserializeObject<T>(contentAsString));
+                return new RestResponse<T>(response, JsonConvert.DeserializeObject<T>(contentAsString), contentAsString);
             }
             catch (Exception ex)
             {
@@ -39,6 +39,6 @@ namespace Dwolla.Client.Rest
             string message,
             Exception innerException = null,
             string content = null) => new RestResponse<T>(
-            response, default(T), new RestException(message, innerException, response.StatusCode, content));
+            response, default(T), content, new RestException(message, innerException, response.StatusCode, content));
     }
 }
