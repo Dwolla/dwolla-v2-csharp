@@ -50,6 +50,7 @@ namespace Dwolla.Client.Tests.Rest
             Assert.Null(actual.Exception);
             Assert.Equal(Expected.Message, actual.Content.Message);
             Assert.Equal(response, actual.Response);
+            Assert.NotNull(actual.RawContent);
         }
 
         private static HttpResponseMessage CreateResponse() =>

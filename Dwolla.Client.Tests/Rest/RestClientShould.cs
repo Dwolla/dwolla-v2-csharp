@@ -25,7 +25,7 @@ namespace Dwolla.Client.Tests.Rest
             var request = new HttpRequestMessage(HttpMethod.Get, new Uri("https://example.com/foo"));
             var response = new HttpResponseMessage();
             _handler.AddFakeResponse(request.RequestUri, response);
-            var expected = new RestResponse<TestResponse>(new HttpResponseMessage(), new TestResponse());
+            var expected = new RestResponse<TestResponse>(new HttpResponseMessage(), new TestResponse(), null);
             _builder.Setup(x => x.Build<TestResponse>(response)).ReturnsAsync(expected);
 
             var actual = await _restClient.SendAsync<TestResponse>(request);

@@ -9,7 +9,7 @@ namespace Dwolla.Client.Rest
         public string RawContent { get; }
         public RestException Exception { get; }
 
-        public RestResponse(HttpResponseMessage response, T content, RestException exception = null, string rawContent = null)
+        public RestResponse(HttpResponseMessage response, T content, string rawContent, RestException exception = null)
         {
             Response = response;
             Exception = exception;
