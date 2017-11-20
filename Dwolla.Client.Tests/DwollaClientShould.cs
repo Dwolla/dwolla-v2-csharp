@@ -56,7 +56,7 @@ namespace Dwolla.Client.Tests
         public async void ThrowOnPostAuthAsyncException()
         {
             var e = CreateRestException();
-            var response = CreateRestResponse<TestResponse>(HttpMethod.Post, null, e);
+            var response = CreateRestResponse<TestResponse>(HttpMethod.Post, null, ex: e);
             var httpRequest = CreateAuthHttpRequest();
             _restClient.Setup(x => x.SendAsync<TestResponse>(It.IsAny<HttpRequestMessage>()))
                 .Callback<HttpRequestMessage>(y => AppTokenCallback(httpRequest, y)).ReturnsAsync(response);
@@ -85,7 +85,7 @@ namespace Dwolla.Client.Tests
         public async void ThrowOnGetAsyncException()
         {
             var e = CreateRestException();
-            var response = CreateRestResponse<TestResponse>(HttpMethod.Get, null, e);
+            var response = CreateRestResponse<TestResponse>(HttpMethod.Get, null, ex: e);
             SetupForGet(CreateRequest(HttpMethod.Get), response);
 
             var ex = await Assert.ThrowsAsync<DwollaException>(
@@ -112,7 +112,7 @@ namespace Dwolla.Client.Tests
         public async void ThrowOnPostAsyncException()
         {
             var e = CreateRestException();
-            var response = CreateRestResponse<TestResponse>(HttpMethod.Post, null, e);
+            var response = CreateRestResponse<TestResponse>(HttpMethod.Post, null, ex: e);
             SetupForPost(CreatePostRequest(), response);
 
             var ex = await Assert.ThrowsAsync<DwollaException>(() =>
@@ -139,7 +139,7 @@ namespace Dwolla.Client.Tests
         public async void ThrowOnNoModelResponsePostAsyncException()
         {
             var e = CreateRestException();
-            var response = CreateRestResponse<object>(HttpMethod.Post, null, e);
+            var response = CreateRestResponse<object>(HttpMethod.Post, null, ex: e);
             SetupForPost(CreatePostRequest(), response);
 
             var ex = await Assert.ThrowsAsync<DwollaException>(() =>
@@ -177,7 +177,7 @@ namespace Dwolla.Client.Tests
         public async void ThrowOnDeleteAsyncException()
         {
             var e = CreateRestException();
-            var response = CreateRestResponse<object>(HttpMethod.Delete, null, e);
+            var response = CreateRestResponse<object>(HttpMethod.Delete, null, ex: e);
             SetupForDelete(CreateDeleteRequest(Request), response);
 
             var ex = await Assert.ThrowsAsync<DwollaException>(() =>
@@ -194,7 +194,7 @@ namespace Dwolla.Client.Tests
         {
             var error = new ErrorResponse {Code = "ExpiredAccessToken", Message = "Access token expired."};
             var e = CreateRestException(JsonConvert.SerializeObject(error));
-            var response = CreateRestResponse<TestResponse>(HttpMethod.Get, null, e);
+            var response = CreateRestResponse<TestResponse>(HttpMethod.Get, null, ex: e);
             SetupForGet(CreateRequest(HttpMethod.Get), response);
 
             var ex = await Assert.ThrowsAsync<DwollaException>(
@@ -233,8 +233,8 @@ namespace Dwolla.Client.Tests
             return r;
         }
 
-        private static RestResponse<T> CreateRestResponse<T>(HttpMethod method, T content = null,
-            RestException ex = null)
+        private static RestResponse<T> CreateRestResponse<T>(HttpMethod method, T content = null, 
+            string rawContent = null, RestException ex = null)
             where T : class
         {
             var r = new HttpResponseMessage
@@ -242,7 +242,7 @@ namespace Dwolla.Client.Tests
                 RequestMessage = new HttpRequestMessage {RequestUri = RequestUri, Method = method}
             };
             r.Headers.Add("x-request-id", RequestId);
-            return new RestResponse<T>(r, content, ex);
+            return new RestResponse<T>(r, content, rawContent, ex);
         }
 
         private static HttpRequestMessage CreateAuthHttpRequest() =>

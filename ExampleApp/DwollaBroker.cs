@@ -5,6 +5,7 @@ using Dwolla.Client.Models;
 using Dwolla.Client.Models.Requests;
 using Dwolla.Client.Models.Responses;
 using Dwolla.Client.Rest;
+using System.Collections.Generic;
 
 namespace ExampleApp
 {
@@ -65,6 +66,28 @@ namespace ExampleApp
         public async Task<IavTokenResponse> GetCustomerIavTokenAsync(Uri customerUri) =>
             (await PostAsync<object, IavTokenResponse>(new Uri(customerUri.AbsoluteUri + "/iav-token"), null)).Content;
 
+        public async Task<Uri> CreateTransferAsync(string sourceFundingSourceId, string destinationFundingSourceId, decimal amount)
+        {
+            var response = await PostAsync(new Uri($"{_client.ApiBaseAddress}/transfers"), 
+                new CreateTransferRequest
+                {
+                    Amount = new Money
+                    {
+                        Currency = "USD",
+                        Value = amount
+                    },
+                    Links = new Dictionary<string, Link>()
+                    {
+                        { "source", new Link { Href = new Uri($"{_client.ApiBaseAddress}/funding-sources/{sourceFundingSourceId}") } },
+                        { "destination", new Link { Href = new Uri($"{_client.ApiBaseAddress}/funding-sources/{destinationFundingSourceId}") } }
+                    }
+                });
+            return response.Response.Headers.Location;
+        }
+
+        public async Task<TransferResponse> GetTransferAsync(string id) =>
+            (await GetAsync<TransferResponse>(new Uri($"{_client.ApiBaseAddress}/transfers/{id}"))).Content;
+        
         public async Task<Uri> CreateWebhookSubscriptionAsync(Uri uri, string url, string secret)
         {
             var response = await PostAsync(uri,
