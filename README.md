@@ -25,6 +25,7 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/Dwolla
 
 ## Changelog
 
+- **4.0.8** Add Transfer models, expose raw response on RestResponse
 - **4.0.7** Add Micro Deposit and Balance models
 - **4.0.6** Breaking change: Remove CreateCustomerRequest.Status. Add UpdateCustomerRequest
 - **3.0.5** Breaking change: CreateCustomerRequest.DateOfBirth `string` -> `DateTime?`. Create base responses, refactor ExampleApp to tasks, add Funding Source models
