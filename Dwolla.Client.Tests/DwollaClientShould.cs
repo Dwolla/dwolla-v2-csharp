@@ -15,7 +15,7 @@ namespace Dwolla.Client.Tests
     {
         private const string JsonV1 = "application/vnd.dwolla.v1.hal+json";
         private const string RequestId = "some-id";
-        private const string UserAgent = "dwolla-v2-csharp/4.0.7";
+        private const string UserAgent = "dwolla-v2-csharp/4.0.8";
         private static readonly Uri RequestUri = new Uri("https://api-sandbox.dwolla.com/foo");
         private static readonly Uri AuthRequestUri = new Uri("https://sandbox.dwolla.com/oauth/v2/foo");
         private static readonly Headers Headers = new Headers {{"key1", "value1"}, {"key2", "value2"}};
@@ -233,7 +233,7 @@ namespace Dwolla.Client.Tests
             return r;
         }
 
-        private static RestResponse<T> CreateRestResponse<T>(HttpMethod method, T content = null, 
+        private static RestResponse<T> CreateRestResponse<T>(HttpMethod method, T content = null,
             string rawContent = null, RestException ex = null)
             where T : class
         {

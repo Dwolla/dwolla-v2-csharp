@@ -68,7 +68,7 @@ namespace ExampleApp
 
         public async Task<Uri> CreateTransferAsync(string sourceFundingSourceId, string destinationFundingSourceId, decimal amount)
         {
-            var response = await PostAsync(new Uri($"{_client.ApiBaseAddress}/transfers"), 
+            var response = await PostAsync(new Uri($"{_client.ApiBaseAddress}/transfers"),
                 new CreateTransferRequest
                 {
                     Amount = new Money
@@ -78,16 +78,19 @@ namespace ExampleApp
                     },
                     Links = new Dictionary<string, Link>()
                     {
-                        { "source", new Link { Href = new Uri($"{_client.ApiBaseAddress}/funding-sources/{sourceFundingSourceId}") } },
-                        { "destination", new Link { Href = new Uri($"{_client.ApiBaseAddress}/funding-sources/{destinationFundingSourceId}") } }
+                        {"source", new Link {Href = new Uri($"{_client.ApiBaseAddress}/funding-sources/{sourceFundingSourceId}")}},
+                        {"destination", new Link {Href = new Uri($"{_client.ApiBaseAddress}/funding-sources/{destinationFundingSourceId}")}}
                     }
                 });
             return response.Response.Headers.Location;
         }
 
+        public async Task<TransferResponse> GetTransferAsync(Uri transferUri) =>
+            (await GetAsync<TransferResponse>(transferUri)).Content;
+
         public async Task<TransferResponse> GetTransferAsync(string id) =>
             (await GetAsync<TransferResponse>(new Uri($"{_client.ApiBaseAddress}/transfers/{id}"))).Content;
-        
+
         public async Task<Uri> CreateWebhookSubscriptionAsync(Uri uri, string url, string secret)
         {
             var response = await PostAsync(uri,

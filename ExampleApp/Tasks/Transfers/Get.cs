@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace ExampleApp.Tasks.Transfers
 {
@@ -12,7 +11,7 @@ namespace ExampleApp.Tasks.Transfers
             var input = ReadLine();
 
             var transfer = await Broker.GetTransferAsync(input);
-            
+
             WriteLine($"Status: {transfer.Status}; Amount: {transfer.Amount.Value} {transfer.Amount.Currency};");
         }
     }

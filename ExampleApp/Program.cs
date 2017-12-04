@@ -40,7 +40,7 @@ namespace ExampleApp
                         case "?":
                             WriteHelp();
                             break;
-                            
+
                         case "quit":
                         case "q":
                         case "exit":
