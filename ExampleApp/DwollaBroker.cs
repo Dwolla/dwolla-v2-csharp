@@ -60,13 +60,16 @@ namespace ExampleApp
         public async Task<GetFundingSourcesResponse> GetCustomerFundingSourcesAsync(Uri customerUri) =>
             (await GetAsync<GetFundingSourcesResponse>(new Uri(customerUri.AbsoluteUri + "/funding-sources"))).Content;
 
+        public async Task<FundingSource> GetFundingSourceAsync(string fundingSourceId) =>
+            (await GetAsync<FundingSource>(new Uri($"{_client.ApiBaseAddress}/funding-sources/{fundingSourceId}"))).Content;
+
         public async Task<BalanceResponse> GetFundingSourceBalanceAsync(Uri balanceUri) =>
             (await GetAsync<BalanceResponse>(balanceUri)).Content;
 
         public async Task<IavTokenResponse> GetCustomerIavTokenAsync(Uri customerUri) =>
             (await PostAsync<object, IavTokenResponse>(new Uri(customerUri.AbsoluteUri + "/iav-token"), null)).Content;
 
-        public async Task<Uri> CreateTransferAsync(string sourceFundingSourceId, string destinationFundingSourceId, decimal amount)
+        public async Task<Uri> CreateTransferAsync(string sourceFundingSourceId, string destinationFundingSourceId, decimal amount, decimal? fee, Uri chargeTo)
         {
             var response = await PostAsync(new Uri($"{_client.ApiBaseAddress}/transfers"),
                 new CreateTransferRequest
@@ -80,7 +83,23 @@ namespace ExampleApp
                     {
                         {"source", new Link {Href = new Uri($"{_client.ApiBaseAddress}/funding-sources/{sourceFundingSourceId}")}},
                         {"destination", new Link {Href = new Uri($"{_client.ApiBaseAddress}/funding-sources/{destinationFundingSourceId}")}}
+                    },
+                    Fees = fee == null || fee == 0m ? null : new List<Fee>()
+                    {
+                        new Fee
+                        {
+                            Amount = new Money
+                            {
+                                Value = fee.Value,
+                                Currency = "USD"
+                            },
+                            Links = new Dictionary<string, Link>()
+                            {
+                                { "charge-to", new Link() { Href = chargeTo } }
+                            }
+                        }
                     }
+
                 });
             return response.Response.Headers.Location;
         }
