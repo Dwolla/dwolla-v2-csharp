@@ -4,6 +4,14 @@
     <TargetFramework>netcoreapp1.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="test-document-upload-fail.png" />
+    <None Remove="test-document-upload-success.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="test-document-upload-fail.png" />
+    <EmbeddedResource Include="test-document-upload-success.png" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Dwolla.Client\Dwolla.Client.csproj">
       <Project>{5754eeca-a324-4595-8797-47ca131e73c9}</Project>
       <Name>Dwolla.Client</Name>

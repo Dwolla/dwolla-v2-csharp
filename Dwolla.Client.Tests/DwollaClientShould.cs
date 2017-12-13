@@ -1,13 +1,17 @@
 using System;
+using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using Dwolla.Client.Models;
+using Dwolla.Client.Models.Requests;
 using Dwolla.Client.Models.Responses;
 using Dwolla.Client.Rest;
 using Moq;
 using Newtonsoft.Json;
 using Xunit;
+using File = Dwolla.Client.Models.File;
 
 namespace Dwolla.Client.Tests
 {
@@ -15,7 +19,7 @@ namespace Dwolla.Client.Tests
     {
         private const string JsonV1 = "application/vnd.dwolla.v1.hal+json";
         private const string RequestId = "some-id";
-        private const string UserAgent = "dwolla-v2-csharp/4.0.8";
+        private const string UserAgent = "dwolla-v2-csharp/4.0.9";
         private static readonly Uri RequestUri = new Uri("https://api-sandbox.dwolla.com/foo");
         private static readonly Uri AuthRequestUri = new Uri("https://sandbox.dwolla.com/oauth/v2/foo");
         private static readonly Headers Headers = new Headers {{"key1", "value1"}, {"key2", "value2"}};
@@ -152,6 +156,35 @@ namespace Dwolla.Client.Tests
         }
 
         [Fact]
+        public async void CreateUploadRequestAndPassToClient()
+        {
+            var request = CreateUploadRequest();
+            var response = CreateRestResponse<object>(HttpMethod.Post);
+            SetupForUpload(CreateUploadRequest(request), response);
+
+            var actual = await _client.UploadAsync(RequestUri, request, Headers);
+
+            Assert.Equal(response, actual);
+        }
+
+        [Fact]
+        public async void ThrowOnUploadAsyncException()
+        {
+            var e = CreateRestException();
+            var request = CreateUploadRequest();
+            var response = CreateRestResponse<object>(HttpMethod.Post, null, ex: e);
+            SetupForUpload(CreateUploadRequest(request), response);
+
+            var ex = await Assert.ThrowsAsync<DwollaException>(() =>
+                _client.UploadAsync(RequestUri, request, Headers));
+
+            Assert.Equal(GetMessage(response.Response), ex.Message);
+            Assert.Equal(e.Content, ex.Content);
+            Assert.Equal(response.Response, ex.Response);
+            Assert.Null(ex.Error);
+        }
+
+        [Fact]
         public async void CreateDeleteRequestAndPassToClient()
         {
             var response = CreateRestResponse<object>(HttpMethod.Delete);
@@ -207,15 +240,31 @@ namespace Dwolla.Client.Tests
             Assert.Equal(error.Message, ex.Error.Message);
         }
 
-        private static HttpRequestMessage CreatePostRequest()
+        private static HttpRequestMessage CreatePostRequest() => CreateContentRequest(HttpMethod.Post, Request);
+
+        private static UploadDocumentRequest CreateUploadRequest() => new UploadDocumentRequest
         {
-            return CreateContentRequest(HttpMethod.Post, Request);
+            DocumentType = "idCard",
+            Document = new File
+            {
+                ContentType = "image/png",
+                Filename = "test.png",
+                Stream = new Mock<Stream>().Object
+            }
+        };
+
+        private static HttpRequestMessage CreateUploadRequest(UploadDocumentRequest request)
+        {
+            var r = CreateRequest(HttpMethod.Post);
+            r.Content = new MultipartFormDataContent($"----------Upload")
+            {
+                {new StringContent(request.DocumentType), "\"documentType\""},
+                GetFileContent(request.Document)
+            };
+            return r;
         }
 
-        private static HttpRequestMessage CreateDeleteRequest(TestRequest content)
-        {
-            return CreateContentRequest(HttpMethod.Delete, content);
-        }
+        private static HttpRequestMessage CreateDeleteRequest(TestRequest content) => CreateContentRequest(HttpMethod.Delete, content);
 
         private static HttpRequestMessage CreateContentRequest(HttpMethod method, TestRequest content)
         {
@@ -234,13 +283,9 @@ namespace Dwolla.Client.Tests
         }
 
         private static RestResponse<T> CreateRestResponse<T>(HttpMethod method, T content = null,
-            string rawContent = null, RestException ex = null)
-            where T : class
+            string rawContent = null, RestException ex = null) where T : class
         {
-            var r = new HttpResponseMessage
-            {
-                RequestMessage = new HttpRequestMessage {RequestUri = RequestUri, Method = method}
-            };
+            var r = new HttpResponseMessage {RequestMessage = new HttpRequestMessage {RequestUri = RequestUri, Method = method}};
             r.Headers.Add("x-request-id", RequestId);
             return new RestResponse<T>(r, content, rawContent, ex);
         }
@@ -262,6 +307,10 @@ namespace Dwolla.Client.Tests
             _restClient.Setup(x => x.SendAsync<T>(It.IsAny<HttpRequestMessage>()))
                 .Callback<HttpRequestMessage>(y => PostCallback(req, y)).ReturnsAsync(res);
 
+        private void SetupForUpload(HttpRequestMessage r, RestResponse<object> response) =>
+            _restClient.Setup(x => x.SendAsync<object>(It.IsAny<HttpRequestMessage>()))
+                .Callback<HttpRequestMessage>(y => UploadCallback(r, y)).ReturnsAsync(response);
+
         private void SetupForDelete(HttpRequestMessage req, RestResponse<object> res) =>
             _restClient.Setup(x => x.SendAsync<object>(It.IsAny<HttpRequestMessage>()))
                 .Callback<HttpRequestMessage>(y => DeleteCallback(req, y)).ReturnsAsync(res);
@@ -274,10 +323,18 @@ namespace Dwolla.Client.Tests
                 actual.Content.Headers.ContentType.ToString());
         }
 
-        private static void DeleteCallback(HttpRequestMessage expected, HttpRequestMessage actual)
+        private static async void UploadCallback(HttpRequestMessage expected, HttpRequestMessage actual)
         {
             GetCallback(expected, actual);
+            var content = await actual.Content.ReadAsStringAsync();
+            Assert.Contains("----------Upload", content);
+            Assert.Contains("documentType", content);
+            Assert.Contains("file", content);
+            Assert.Equal("multipart/form-data; boundary=\"----------Upload\"", actual.Content.Headers.ContentType.ToString());
         }
+
+        private static void DeleteCallback(HttpRequestMessage expected, HttpRequestMessage actual) =>
+            GetCallback(expected, actual);
 
         private static void GetCallback(HttpRequestMessage expected, HttpRequestMessage actual)
         {
@@ -299,6 +356,18 @@ namespace Dwolla.Client.Tests
 
         private static string GetMessage(HttpResponseMessage response) =>
             $"Dwolla API Error, Resource=\"{response.RequestMessage.Method} {response.RequestMessage.RequestUri}\", RequestId=\"{RequestId}\"";
+
+        private static StreamContent GetFileContent(File file)
+        {
+            var fc = new StreamContent(file.Stream);
+            fc.Headers.ContentType = MediaTypeHeaderValue.Parse(file.ContentType);
+            fc.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
+            {
+                Name = "\"file\"",
+                FileName = $"\"{file.Filename}\""
+            };
+            return fc;
+        }
 
         private class TestRequest
         {
