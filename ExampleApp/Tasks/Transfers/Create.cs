@@ -12,7 +12,7 @@ namespace ExampleApp.Tasks.Transfers
             var sourceFundingSource = ReadLine();
             Write("Funding Source ID to which to transfer: ");
             var destinationFundingSource = ReadLine();
-            
+
             Write("Include a fee? (y/n): ");
             var includeFee = ReadLine();
 

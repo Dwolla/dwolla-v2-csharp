@@ -33,20 +33,31 @@ namespace ExampleApp
         public async Task<RootResponse> GetRootAsync() =>
             (await GetAsync<RootResponse>(new Uri(_client.ApiBaseAddress))).Content;
 
-        public async Task<Uri> CreateCustomerAsync(Uri uri, string firstName, string lastName, string email)
+        public async Task<Uri> CreateCustomerAsync(Uri uri, string firstName, string lastName, string email) => await CreateCustomerAsync(uri, new CreateCustomerRequest
         {
-            return await CreateCustomerAsync(uri, new CreateCustomerRequest
-            {
-                FirstName = firstName,
-                LastName = lastName,
-                Email = email
-            });
-        }
+            FirstName = firstName,
+            LastName = lastName,
+            Email = email
+        });
 
         public async Task<Uri> CreateCustomerAsync(Uri uri, CreateCustomerRequest request)
         {
             var response = await PostAsync(uri, request);
             return response.Response.Headers.Location;
+        }
+
+        public async Task<Uri> UploadDocumentAsync(Uri uri, UploadDocumentRequest request)
+        {
+            try
+            {
+                var response = await _client.UploadAsync(uri, request, _headers);
+                return response.Response.Headers.Location;
+            }
+            catch (DwollaException e)
+            {
+                HandleError(e);
+                throw;
+            }
         }
 
         public async Task<Customer> UpdateCustomerAsync(Uri uri, UpdateCustomerRequest request) =>
@@ -56,6 +67,9 @@ namespace ExampleApp
 
         public async Task<GetCustomersResponse> GetCustomersAsync(Uri uri) =>
             (await GetAsync<GetCustomersResponse>(uri)).Content;
+
+        public async Task<GetDocumentsResponse> GetCustomerDocumentsAsync(Uri customerUri) =>
+            (await GetAsync<GetDocumentsResponse>(new Uri(customerUri.AbsoluteUri + "/documents"))).Content;
 
         public async Task<GetFundingSourcesResponse> GetCustomerFundingSourcesAsync(Uri customerUri) =>
             (await GetAsync<GetFundingSourcesResponse>(new Uri(customerUri.AbsoluteUri + "/funding-sources"))).Content;
@@ -84,29 +98,30 @@ namespace ExampleApp
                         {"source", new Link {Href = new Uri($"{_client.ApiBaseAddress}/funding-sources/{sourceFundingSourceId}")}},
                         {"destination", new Link {Href = new Uri($"{_client.ApiBaseAddress}/funding-sources/{destinationFundingSourceId}")}}
                     },
-                    Fees = fee == null || fee == 0m ? null : new List<Fee>()
-                    {
-                        new Fee
+                    Fees = fee == null || fee == 0m
+                        ? null
+                        : new List<Fee>()
                         {
-                            Amount = new Money
+                            new Fee
                             {
-                                Value = fee.Value,
-                                Currency = "USD"
-                            },
-                            Links = new Dictionary<string, Link>()
-                            {
-                                { "charge-to", new Link() { Href = chargeTo } }
+                                Amount = new Money
+                                {
+                                    Value = fee.Value,
+                                    Currency = "USD"
+                                },
+                                Links = new Dictionary<string, Link>()
+                                {
+                                    {"charge-to", new Link() {Href = chargeTo}}
+                                }
                             }
                         }
-                    }
-
                 });
             return response.Response.Headers.Location;
         }
 
         public async Task<TransferResponse> GetTransferAsync(Uri transferUri) =>
             (await GetAsync<TransferResponse>(transferUri)).Content;
-        
+
         public async Task<TransferResponse> GetTransferAsync(string id) =>
             (await GetAsync<TransferResponse>(new Uri($"{_client.ApiBaseAddress}/transfers/{id}"))).Content;
 
@@ -142,8 +157,7 @@ namespace ExampleApp
         (await GetAsync<GetBusinessClassificationsResponse>(
             new Uri($"{_client.ApiBaseAddress}/business-classifications"))).Content;
 
-        private async Task<RestResponse<TRes>> GetAsync<TRes>(Uri uri)
-            where TRes : IDwollaResponse
+        private async Task<RestResponse<TRes>> GetAsync<TRes>(Uri uri) where TRes : IDwollaResponse
         {
             try
             {
@@ -152,12 +166,6 @@ namespace ExampleApp
             catch (DwollaException e)
             {
                 HandleError(e);
-
-                // Example error handling. More info: https://docsv2.dwolla.com/#errors
-                if (e.Error?.Code == "ExpiredAccessToken")
-                {
-                    // TODO: Refresh token and retry request
-                }
                 throw;
             }
         }
@@ -175,8 +183,7 @@ namespace ExampleApp
             }
         }
 
-        private async Task<RestResponse<TRes>> PostAsync<TReq, TRes>(Uri uri, TReq request)
-            where TRes : IDwollaResponse
+        private async Task<RestResponse<TRes>> PostAsync<TReq, TRes>(Uri uri, TReq request) where TRes : IDwollaResponse
         {
             try
             {
@@ -202,10 +209,16 @@ namespace ExampleApp
             }
         }
 
-        private void HandleError(DwollaException e)
+        private static void HandleError(DwollaException e)
         {
             // TODO: Handle error
             Console.WriteLine(e);
+
+            // Example error handling. More info: https://docsv2.dwolla.com/#errors
+            if (e.Error?.Code == "ExpiredAccessToken")
+            {
+                // TODO: Refresh token and retry request
+            }
         }
     }
 }

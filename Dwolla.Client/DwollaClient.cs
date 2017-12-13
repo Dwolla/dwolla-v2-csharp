@@ -11,6 +11,7 @@ using Dwolla.Client.Rest;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System.Reflection;
+using Dwolla.Client.Models.Requests;
 
 [assembly: InternalsVisibleTo("Dwolla.Client.Tests")]
 
@@ -28,6 +29,7 @@ namespace Dwolla.Client
             where TRes : IDwollaResponse;
 
         Task<RestResponse<object>> PostAsync<TReq>(Uri uri, TReq content, Headers headers);
+        Task<RestResponse<object>> UploadAsync(Uri uri, UploadDocumentRequest content, Headers headers);
         Task<RestResponse<object>> DeleteAsync<TReq>(Uri uri, TReq content, Headers headers);
     }
 
@@ -61,6 +63,9 @@ namespace Dwolla.Client
         public async Task<RestResponse<object>> PostAsync<TReq>(Uri uri, TReq content, Headers headers) =>
             await SendAsync<object>(CreatePostRequest(uri, content, headers));
 
+        public async Task<RestResponse<object>> UploadAsync(Uri uri, UploadDocumentRequest content, Headers headers) =>
+            await SendAsync<object>(CreateUploadRequest(uri, content, headers));
+
         public async Task<RestResponse<object>> DeleteAsync<TReq>(Uri uri, TReq content, Headers headers) =>
             await SendAsync<object>(CreateDeleteRequest(uri, content, headers));
 
@@ -82,25 +87,42 @@ namespace Dwolla.Client
         }
 
         private static HttpRequestMessage CreateDeleteRequest<TReq>(
-            Uri requestUri, TReq content, Headers headers, string contentType = ContentType)
-        {
-            return CreateContentRequest(HttpMethod.Delete, requestUri, headers, content, contentType);
-        }
+            Uri requestUri, TReq content, Headers headers, string contentType = ContentType) =>
+            CreateContentRequest(HttpMethod.Delete, requestUri, headers, content, contentType);
 
         private static HttpRequestMessage CreatePostRequest<TReq>(
-            Uri requestUri, TReq content, Headers headers, string contentType = ContentType)
-        {
-            return CreateContentRequest(HttpMethod.Post, requestUri, headers, content, contentType);
-        }
+            Uri requestUri, TReq content, Headers headers, string contentType = ContentType) =>
+            CreateContentRequest(HttpMethod.Post, requestUri, headers, content, contentType);
 
         private static HttpRequestMessage CreateContentRequest<TReq>(HttpMethod method, Uri requestUri, Headers headers,
             TReq content, string contentType)
         {
             var r = CreateRequest(method, requestUri, headers);
-            r.Content = content != null
-                ? new StringContent(JsonConvert.SerializeObject(content, JsonSettings), Encoding.UTF8, contentType)
-                : null;
+            r.Content = new StringContent(JsonConvert.SerializeObject(content, JsonSettings), Encoding.UTF8, contentType);
             return r;
+        }
+
+        private static HttpRequestMessage CreateUploadRequest(Uri requestUri, UploadDocumentRequest content, Headers headers)
+        {
+            var r = CreateRequest(HttpMethod.Post, requestUri, headers);
+            r.Content = new MultipartFormDataContent($"----------Upload")
+            {
+                {new StringContent(content.DocumentType), "\"documentType\""},
+                GetFileContent(content.Document)
+            };
+            return r;
+        }
+
+        private static StreamContent GetFileContent(File file)
+        {
+            var fc = new StreamContent(file.Stream);
+            fc.Headers.ContentType = MediaTypeHeaderValue.Parse(file.ContentType);
+            fc.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
+            {
+                Name = "\"file\"",
+                FileName = $"\"{file.Filename}\""
+            };
+            return fc;
         }
 
         private static HttpRequestMessage CreateRequest(HttpMethod method, Uri requestUri, Headers headers)
