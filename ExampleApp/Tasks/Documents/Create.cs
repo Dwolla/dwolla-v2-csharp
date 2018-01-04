@@ -18,9 +18,11 @@ namespace ExampleApp.Tasks.Documents
 
             var rootRes = await Broker.GetRootAsync();
 
-            using (var fileStream = typeof(Create).GetTypeInfo().Assembly.GetManifestResourceStream($"ExampleApp.{FilenameSuccess}"))
+            using (var fileStream = typeof(Create).GetTypeInfo().Assembly
+                .GetManifestResourceStream($"ExampleApp.{FilenameSuccess}"))
             {
-                var res = await Broker.UploadDocumentAsync(new Uri($"{rootRes.Links["customers"].Href}/{input}/documents"),
+                var res = await Broker.UploadDocumentAsync(
+                    new Uri($"{rootRes.Links["customers"].Href}/{input}/documents"),
                     new UploadDocumentRequest
                     {
                         DocumentType = "idCard",

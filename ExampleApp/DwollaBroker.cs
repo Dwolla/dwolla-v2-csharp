@@ -33,12 +33,13 @@ namespace ExampleApp
         public async Task<RootResponse> GetRootAsync() =>
             (await GetAsync<RootResponse>(new Uri(_client.ApiBaseAddress))).Content;
 
-        public async Task<Uri> CreateCustomerAsync(Uri uri, string firstName, string lastName, string email) => await CreateCustomerAsync(uri, new CreateCustomerRequest
-        {
-            FirstName = firstName,
-            LastName = lastName,
-            Email = email
-        });
+        public async Task<Uri> CreateCustomerAsync(Uri uri, string firstName, string lastName, string email) =>
+            await CreateCustomerAsync(uri, new CreateCustomerRequest
+            {
+                FirstName = firstName,
+                LastName = lastName,
+                Email = email
+            });
 
         public async Task<Uri> CreateCustomerAsync(Uri uri, CreateCustomerRequest request)
         {
@@ -75,16 +76,19 @@ namespace ExampleApp
             (await GetAsync<GetFundingSourcesResponse>(new Uri(customerUri.AbsoluteUri + "/funding-sources"))).Content;
 
         public async Task<FundingSource> GetFundingSourceAsync(string fundingSourceId) =>
-            (await GetAsync<FundingSource>(new Uri($"{_client.ApiBaseAddress}/funding-sources/{fundingSourceId}"))).Content;
+            (await GetAsync<FundingSource>(new Uri($"{_client.ApiBaseAddress}/funding-sources/{fundingSourceId}")))
+            .Content;
 
         public async Task<MicroDepositsResponse> GetMicroDepositsAsync(string fundingSourceId) =>
-            (await GetAsync<MicroDepositsResponse>(new Uri($"{_client.ApiBaseAddress}/funding-sources/{fundingSourceId}/micro-deposits"))).Content;
+        (await GetAsync<MicroDepositsResponse>(
+            new Uri($"{_client.ApiBaseAddress}/funding-sources/{fundingSourceId}/micro-deposits"))).Content;
 
         public async Task<Uri> VerifyMicroDepositsAsync(string fundingSourceId, decimal amount1, decimal amount2) =>
-            (await PostAsync(new Uri($"{_client.ApiBaseAddress}/funding-sources/{fundingSourceId}/micro-deposits"), new MicroDepositsRequest
+        (await PostAsync(new Uri($"{_client.ApiBaseAddress}/funding-sources/{fundingSourceId}/micro-deposits"),
+            new MicroDepositsRequest
             {
-                Amount1 = new Money { Value = amount1, Currency = "USD" },
-                Amount2 = new Money { Value = amount2, Currency = "USD" }
+                Amount1 = new Money {Value = amount1, Currency = "USD"},
+                Amount2 = new Money {Value = amount2, Currency = "USD"}
             })).Response.Headers.Location;
 
 
@@ -94,7 +98,8 @@ namespace ExampleApp
         public async Task<IavTokenResponse> GetCustomerIavTokenAsync(Uri customerUri) =>
             (await PostAsync<object, IavTokenResponse>(new Uri(customerUri.AbsoluteUri + "/iav-token"), null)).Content;
 
-        public async Task<Uri> CreateTransferAsync(string sourceFundingSourceId, string destinationFundingSourceId, decimal amount, decimal? fee, Uri chargeTo)
+        public async Task<Uri> CreateTransferAsync(string sourceFundingSourceId, string destinationFundingSourceId,
+            decimal amount, decimal? fee, Uri chargeTo)
         {
             var response = await PostAsync(new Uri($"{_client.ApiBaseAddress}/transfers"),
                 new CreateTransferRequest
@@ -106,8 +111,20 @@ namespace ExampleApp
                     },
                     Links = new Dictionary<string, Link>()
                     {
-                        {"source", new Link {Href = new Uri($"{_client.ApiBaseAddress}/funding-sources/{sourceFundingSourceId}")}},
-                        {"destination", new Link {Href = new Uri($"{_client.ApiBaseAddress}/funding-sources/{destinationFundingSourceId}")}}
+                        {
+                            "source",
+                            new Link
+                            {
+                                Href = new Uri($"{_client.ApiBaseAddress}/funding-sources/{sourceFundingSourceId}")
+                            }
+                        },
+                        {
+                            "destination",
+                            new Link
+                            {
+                                Href = new Uri($"{_client.ApiBaseAddress}/funding-sources/{destinationFundingSourceId}")
+                            }
+                        }
                     },
                     Fees = fee == null || fee == 0m
                         ? null
@@ -137,7 +154,8 @@ namespace ExampleApp
             (await GetAsync<TransferResponse>(new Uri($"{_client.ApiBaseAddress}/transfers/{id}"))).Content;
 
         public async Task<TransferFailureResponse> GetTransferFailureAsync(string id) =>
-            (await GetAsync<TransferFailureResponse>(new Uri($"{_client.ApiBaseAddress}/transfers/{id}/failure"))).Content;
+            (await GetAsync<TransferFailureResponse>(new Uri($"{_client.ApiBaseAddress}/transfers/{id}/failure")))
+            .Content;
 
         public async Task<Uri> CreateWebhookSubscriptionAsync(Uri uri, string url, string secret)
         {

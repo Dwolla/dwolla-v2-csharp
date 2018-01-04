@@ -26,7 +26,8 @@ namespace Dwolla.Client.Rest
 
             try
             {
-                return new RestResponse<T>(response, JsonConvert.DeserializeObject<T>(contentAsString), contentAsString);
+                return new RestResponse<T>(response, JsonConvert.DeserializeObject<T>(contentAsString),
+                    contentAsString);
             }
             catch (Exception ex)
             {

@@ -20,11 +20,13 @@ namespace ExampleApp.Tasks.Transfers
             if ("y".Equals(includeFee, StringComparison.CurrentCultureIgnoreCase))
             {
                 var fundingSource = await Broker.GetFundingSourceAsync(destinationFundingSource);
-                transferUri = await Broker.CreateTransferAsync(sourceFundingSource, destinationFundingSource, 50, 1, fundingSource.Links["customer"].Href);
+                transferUri = await Broker.CreateTransferAsync(sourceFundingSource, destinationFundingSource, 50, 1,
+                    fundingSource.Links["customer"].Href);
             }
             else
             {
-                transferUri = await Broker.CreateTransferAsync(sourceFundingSource, destinationFundingSource, 50, null, null);
+                transferUri =
+                    await Broker.CreateTransferAsync(sourceFundingSource, destinationFundingSource, 50, null, null);
             }
 
             if (transferUri == null)

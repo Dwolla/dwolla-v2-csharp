@@ -83,6 +83,7 @@ namespace Dwolla.Client
             {
                 throw e;
             }
+
             throw e;
         }
 
@@ -98,11 +99,13 @@ namespace Dwolla.Client
             TReq content, string contentType)
         {
             var r = CreateRequest(method, requestUri, headers);
-            r.Content = new StringContent(JsonConvert.SerializeObject(content, JsonSettings), Encoding.UTF8, contentType);
+            r.Content = new StringContent(JsonConvert.SerializeObject(content, JsonSettings), Encoding.UTF8,
+                contentType);
             return r;
         }
 
-        private static HttpRequestMessage CreateUploadRequest(Uri requestUri, UploadDocumentRequest content, Headers headers)
+        private static HttpRequestMessage CreateUploadRequest(Uri requestUri, UploadDocumentRequest content,
+            Headers headers)
         {
             var r = CreateRequest(HttpMethod.Post, requestUri, headers);
             r.Content = new MultipartFormDataContent($"----------Upload")

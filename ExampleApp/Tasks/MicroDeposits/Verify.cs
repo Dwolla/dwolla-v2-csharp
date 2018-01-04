@@ -15,7 +15,7 @@ namespace ExampleApp.Tasks.MicroDeposits
 
             Write("Second micro-deposit amount: ");
             var amount2 = decimal.Parse(ReadLine());
-            
+
             var res = await Broker.VerifyMicroDepositsAsync(fundingSource, amount1, amount2);
         }
     }
