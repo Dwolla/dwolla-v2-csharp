@@ -8,5 +8,6 @@ namespace Dwolla.Client.Models.Responses
         public string Status { get; set; }
         public string Type { get; set; }
         public DateTime Created { get; set; }
+        public string FailureReason { get; set; }
     }
 }
