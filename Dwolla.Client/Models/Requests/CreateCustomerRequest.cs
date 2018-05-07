@@ -23,5 +23,6 @@ namespace Dwolla.Client.Models.Requests
         public string Ein { get; set; }
         public string DoingBusinessAs { get; set; }
         public string Website { get; set; }
+        public Controller Controller { get; set; }
     }
 }
