@@ -33,6 +33,32 @@ namespace ExampleApp
         public async Task<RootResponse> GetRootAsync() =>
             (await GetAsync<RootResponse>(new Uri(_client.ApiBaseAddress))).Content;
 
+        public async Task<Uri> CreateBeneficialOwnerAsync(Uri uri, CreateBeneficialOwnerRequest request)
+        {
+            var response = await PostAsync(uri, request);
+            return response.Response.Headers.Location;
+        }
+
+        public async Task<GetBeneficialOwnersResponse> GetBeneficialOwnersAsync(Uri uri) =>
+            (await GetAsync<GetBeneficialOwnersResponse>(uri)).Content;
+
+        public async Task<BeneficialOwnerResponse> GetBeneficialOwnerAsync(Uri uri) =>
+            (await GetAsync<BeneficialOwnerResponse>(uri)).Content;
+
+        public async Task DeleteBeneficialOwnerAsync(string id)
+        {
+            await DeleteAsync<object>(new Uri($"{_client.ApiBaseAddress}/beneficial-owners/{id}"), null);
+        }
+
+        public async Task<BeneficialOwnershipResponse> GetBeneficialOwnershipAsync(Uri uri) =>
+            (await GetAsync<BeneficialOwnershipResponse>(uri)).Content;
+
+        public async Task<Uri> CertifyBeneficialOwnershipAsync(Uri uri) =>
+            (await PostAsync(uri, new CertifyBeneficialOwnershipRequest()
+            {
+                Status = "certified"
+            })).Response.Headers.Location;
+
         public async Task<Uri> CreateCustomerAsync(Uri uri, string firstName, string lastName, string email) =>
             await CreateCustomerAsync(uri, new CreateCustomerRequest
             {
