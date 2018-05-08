@@ -80,16 +80,16 @@ namespace ExampleApp
             .Content;
 
         public async Task<MicroDepositsResponse> GetMicroDepositsAsync(string fundingSourceId) =>
-        (await GetAsync<MicroDepositsResponse>(
-            new Uri($"{_client.ApiBaseAddress}/funding-sources/{fundingSourceId}/micro-deposits"))).Content;
+            (await GetAsync<MicroDepositsResponse>(
+                new Uri($"{_client.ApiBaseAddress}/funding-sources/{fundingSourceId}/micro-deposits"))).Content;
 
         public async Task<Uri> VerifyMicroDepositsAsync(string fundingSourceId, decimal amount1, decimal amount2) =>
-        (await PostAsync(new Uri($"{_client.ApiBaseAddress}/funding-sources/{fundingSourceId}/micro-deposits"),
-            new MicroDepositsRequest
-            {
-                Amount1 = new Money {Value = amount1, Currency = "USD"},
-                Amount2 = new Money {Value = amount2, Currency = "USD"}
-            })).Response.Headers.Location;
+            (await PostAsync(new Uri($"{_client.ApiBaseAddress}/funding-sources/{fundingSourceId}/micro-deposits"),
+                new MicroDepositsRequest
+                {
+                    Amount1 = new Money {Value = amount1, Currency = "USD"},
+                    Amount2 = new Money {Value = amount2, Currency = "USD"}
+                })).Response.Headers.Location;
 
 
         public async Task<BalanceResponse> GetFundingSourceBalanceAsync(Uri balanceUri) =>
@@ -183,8 +183,8 @@ namespace ExampleApp
             (await GetAsync<GetEventsResponse>(uri)).Content;
 
         public async Task<GetBusinessClassificationsResponse> GetBusinessClassificationsAsync() =>
-        (await GetAsync<GetBusinessClassificationsResponse>(
-            new Uri($"{_client.ApiBaseAddress}/business-classifications"))).Content;
+            (await GetAsync<GetBusinessClassificationsResponse>(
+                new Uri($"{_client.ApiBaseAddress}/business-classifications"))).Content;
 
         private async Task<RestResponse<TRes>> GetAsync<TRes>(Uri uri) where TRes : IDwollaResponse
         {

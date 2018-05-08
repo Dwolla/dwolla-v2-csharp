@@ -25,6 +25,7 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/Dwolla
 
 ## Changelog
 
+- **4.0.12** Add Controller models
 - **4.0.11** Add document failure reason
 - **4.0.10** Add Micro Deposit models
 - **4.0.9** Add Document models, support transfer fees
