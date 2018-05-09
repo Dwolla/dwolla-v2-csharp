@@ -13,7 +13,8 @@ namespace ExampleApp.Tasks.BeneficialOwners
             var input = ReadLine();
 
             var rootRes = await Broker.GetRootAsync();
-            var uri = await Broker.CertifyBeneficialOwnershipAsync(new Uri($"{rootRes.Links["customers"].Href}/{input}/beneficial-ownership"));
+            var uri = await Broker.CertifyBeneficialOwnershipAsync(
+                new Uri($"{rootRes.Links["customers"].Href}/{input}/beneficial-ownership"));
 
             WriteLine($"Certified");
         }

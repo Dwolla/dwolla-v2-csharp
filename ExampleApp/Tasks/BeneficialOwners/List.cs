@@ -13,7 +13,9 @@ namespace ExampleApp.Tasks.BeneficialOwners
             var input = ReadLine();
 
             var rootRes = await Broker.GetRootAsync();
-            var listResponse = await Broker.GetBeneficialOwnersAsync(new Uri($"{rootRes.Links["customers"].Href}/{input}/beneficial-owners"));
+            var listResponse =
+                await Broker.GetBeneficialOwnersAsync(
+                    new Uri($"{rootRes.Links["customers"].Href}/{input}/beneficial-owners"));
 
             WriteLine($"{listResponse.Embedded.BeneficialOwners.Count()} beneficial owners retrieved:");
 

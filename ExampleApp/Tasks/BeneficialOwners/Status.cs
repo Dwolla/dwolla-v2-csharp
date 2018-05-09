@@ -13,7 +13,9 @@ namespace ExampleApp.Tasks.BeneficialOwners
             var input = ReadLine();
 
             var rootRes = await Broker.GetRootAsync();
-            var statusResponse = await Broker.GetBeneficialOwnershipAsync(new Uri($"{rootRes.Links["customers"].Href}/{input}/beneficial-ownership"));
+            var statusResponse =
+                await Broker.GetBeneficialOwnershipAsync(
+                    new Uri($"{rootRes.Links["customers"].Href}/{input}/beneficial-ownership"));
 
             WriteLine($"Status={statusResponse.Status}");
         }
