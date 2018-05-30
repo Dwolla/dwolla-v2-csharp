@@ -3,7 +3,7 @@
 namespace ExampleApp.Tasks.Events
 {
     [Task("le", "List Events")]
-    class List : BaseTask
+    internal class List : BaseTask
     {
         public override async Task Run()
         {

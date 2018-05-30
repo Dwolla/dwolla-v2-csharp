@@ -1,9 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace ExampleApp.Tasks.MicroDeposits
 {
     [Task("vmd", "Verify Micro-deposits")]
-    class Verify : BaseTask
+    internal class Verify : BaseTask
     {
         public override async Task Run()
         {
@@ -16,7 +17,11 @@ namespace ExampleApp.Tasks.MicroDeposits
             Write("Second micro-deposit amount: ");
             var amount2 = decimal.Parse(ReadLine());
 
-            var res = await Broker.VerifyMicroDepositsAsync(fundingSource, amount1, amount2);
+            var uri = await Broker.VerifyMicroDepositsAsync(fundingSource, amount1, amount2);
+
+            if (uri == null) return;
+
+            Console.WriteLine("Verified");
         }
     }
 }

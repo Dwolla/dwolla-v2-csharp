@@ -3,7 +3,7 @@
 namespace ExampleApp.Tasks.Transfers
 {
     [Task("gtf", "Get Transfer Failure")]
-    class GetFailre : BaseTask
+    internal class GetFailure : BaseTask
     {
         public override async Task Run()
         {

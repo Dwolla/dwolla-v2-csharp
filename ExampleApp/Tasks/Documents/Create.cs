@@ -1,13 +1,13 @@
 ﻿using System;
-using System.Threading.Tasks;
-using Dwolla.Client.Models.Requests;
-using Dwolla.Client.Models;
 using System.Reflection;
+using System.Threading.Tasks;
+using Dwolla.Client.Models;
+using Dwolla.Client.Models.Requests;
 
 namespace ExampleApp.Tasks.Documents
 {
     [Task("cd", "Create Document")]
-    class Create : BaseTask
+    internal class Create : BaseTask
     {
         private const string FilenameSuccess = "test-document-upload-success.png";
 
@@ -21,7 +21,7 @@ namespace ExampleApp.Tasks.Documents
             using (var fileStream = typeof(Create).GetTypeInfo().Assembly
                 .GetManifestResourceStream($"ExampleApp.{FilenameSuccess}"))
             {
-                var res = await Broker.UploadDocumentAsync(
+                var uri = await Broker.UploadDocumentAsync(
                     new Uri($"{rootRes.Links["customers"].Href}/{input}/documents"),
                     new UploadDocumentRequest
                     {
@@ -34,7 +34,9 @@ namespace ExampleApp.Tasks.Documents
                         }
                     });
 
-                WriteLine($"Customer document uploaded: URI={res}");
+                if (uri == null) return;
+
+                WriteLine($"Customer document uploaded: URI={uri}");
             }
         }
     }

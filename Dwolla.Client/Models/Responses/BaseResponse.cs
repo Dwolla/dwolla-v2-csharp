@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 namespace Dwolla.Client.Models.Responses
 {
     /// <summary>
-    /// Implemented by any model returned by DwollaClient
+    ///     Implemented by any model returned by DwollaClient
     /// </summary>
     public interface IDwollaResponse
     {

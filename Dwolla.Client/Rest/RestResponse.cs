@@ -1,20 +1,31 @@
-﻿using System.Net.Http;
+﻿using System.Linq;
+using System.Net.Http;
+using Dwolla.Client.Models.Responses;
 
 namespace Dwolla.Client.Rest
 {
     public class RestResponse<T>
     {
-        public HttpResponseMessage Response { get; }
         public T Content { get; }
+        public ErrorResponse Error { get; }
         public string RawContent { get; }
-        public RestException Exception { get; }
+        public string RequestId { get; }
+        public HttpResponseMessage Response { get; }
 
-        public RestResponse(HttpResponseMessage response, T content, string rawContent, RestException exception = null)
+        internal RestResponse(HttpResponseMessage response, T content, string rawContent, ErrorResponse error = null)
         {
-            Response = response;
-            Exception = exception;
             Content = content;
+            Error = error;
             RawContent = rawContent;
+            Response = response;
+            RequestId = GetRequestId(response);
+        }
+
+        private static string GetRequestId(HttpResponseMessage r)
+        {
+            if (r == null) return null;
+            r.Headers.TryGetValues("x-request-id", out var values);
+            return values?.FirstOrDefault();
         }
     }
 }

@@ -1,6 +1,6 @@
-﻿using System.Net;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Text;
+using Dwolla.Client.Models.Responses;
 using Dwolla.Client.Rest;
 using Newtonsoft.Json;
 using Xunit;
@@ -9,60 +9,86 @@ namespace Dwolla.Client.Tests.Rest
 {
     public class ResponseBuilderShould
     {
-        private static readonly TestResponse Expected = new TestResponse {Message = "testing"};
+        private const string RequestId = "myRequestId";
+
         private readonly ResponseBuilder _builder;
 
         public ResponseBuilderShould() => _builder = new ResponseBuilder();
 
         [Fact]
-        public async void SetExceptionOnNullContent()
+        public async void SetErrorOnNullContent()
         {
-            var response = CreateResponse();
-            response.Content = null;
+            var response = CreateResponse(null);
 
             var actual = await _builder.Build<TestResponse>(response);
 
-            Assert.Equal("Response content is null, StatusCode=OK", actual.Exception.Message);
             Assert.Null(actual.Content);
+            Assert.Equal("NullResponse", actual.Error.Code);
+            Assert.Equal("Response content is null", actual.Error.Message);
+            Assert.Null(actual.RawContent);
+            Assert.Equal(RequestId, actual.RequestId);
             Assert.Equal(response, actual.Response);
         }
 
         [Fact]
-        public async void SetExceptionOnInvalidJson()
+        public async void SetErrorOnInvalidJson()
         {
-            var response = CreateResponse();
-            response.Content = new StringContent("{", Encoding.UTF8);
+            const string raw = "{";
+            var response = CreateResponse(raw);
 
             var actual = await _builder.Build<TestResponse>(response);
 
-            Assert.Equal("Exception parsing JSON, StatusCode=OK, Content='{'", actual.Exception.Message);
             Assert.Null(actual.Content);
+            Assert.Equal("DeserializationException", actual.Error.Code);
+            Assert.Equal("Unexpected end when reading JSON. Path '', line 1, position 1.", actual.Error.Message);
+            Assert.Equal(raw, actual.RawContent);
+            Assert.Equal(RequestId, actual.RequestId);
             Assert.Equal(response, actual.Response);
         }
 
         [Fact]
-        public async void ReturnResponse()
+        public async void DeserializeErrorResponse()
         {
-            var response = CreateResponse();
+            var expected = new ErrorResponse {Code = "MyCode", Message = "MyMessage"};
+            var raw = JsonConvert.SerializeObject(expected);
+            var response = CreateResponse(raw);
 
             var actual = await _builder.Build<TestResponse>(response);
 
-            Assert.Null(actual.Exception);
-            Assert.Equal(Expected.Message, actual.Content.Message);
+            Assert.Null(actual.Content);
+            Assert.Equal(expected.Code, actual.Error.Code);
+            Assert.Equal(expected.Message, actual.Error.Message);
+            Assert.Equal(raw, actual.RawContent);
+            Assert.Equal(RequestId, actual.RequestId);
             Assert.Equal(response, actual.Response);
-            Assert.NotNull(actual.RawContent);
         }
 
-        private static HttpResponseMessage CreateResponse() =>
-            new HttpResponseMessage
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(JsonConvert.SerializeObject(Expected), Encoding.UTF8)
-            };
+        [Fact]
+        public async void DeserializeResponse()
+        {
+            var expected = new TestResponse {TestProp = "testing"};
+            var raw = JsonConvert.SerializeObject(expected);
+            var response = CreateResponse(raw);
+
+            var actual = await _builder.Build<TestResponse>(response);
+
+            Assert.Equal(expected.TestProp, actual.Content.TestProp);
+            Assert.Null(actual.Error);
+            Assert.Equal(raw, actual.RawContent);
+            Assert.Equal(RequestId, actual.RequestId);
+            Assert.Equal(response, actual.Response);
+        }
+
+        private static HttpResponseMessage CreateResponse(string content)
+        {
+            var r = new HttpResponseMessage {Content = content == null ? null : new StringContent(content, Encoding.UTF8)};
+            r.Headers.Add("x-request-id", RequestId);
+            return r;
+        }
 
         private class TestResponse
         {
-            public string Message { get; set; }
+            public string TestProp { get; set; }
         }
     }
 }

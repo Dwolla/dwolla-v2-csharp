@@ -3,7 +3,7 @@
 namespace ExampleApp.Tasks.WebhookSubscriptions
 {
     [Task("lws", "List Webhook Subscriptions")]
-    class List : BaseTask
+    internal class List : BaseTask
     {
         public override async Task Run()
         {

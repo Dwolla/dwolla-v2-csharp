@@ -2,11 +2,8 @@
 
 namespace Dwolla.Client
 {
-    class DateOnlyConverter : IsoDateTimeConverter
+    public class DateOnlyConverter : IsoDateTimeConverter
     {
-        public DateOnlyConverter()
-        {
-            base.DateTimeFormat = "yyyy-MM-dd";
-        }
+        public DateOnlyConverter() => DateTimeFormat = "yyyy-MM-dd";
     }
 }

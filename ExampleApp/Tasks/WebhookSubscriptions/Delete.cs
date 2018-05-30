@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 namespace ExampleApp.Tasks.WebhookSubscriptions
 {
     [Task("dws", "Delete a Webhook Subscription")]
-    class Delete : BaseTask
+    internal class Delete : BaseTask
     {
         public override async Task Run()
         {

@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 namespace ExampleApp.Tasks.Customers
 {
     [Task("lcfs", "List a Customer's Funding Sources")]
-    class FundingSourcesList : BaseTask
+    internal class FundingSourcesList : BaseTask
     {
         public override async Task Run()
         {
@@ -14,6 +14,7 @@ namespace ExampleApp.Tasks.Customers
             var rootRes = await Broker.GetRootAsync();
             var res = await Broker.GetCustomerFundingSourcesAsync(
                 new Uri($"{rootRes.Links["customers"].Href}/{input}"));
+
             res.Embedded.FundingSources
                 .ForEach(fs => WriteLine($" - ID:{fs.Id}  Name:{fs.Name} Type:{fs.Type}"));
         }

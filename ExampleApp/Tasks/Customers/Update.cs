@@ -5,7 +5,7 @@ using Dwolla.Client.Models.Requests;
 namespace ExampleApp.Tasks.Customers
 {
     [Task("cu", "Update Customer")]
-    class Update : BaseTask
+    internal class Update : BaseTask
     {
         public override async Task Run()
         {

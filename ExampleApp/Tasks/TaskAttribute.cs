@@ -2,7 +2,7 @@
 
 namespace ExampleApp.Tasks
 {
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Class)]
     internal class TaskAttribute : Attribute
     {
         public TaskAttribute(string command, string description)

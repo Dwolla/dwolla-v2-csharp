@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Dwolla.Client.Rest
@@ -19,8 +20,17 @@ namespace Dwolla.Client.Rest
 
         public async Task<RestResponse<T>> SendAsync<T>(HttpRequestMessage request)
         {
-            using (var response = await _client.SendAsync(request))
-                return await _builder.Build<T>(response);
+            try
+            {
+                using (var response = await _client.SendAsync(request))
+                {
+                    return await _builder.Build<T>(response);
+                }
+            }
+            catch (Exception e)
+            {
+                return _builder.Error<T>(null, "HttpClientException", e.Message);
+            }
         }
 
         internal RestClient(HttpClient client, IResponseBuilder builder)

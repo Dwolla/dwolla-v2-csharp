@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Dwolla.Client.Models.Responses
+﻿namespace Dwolla.Client.Models.Responses
 {
     public class BeneficialOwnerResponse : BaseResponse
     {

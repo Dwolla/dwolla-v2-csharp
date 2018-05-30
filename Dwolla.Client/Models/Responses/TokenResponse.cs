@@ -19,7 +19,8 @@ namespace Dwolla.Client.Models.Responses
         [JsonProperty(PropertyName = "token_type")]
         public string TokenType { get; set; }
 
-        [JsonProperty(PropertyName = "error")] public string Error { get; set; }
+        [JsonProperty(PropertyName = "error")]
+        public string Error { get; set; }
 
         [JsonProperty(PropertyName = "error_description")]
         public string ErrorDescription { get; set; }

@@ -25,6 +25,10 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/Dwolla
 
 ## Changelog
 
+- **5.0.15** Upgrade dependencies and Dwolla.Client.Tests and ExampleApp to `netcoreapp2.0`. Breaking changes:
+  - DwollaClient no longer throws on API errors, they should be properly deserialized into RestResponse.Error instead
+  - DwollaException, RestException, and RestResponse.Exception are removed
+  - Use `EmptyResponse` instead of `object` in DwollaClient inteface 
 - **4.0.14** Ignore null values in JSON POST requests
 - **4.0.13** Add Beneficial Owner models and examples
 - **4.0.12** Add Controller models

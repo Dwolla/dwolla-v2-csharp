@@ -3,7 +3,7 @@
 namespace ExampleApp.Tasks.Transfers
 {
     [Task("gt", "Get Transfer")]
-    class Get : BaseTask
+    internal class Get : BaseTask
     {
         public override async Task Run()
         {

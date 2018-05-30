@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 namespace ExampleApp.Tasks.Transfers
 {
     [Task("ct", "Create Transfer")]
-    class Create : BaseTask
+    internal class Create : BaseTask
     {
         public override async Task Run()
         {
@@ -16,23 +16,21 @@ namespace ExampleApp.Tasks.Transfers
             Write("Include a fee? (y/n): ");
             var includeFee = ReadLine();
 
-            Uri transferUri;
+            Uri uri;
             if ("y".Equals(includeFee, StringComparison.CurrentCultureIgnoreCase))
             {
                 var fundingSource = await Broker.GetFundingSourceAsync(destinationFundingSource);
-                transferUri = await Broker.CreateTransferAsync(sourceFundingSource, destinationFundingSource, 50, 1,
+                uri = await Broker.CreateTransferAsync(sourceFundingSource, destinationFundingSource, 50, 1,
                     fundingSource.Links["customer"].Href);
             }
             else
             {
-                transferUri =
-                    await Broker.CreateTransferAsync(sourceFundingSource, destinationFundingSource, 50, null, null);
+                uri = await Broker.CreateTransferAsync(sourceFundingSource, destinationFundingSource, 50, null, null);
             }
 
-            if (transferUri == null)
-                throw new Exception("transfer failed");
+            if (uri == null) return;
 
-            var transfer = await Broker.GetTransferAsync(transferUri);
+            var transfer = await Broker.GetTransferAsync(uri);
             WriteLine($"Created {transfer.Id}; Status: {transfer.Status}");
         }
     }
