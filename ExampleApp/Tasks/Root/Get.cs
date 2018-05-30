@@ -3,7 +3,7 @@
 namespace ExampleApp.Tasks.Root
 {
     [Task("gr", "Get root")]
-    class Get : BaseTask
+    internal class Get : BaseTask
     {
         public override async Task Run()
         {

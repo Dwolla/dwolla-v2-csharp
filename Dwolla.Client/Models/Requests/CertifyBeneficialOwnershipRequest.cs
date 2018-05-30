@@ -1,7 +1,4 @@
-﻿using Newtonsoft.Json;
-using System;
-
-namespace Dwolla.Client.Models.Requests
+﻿namespace Dwolla.Client.Models.Requests
 {
     public class CertifyBeneficialOwnershipRequest
     {

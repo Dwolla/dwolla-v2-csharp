@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace ExampleApp.Tasks.BeneficialOwners
 {
     [Task("gbos", "Get Beneficial Ownership Status")]
-    class Status : BaseTask
+    internal class Status : BaseTask
     {
         public override async Task Run()
         {
@@ -13,11 +12,10 @@ namespace ExampleApp.Tasks.BeneficialOwners
             var input = ReadLine();
 
             var rootRes = await Broker.GetRootAsync();
-            var statusResponse =
-                await Broker.GetBeneficialOwnershipAsync(
-                    new Uri($"{rootRes.Links["customers"].Href}/{input}/beneficial-ownership"));
+            var statusRes = await Broker.GetBeneficialOwnershipAsync(
+                new Uri($"{rootRes.Links["customers"].Href}/{input}/beneficial-ownership"));
 
-            WriteLine($"Status={statusResponse.Status}");
+            WriteLine($"Status={statusRes.Status}");
         }
     }
 }

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 namespace ExampleApp.Tasks.Customers
 {
     [Task("gcb", "Get Customer Balance")]
-    class Balance : BaseTask
+    internal class Balance : BaseTask
     {
         public override async Task Run()
         {
@@ -13,8 +13,7 @@ namespace ExampleApp.Tasks.Customers
             var input = ReadLine();
 
             var rootRes = await Broker.GetRootAsync();
-            var sourcesRes =
-                await Broker.GetCustomerFundingSourcesAsync(new Uri($"{rootRes.Links["customers"].Href}/{input}"));
+            var sourcesRes = await Broker.GetCustomerFundingSourcesAsync(new Uri($"{rootRes.Links["customers"].Href}/{input}"));
             var balanceRes = await Broker.GetFundingSourceBalanceAsync(sourcesRes.Embedded.FundingSources
                 .First(x => x.Type == "balance").Links["balance"].Href);
 

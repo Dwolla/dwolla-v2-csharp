@@ -3,7 +3,7 @@
 namespace ExampleApp.Tasks.BusinessClassifications
 {
     [Task("lbc", "List Business Classifications")]
-    class List : BaseTask
+    internal class List : BaseTask
     {
         public override async Task Run()
         {

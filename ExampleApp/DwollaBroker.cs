@@ -1,27 +1,27 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Dwolla.Client;
 using Dwolla.Client.Models;
 using Dwolla.Client.Models.Requests;
 using Dwolla.Client.Models.Responses;
 using Dwolla.Client.Rest;
-using System.Collections.Generic;
 
 namespace ExampleApp
 {
-    public class DwollaBroker
+    internal class DwollaBroker
     {
         private readonly Headers _headers = new Headers();
         private readonly IDwollaClient _client;
 
-        public DwollaBroker(IDwollaClient client) => _client = client;
+        internal DwollaBroker(IDwollaClient client) => _client = client;
 
-        public async Task<TokenResponse> SetAuthroizationHeader(string key, string secret)
+        internal async Task<TokenResponse> SetAuthroizationHeader(string key, string secret)
         {
             var response = await _client.PostAuthAsync<AppTokenRequest, TokenResponse>(
                 new Uri($"{_client.AuthBaseAddress}/token"), new AppTokenRequest {Key = key, Secret = secret});
 
-            // TODO: Securely store token in database for reuse
+            // TODO: Securely store token in your database for reuse
             if (!_headers.ContainsKey("Authorization"))
                 _headers.Add("Authorization", $"Bearer {response.Content.Token}");
             else
@@ -30,36 +30,31 @@ namespace ExampleApp
             return response.Content;
         }
 
-        public async Task<RootResponse> GetRootAsync() =>
+        internal async Task<RootResponse> GetRootAsync() =>
             (await GetAsync<RootResponse>(new Uri(_client.ApiBaseAddress))).Content;
 
-        public async Task<Uri> CreateBeneficialOwnerAsync(Uri uri, CreateBeneficialOwnerRequest request)
+        internal async Task<Uri> CreateBeneficialOwnerAsync(Uri uri, CreateBeneficialOwnerRequest request)
         {
             var response = await PostAsync(uri, request);
             return response.Response.Headers.Location;
         }
 
-        public async Task<GetBeneficialOwnersResponse> GetBeneficialOwnersAsync(Uri uri) =>
+        internal async Task<GetBeneficialOwnersResponse> GetBeneficialOwnersAsync(Uri uri) =>
             (await GetAsync<GetBeneficialOwnersResponse>(uri)).Content;
 
-        public async Task<BeneficialOwnerResponse> GetBeneficialOwnerAsync(Uri uri) =>
+        internal async Task<BeneficialOwnerResponse> GetBeneficialOwnerAsync(Uri uri) =>
             (await GetAsync<BeneficialOwnerResponse>(uri)).Content;
 
-        public async Task DeleteBeneficialOwnerAsync(string id)
-        {
+        internal async Task DeleteBeneficialOwnerAsync(string id) =>
             await DeleteAsync<object>(new Uri($"{_client.ApiBaseAddress}/beneficial-owners/{id}"), null);
-        }
 
-        public async Task<BeneficialOwnershipResponse> GetBeneficialOwnershipAsync(Uri uri) =>
+        internal async Task<BeneficialOwnershipResponse> GetBeneficialOwnershipAsync(Uri uri) =>
             (await GetAsync<BeneficialOwnershipResponse>(uri)).Content;
 
-        public async Task<Uri> CertifyBeneficialOwnershipAsync(Uri uri) =>
-            (await PostAsync(uri, new CertifyBeneficialOwnershipRequest()
-            {
-                Status = "certified"
-            })).Response.Headers.Location;
+        internal async Task<Uri> CertifyBeneficialOwnershipAsync(Uri uri) =>
+            (await PostAsync(uri, new CertifyBeneficialOwnershipRequest {Status = "certified"})).Response.Headers.Location;
 
-        public async Task<Uri> CreateCustomerAsync(Uri uri, string firstName, string lastName, string email) =>
+        internal async Task<Uri> CreateCustomerAsync(Uri uri, string firstName, string lastName, string email) =>
             await CreateCustomerAsync(uri, new CreateCustomerRequest
             {
                 FirstName = firstName,
@@ -67,49 +62,37 @@ namespace ExampleApp
                 Email = email
             });
 
-        public async Task<Uri> CreateCustomerAsync(Uri uri, CreateCustomerRequest request)
+        internal async Task<Uri> CreateCustomerAsync(Uri uri, CreateCustomerRequest request)
         {
-            var response = await PostAsync(uri, request);
-            return response.Response.Headers.Location;
+            var r = await PostAsync<CreateCustomerRequest, EmptyResponse>(uri, request);
+            return r.Response.Headers.Location;
         }
 
-        public async Task<Uri> UploadDocumentAsync(Uri uri, UploadDocumentRequest request)
-        {
-            try
-            {
-                var response = await _client.UploadAsync(uri, request, _headers);
-                return response.Response.Headers.Location;
-            }
-            catch (DwollaException e)
-            {
-                HandleError(e);
-                throw;
-            }
-        }
+        internal async Task<Uri> UploadDocumentAsync(Uri uri, UploadDocumentRequest request) =>
+            (await ExecAsync(() => _client.UploadAsync(uri, request, _headers))).Response.Headers.Location;
 
-        public async Task<Customer> UpdateCustomerAsync(Uri uri, UpdateCustomerRequest request) =>
+        internal async Task<Customer> UpdateCustomerAsync(Uri uri, UpdateCustomerRequest request) =>
             (await PostAsync<UpdateCustomerRequest, Customer>(uri, request)).Content;
 
-        public async Task<Customer> GetCustomerAsync(Uri uri) => (await GetAsync<Customer>(uri)).Content;
+        internal async Task<Customer> GetCustomerAsync(Uri uri) => (await GetAsync<Customer>(uri)).Content;
 
-        public async Task<GetCustomersResponse> GetCustomersAsync(Uri uri) =>
+        internal async Task<GetCustomersResponse> GetCustomersAsync(Uri uri) =>
             (await GetAsync<GetCustomersResponse>(uri)).Content;
 
-        public async Task<GetDocumentsResponse> GetCustomerDocumentsAsync(Uri customerUri) =>
+        internal async Task<GetDocumentsResponse> GetCustomerDocumentsAsync(Uri customerUri) =>
             (await GetAsync<GetDocumentsResponse>(new Uri(customerUri.AbsoluteUri + "/documents"))).Content;
 
-        public async Task<GetFundingSourcesResponse> GetCustomerFundingSourcesAsync(Uri customerUri) =>
+        internal async Task<GetFundingSourcesResponse> GetCustomerFundingSourcesAsync(Uri customerUri) =>
             (await GetAsync<GetFundingSourcesResponse>(new Uri(customerUri.AbsoluteUri + "/funding-sources"))).Content;
 
-        public async Task<FundingSource> GetFundingSourceAsync(string fundingSourceId) =>
-            (await GetAsync<FundingSource>(new Uri($"{_client.ApiBaseAddress}/funding-sources/{fundingSourceId}")))
-            .Content;
+        internal async Task<FundingSource> GetFundingSourceAsync(string fundingSourceId) =>
+            (await GetAsync<FundingSource>(new Uri($"{_client.ApiBaseAddress}/funding-sources/{fundingSourceId}"))).Content;
 
-        public async Task<MicroDepositsResponse> GetMicroDepositsAsync(string fundingSourceId) =>
+        internal async Task<MicroDepositsResponse> GetMicroDepositsAsync(string fundingSourceId) =>
             (await GetAsync<MicroDepositsResponse>(
                 new Uri($"{_client.ApiBaseAddress}/funding-sources/{fundingSourceId}/micro-deposits"))).Content;
 
-        public async Task<Uri> VerifyMicroDepositsAsync(string fundingSourceId, decimal amount1, decimal amount2) =>
+        internal async Task<Uri> VerifyMicroDepositsAsync(string fundingSourceId, decimal amount1, decimal amount2) =>
             (await PostAsync(new Uri($"{_client.ApiBaseAddress}/funding-sources/{fundingSourceId}/micro-deposits"),
                 new MicroDepositsRequest
                 {
@@ -118,13 +101,13 @@ namespace ExampleApp
                 })).Response.Headers.Location;
 
 
-        public async Task<BalanceResponse> GetFundingSourceBalanceAsync(Uri balanceUri) =>
+        internal async Task<BalanceResponse> GetFundingSourceBalanceAsync(Uri balanceUri) =>
             (await GetAsync<BalanceResponse>(balanceUri)).Content;
 
-        public async Task<IavTokenResponse> GetCustomerIavTokenAsync(Uri customerUri) =>
-            (await PostAsync<object, IavTokenResponse>(new Uri(customerUri.AbsoluteUri + "/iav-token"), null)).Content;
+        internal async Task<IavTokenResponse> GetCustomerIavTokenAsync(Uri customerUri) =>
+            (await PostAsync<EmptyResponse, IavTokenResponse>(new Uri(customerUri.AbsoluteUri + "/iav-token"), null)).Content;
 
-        public async Task<Uri> CreateTransferAsync(string sourceFundingSourceId, string destinationFundingSourceId,
+        internal async Task<Uri> CreateTransferAsync(string sourceFundingSourceId, string destinationFundingSourceId,
             decimal amount, decimal? fee, Uri chargeTo)
         {
             var response = await PostAsync(new Uri($"{_client.ApiBaseAddress}/transfers"),
@@ -135,145 +118,80 @@ namespace ExampleApp
                         Currency = "USD",
                         Value = amount
                     },
-                    Links = new Dictionary<string, Link>()
+                    Links = new Dictionary<string, Link>
                     {
-                        {
-                            "source",
-                            new Link
-                            {
-                                Href = new Uri($"{_client.ApiBaseAddress}/funding-sources/{sourceFundingSourceId}")
-                            }
-                        },
-                        {
-                            "destination",
-                            new Link
-                            {
-                                Href = new Uri($"{_client.ApiBaseAddress}/funding-sources/{destinationFundingSourceId}")
-                            }
-                        }
+                        {"source", new Link {Href = new Uri($"{_client.ApiBaseAddress}/funding-sources/{sourceFundingSourceId}")}},
+                        {"destination", new Link {Href = new Uri($"{_client.ApiBaseAddress}/funding-sources/{destinationFundingSourceId}")}}
                     },
                     Fees = fee == null || fee == 0m
                         ? null
-                        : new List<Fee>()
+                        : new List<Fee>
                         {
                             new Fee
                             {
-                                Amount = new Money
-                                {
-                                    Value = fee.Value,
-                                    Currency = "USD"
-                                },
-                                Links = new Dictionary<string, Link>()
-                                {
-                                    {"charge-to", new Link() {Href = chargeTo}}
-                                }
+                                Amount = new Money {Value = fee.Value, Currency = "USD"},
+                                Links = new Dictionary<string, Link> {{"charge-to", new Link {Href = chargeTo}}}
                             }
                         }
                 });
             return response.Response.Headers.Location;
         }
 
-        public async Task<TransferResponse> GetTransferAsync(Uri transferUri) =>
+        internal async Task<TransferResponse> GetTransferAsync(Uri transferUri) =>
             (await GetAsync<TransferResponse>(transferUri)).Content;
 
-        public async Task<TransferResponse> GetTransferAsync(string id) =>
+        internal async Task<TransferResponse> GetTransferAsync(string id) =>
             (await GetAsync<TransferResponse>(new Uri($"{_client.ApiBaseAddress}/transfers/{id}"))).Content;
 
-        public async Task<TransferFailureResponse> GetTransferFailureAsync(string id) =>
-            (await GetAsync<TransferFailureResponse>(new Uri($"{_client.ApiBaseAddress}/transfers/{id}/failure")))
-            .Content;
+        internal async Task<TransferFailureResponse> GetTransferFailureAsync(string id) =>
+            (await GetAsync<TransferFailureResponse>(new Uri($"{_client.ApiBaseAddress}/transfers/{id}/failure"))).Content;
 
-        public async Task<Uri> CreateWebhookSubscriptionAsync(Uri uri, string url, string secret)
-        {
-            var response = await PostAsync(uri,
-                new CreateWebhookSubscriptionRequest
-                {
-                    Url = url,
-                    Secret = secret
-                });
-            return response.Response.Headers.Location;
-        }
+        internal async Task<Uri> CreateWebhookSubscriptionAsync(Uri uri, string url, string secret) =>
+            (await PostAsync(uri, new CreateWebhookSubscriptionRequest {Url = url, Secret = secret})).Response.Headers.Location;
 
-        public async Task DeleteWebhookSubscriptionAsync(Uri uri)
-        {
-            await DeleteAsync<object>(uri, null);
-        }
+        internal async Task DeleteWebhookSubscriptionAsync(Uri uri) => await DeleteAsync<object>(uri, null);
 
-        public async Task<WebhookSubscription> GetWebhookSubscriptionAsync(Uri uri) =>
+        internal async Task<WebhookSubscription> GetWebhookSubscriptionAsync(Uri uri) =>
             (await GetAsync<WebhookSubscription>(uri)).Content;
 
-        public async Task<GetWebhookSubscriptionsResponse> GetWebhookSubscriptionsAsync(Uri uri) =>
+        internal async Task<GetWebhookSubscriptionsResponse> GetWebhookSubscriptionsAsync(Uri uri) =>
             (await GetAsync<GetWebhookSubscriptionsResponse>(uri)).Content;
 
-        public async Task<GetEventsResponse> GetEventsAsync(Uri uri) =>
+        internal async Task<GetEventsResponse> GetEventsAsync(Uri uri) =>
             (await GetAsync<GetEventsResponse>(uri)).Content;
 
-        public async Task<GetBusinessClassificationsResponse> GetBusinessClassificationsAsync() =>
+        internal async Task<GetBusinessClassificationsResponse> GetBusinessClassificationsAsync() =>
             (await GetAsync<GetBusinessClassificationsResponse>(
                 new Uri($"{_client.ApiBaseAddress}/business-classifications"))).Content;
 
-        private async Task<RestResponse<TRes>> GetAsync<TRes>(Uri uri) where TRes : IDwollaResponse
-        {
-            try
-            {
-                return await _client.GetAsync<TRes>(uri, _headers);
-            }
-            catch (DwollaException e)
-            {
-                HandleError(e);
-                throw;
-            }
-        }
+        private async Task<RestResponse<TRes>> GetAsync<TRes>(Uri uri) where TRes : IDwollaResponse =>
+            await ExecAsync(() => _client.GetAsync<TRes>(uri, _headers));
 
-        private async Task<RestResponse<object>> PostAsync<TReq>(Uri uri, TReq request)
-        {
-            try
-            {
-                return await _client.PostAsync(uri, request, _headers);
-            }
-            catch (DwollaException e)
-            {
-                HandleError(e);
-                throw;
-            }
-        }
+        private async Task<RestResponse<EmptyResponse>> PostAsync<TReq>(Uri uri, TReq request) =>
+            await ExecAsync(() => _client.PostAsync<TReq, EmptyResponse>(uri, request, _headers));
 
-        private async Task<RestResponse<TRes>> PostAsync<TReq, TRes>(Uri uri, TReq request) where TRes : IDwollaResponse
-        {
-            try
-            {
-                return await _client.PostAsync<TReq, TRes>(uri, request, _headers);
-            }
-            catch (DwollaException e)
-            {
-                HandleError(e);
-                throw;
-            }
-        }
+        private async Task<RestResponse<TRes>> PostAsync<TReq, TRes>(Uri uri, TReq request) where TRes : IDwollaResponse =>
+            await ExecAsync(() => _client.PostAsync<TReq, TRes>(uri, request, _headers));
 
-        private async Task<RestResponse<object>> DeleteAsync<TReq>(Uri uri, TReq request)
-        {
-            try
-            {
-                return await _client.DeleteAsync(uri, request, _headers);
-            }
-            catch (DwollaException e)
-            {
-                HandleError(e);
-                throw;
-            }
-        }
+        private async Task<RestResponse<EmptyResponse>> DeleteAsync<TReq>(Uri uri, TReq request) =>
+            await ExecAsync(() => _client.DeleteAsync(uri, request, _headers));
 
-        private static void HandleError(DwollaException e)
+        private static async Task<RestResponse<TRes>> ExecAsync<TRes>(Func<Task<RestResponse<TRes>>> func) where TRes : IDwollaResponse
         {
-            // TODO: Handle error
-            Console.WriteLine(e);
+            var r = await func();
+            if (r.Error == null) return r;
+
+            // TODO: Handle error specific to your application
+            var e = r.Error;
+            Console.WriteLine($"{e.Code}: {e.Message}");
 
             // Example error handling. More info: https://docsv2.dwolla.com/#errors
-            if (e.Error?.Code == "ExpiredAccessToken")
+            if (e.Code == "ExpiredAccessToken")
             {
                 // TODO: Refresh token and retry request
             }
+
+            return r;
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,7 +19,7 @@ namespace Dwolla.Client.Tests.Rest
             Requests.Add(new Request(message, content));
             return _responses.ContainsKey(message.RequestUri)
                 ? _responses[message.RequestUri]
-                : new HttpResponseMessage(HttpStatusCode.NotFound) {RequestMessage = message};
+                : throw new Exception("Not Found");
         }
     }
 

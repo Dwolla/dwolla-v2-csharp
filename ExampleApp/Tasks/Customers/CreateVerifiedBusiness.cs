@@ -6,13 +6,13 @@ using Dwolla.Client.Models.Requests;
 namespace ExampleApp.Tasks.Customers
 {
     [Task("cvbc", "Create a Verified Business Customer")]
-    class CreateVerifiedBusiness : BaseTask
+    internal class CreateVerifiedBusiness : BaseTask
     {
         public override async Task Run()
         {
             var rootRes = await Broker.GetRootAsync();
-            var createdCustomerUri = await Broker.CreateCustomerAsync(rootRes.Links["customers"].Href,
-                new CreateCustomerRequest()
+            var uri = await Broker.CreateCustomerAsync(rootRes.Links["customers"].Href,
+                new CreateCustomerRequest
                 {
                     FirstName = "authorized",
                     LastName = "rep",
@@ -45,9 +45,10 @@ namespace ExampleApp.Tasks.Customers
                     }
                 });
 
-            var customer = await Broker.GetCustomerAsync(createdCustomerUri);
-            WriteLine(
-                $"Created {customer.FirstName} {customer.LastName} at {customer.BusinessName} with email={customer.Email}");
+            if (uri == null) return;
+
+            var customer = await Broker.GetCustomerAsync(uri);
+            WriteLine($"Created {customer.FirstName} {customer.LastName} at {customer.BusinessName} with email={customer.Email}");
         }
     }
 }

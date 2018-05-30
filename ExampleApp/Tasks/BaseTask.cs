@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace ExampleApp.Tasks
 {
-    abstract class BaseTask
+    internal abstract class BaseTask
     {
         public DwollaBroker Broker { get; set; }
 

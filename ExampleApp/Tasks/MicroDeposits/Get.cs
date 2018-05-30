@@ -3,7 +3,7 @@
 namespace ExampleApp.Tasks.MicroDeposits
 {
     [Task("gmd", "Get Micro-deposits")]
-    class Get : BaseTask
+    internal class Get : BaseTask
     {
         public override async Task Run()
         {

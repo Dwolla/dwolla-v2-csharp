@@ -1,17 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Dwolla.Client;
-using static System.Console;
 using ExampleApp.Tasks;
-using System.Collections.Generic;
-using System.Reflection;
+using static System.Console;
 
 namespace ExampleApp
 {
     public class Program
     {
-        static void Main()
+        private static void Main()
         {
             var key = Environment.GetEnvironmentVariable("DWOLLA_APP_KEY");
             var secret = Environment.GetEnvironmentVariable("DWOLLA_APP_SECRET");
@@ -24,7 +24,7 @@ namespace ExampleApp
             else
             {
                 var running = true;
-                var broker = new DwollaBroker(DwollaClient.Create(isSandbox: true));
+                var broker = new DwollaBroker(DwollaClient.Create(true));
 
                 Task.Run(async () => await broker.SetAuthroizationHeader(key, secret)).Wait();
 
@@ -33,9 +33,10 @@ namespace ExampleApp
                 while (running)
                 {
                     Write("What would you like to do? (Press ? for options): ");
-                    var input = ReadLine();
+                    var i = ReadLine();
+                    var input = i == null ? "" : i.ToLower().Trim();
 
-                    switch (input.ToLower().Trim())
+                    switch (input)
                     {
                         case "?":
                             WriteHelp();
@@ -48,7 +49,7 @@ namespace ExampleApp
                             break;
 
                         default:
-                            BeginTask(input.ToLower().Trim(), broker);
+                            BeginTask(input, broker);
                             break;
                     }
                 }
@@ -68,13 +69,11 @@ namespace ExampleApp
         private static List<TaskAttribute> GetTasks()
         {
             if (_tasks == null)
-            {
                 _tasks = Assembly.GetEntryAssembly().GetTypes()
                     .Where(x => typeof(BaseTask).IsAssignableFrom(x) &&
                                 !x.GetTypeInfo().IsAbstract &&
                                 x.GetTypeInfo().GetCustomAttribute<TaskAttribute>() != null)
                     .ToDictionary(x => x.GetTypeInfo().GetCustomAttribute<TaskAttribute>().Command);
-            }
 
             return _tasks
                 .OrderBy(x => x.Value.FullName)
