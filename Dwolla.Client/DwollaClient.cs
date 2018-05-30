@@ -40,7 +40,11 @@ namespace Dwolla.Client
         public string AuthBaseAddress { get; }
 
         private static readonly JsonSerializerSettings JsonSettings =
-            new JsonSerializerSettings {ContractResolver = new CamelCasePropertyNamesContractResolver()};
+            new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                NullValueHandling = NullValueHandling.Ignore
+            };
 
         private const string AuthContentType = "application/json";
 

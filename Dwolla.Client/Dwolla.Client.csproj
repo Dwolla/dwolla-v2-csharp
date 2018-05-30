@@ -3,12 +3,12 @@
     <TargetFramework>netstandard1.3</TargetFramework>
     <Company>Dwolla, Inc.</Company>
     <!-- Also update UserAgent version in DwollaClient.cs -->
-    <AssemblyVersion>4.0.13</AssemblyVersion>
-    <FileVersion>4.0.13</FileVersion>
-    <Version>4.0.13</Version>
+    <AssemblyVersion>4.0.14</AssemblyVersion>
+    <FileVersion>4.0.14</FileVersion>
+    <Version>4.0.14</Version>
     <Authors>Dwolla, Inc</Authors>
     <Description>Official C# Wrapper for Dwolla's API v2</Description>
-    <Copyright>Copyright © 2017 Dwolla, Inc</Copyright>
+    <Copyright>Copyright © 2018 Dwolla, Inc</Copyright>
     <PackageProjectUrl>https://github.com/Dwolla/dwolla-v2-csharp</PackageProjectUrl>
     <PackageIconUrl>https://dashboard.dwolla.com/static/icons/android-chrome-192x192.png</PackageIconUrl>
     <PackageTags>dwolla api payments bank transfers money ach sdk</PackageTags>

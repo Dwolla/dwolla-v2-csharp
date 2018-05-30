@@ -25,6 +25,7 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/Dwolla
 
 ## Changelog
 
+- **4.0.14** Ignore null values in JSON POST requests
 - **4.0.13** Add Beneficial Owner models and examples
 - **4.0.12** Add Controller models
 - **4.0.11** Add document failure reason
