@@ -123,7 +123,7 @@ namespace Dwolla.Client
         {
             _client = client;
             ApiBaseAddress = isSandbox ? "https://api-sandbox.dwolla.com" : "https://api.dwolla.com";
-            AuthBaseAddress = isSandbox ? "https://sandbox.dwolla.com/oauth/v2" : "https://www.dwolla.com/oauth/v2";
+            AuthBaseAddress = isSandbox ? "https://accounts-sandbox.dwolla.com" : "https://accounts.dwolla.com";
         }
 
         private static readonly string ClientVersion = typeof(DwollaClient).GetTypeInfo().Assembly
