@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
@@ -22,7 +23,7 @@ namespace Dwolla.Client
         string ApiBaseAddress { get; }
         string AuthBaseAddress { get; }
 
-        Task<RestResponse<TRes>> PostAuthAsync<TReq, TRes>(Uri uri, TReq content) where TRes : IDwollaResponse;
+        Task<RestResponse<TRes>> PostAuthAsync<TRes>(Uri uri, AppTokenRequest content) where TRes : IDwollaResponse;
         Task<RestResponse<TRes>> GetAsync<TRes>(Uri uri, Headers headers) where TRes : IDwollaResponse;
         Task<RestResponse<TRes>> PostAsync<TReq, TRes>(Uri uri, TReq content, Headers headers) where TRes : IDwollaResponse;
         Task<RestResponse<EmptyResponse>> DeleteAsync<TReq>(Uri uri, TReq content, Headers headers);
@@ -42,16 +43,20 @@ namespace Dwolla.Client
                 NullValueHandling = NullValueHandling.Ignore
             };
 
-        private const string AuthContentType = "application/json";
-
         private readonly IRestClient _client;
 
         public static DwollaClient Create(bool isSandbox) =>
             new DwollaClient(new RestClient(CreateHttpClient()), isSandbox);
 
-        public async Task<RestResponse<TRes>> PostAuthAsync<TReq, TRes>(
-            Uri uri, TReq content) where TRes : IDwollaResponse =>
-            await SendAsync<TRes>(CreatePostRequest(uri, content, new Headers(), AuthContentType));
+        public async Task<RestResponse<TRes>> PostAuthAsync<TRes>(
+            Uri uri, AppTokenRequest content) where TRes : IDwollaResponse =>
+            await SendAsync<TRes>(new HttpRequestMessage(HttpMethod.Post, uri)
+            {
+                Content = new FormUrlEncodedContent(new Dictionary<string, string>
+                {
+                    {"client_id", content.Key}, {"client_secret", content.Secret}, {"grant_type", content.GrantType}
+                })
+            });
 
         public async Task<RestResponse<TRes>> GetAsync<TRes>(
             Uri uri, Headers headers) where TRes : IDwollaResponse =>
@@ -83,8 +88,7 @@ namespace Dwolla.Client
             HttpMethod method, Uri requestUri, Headers headers, TReq content, string contentType)
         {
             var r = CreateRequest(method, requestUri, headers);
-            r.Content = new StringContent(
-                JsonConvert.SerializeObject(content, JsonSettings), Encoding.UTF8, contentType);
+            r.Content = new StringContent(JsonConvert.SerializeObject(content, JsonSettings), Encoding.UTF8, contentType);
             return r;
         }
 
@@ -115,6 +119,7 @@ namespace Dwolla.Client
         private static HttpRequestMessage CreateRequest(HttpMethod method, Uri requestUri, Headers headers)
         {
             var r = new HttpRequestMessage(method, requestUri);
+            r.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(ContentType));
             foreach (var header in headers) r.Headers.Add(header.Key, header.Value);
             return r;
         }
@@ -133,7 +138,6 @@ namespace Dwolla.Client
         {
             var client = new HttpClient(new HttpClientHandler {SslProtocols = SslProtocols.Tls12});
             client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("dwolla-v2-csharp", ClientVersion));
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(ContentType));
             return client;
         }
     }

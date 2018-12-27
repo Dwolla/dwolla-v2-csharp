@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -18,7 +19,7 @@ namespace Dwolla.Client.Tests
     {
         private const string JsonV1 = "application/vnd.dwolla.v1.hal+json";
         private const string RequestId = "some-id";
-        private const string UserAgent = "dwolla-v2-csharp/5.1.0";
+        private const string UserAgent = "dwolla-v2-csharp/5.1.1";
         private static readonly Uri RequestUri = new Uri("https://api-sandbox.dwolla.com/foo");
         private static readonly Uri AuthRequestUri = new Uri("https://accounts-sandbox.dwolla.com/foo");
         private static readonly Headers Headers = new Headers {{"key1", "value1"}, {"key2", "value2"}};
@@ -39,18 +40,18 @@ namespace Dwolla.Client.Tests
         {
             var client = DwollaClient.CreateHttpClient();
             Assert.Equal(UserAgent, client.DefaultRequestHeaders.UserAgent.ToString());
-            Assert.Equal(JsonV1, client.DefaultRequestHeaders.Accept.ToString());
         }
 
         [Fact]
         public async void CreatePostAuthRequestAndPassToClient()
         {
             var response = CreateRestResponse(HttpMethod.Post, Response);
-            var request = CreateAuthHttpRequest();
+            var req = new AppTokenRequest {Key = "key", Secret = "secret"};
+            var request = CreateAuthHttpRequest(req);
             _restClient.Setup(x => x.SendAsync<TestResponse>(It.IsAny<HttpRequestMessage>()))
                 .Callback<HttpRequestMessage>(y => AppTokenCallback(request, y)).ReturnsAsync(response);
 
-            var actual = await _client.PostAuthAsync<TestRequest, TestResponse>(AuthRequestUri, Request);
+            var actual = await _client.PostAuthAsync<TestResponse>(AuthRequestUri, req);
 
             Assert.Equal(response, actual);
         }
@@ -139,7 +140,8 @@ namespace Dwolla.Client.Tests
         private static HttpRequestMessage CreateRequest(HttpMethod method)
         {
             var r = new HttpRequestMessage(method, RequestUri);
-            foreach (var header in Headers) r.Headers.Add(header.Key, header.Value);
+            r.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(JsonV1));
+            foreach (var (key, value) in Headers) r.Headers.Add(key, value);
             return r;
         }
 
@@ -154,10 +156,13 @@ namespace Dwolla.Client.Tests
             return new RestResponse<T>(r, content, rawContent);
         }
 
-        private static HttpRequestMessage CreateAuthHttpRequest() =>
+        private static HttpRequestMessage CreateAuthHttpRequest(AppTokenRequest req) =>
             new HttpRequestMessage(HttpMethod.Post, AuthRequestUri)
             {
-                Content = new StringContent(JsonConvert.SerializeObject(Request), Encoding.UTF8, "application/json")
+                Content = new FormUrlEncodedContent(new Dictionary<string, string>
+                {
+                    {"client_id", req.Key}, {"client_secret", req.Secret}, {"grant_type", req.GrantType}
+                })
             };
 
         private void SetupForGet(HttpRequestMessage req, RestResponse<TestResponse> res) =>
@@ -210,8 +215,8 @@ namespace Dwolla.Client.Tests
         {
             Assert.Equal(expected.Method, actual.Method);
             Assert.Equal(expected.RequestUri, actual.RequestUri);
-            Assert.Equal("{\"message\":\"requestTest\"}", await actual.Content.ReadAsStringAsync());
-            Assert.Equal("application/json; charset=utf-8", actual.Content.Headers.ContentType.ToString());
+            Assert.Equal("client_id=key&client_secret=secret&grant_type=client_credentials", await actual.Content.ReadAsStringAsync());
+            Assert.Equal("application/x-www-form-urlencoded", actual.Content.Headers.ContentType.ToString());
         }
 
         private static bool AssertHeader(HttpRequestMessage expected, HttpRequestMessage actual, string key) =>
