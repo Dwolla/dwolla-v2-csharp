@@ -16,9 +16,9 @@ namespace ExampleApp
 
         internal DwollaBroker(IDwollaClient client) => _client = client;
 
-        internal async Task<TokenResponse> SetAuthroizationHeader(string key, string secret)
+        internal async Task<TokenResponse> SetAuthorizationHeader(string key, string secret)
         {
-            var response = await _client.PostAuthAsync<AppTokenRequest, TokenResponse>(
+            var response = await _client.PostAuthAsync<TokenResponse>(
                 new Uri($"{_client.AuthBaseAddress}/token"), new AppTokenRequest {Key = key, Secret = secret});
 
             // TODO: Securely store token in your database for reuse

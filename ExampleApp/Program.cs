@@ -26,7 +26,7 @@ namespace ExampleApp
                 var running = true;
                 var broker = new DwollaBroker(DwollaClient.Create(true));
 
-                Task.Run(async () => await broker.SetAuthroizationHeader(key, secret)).Wait();
+                Task.Run(async () => await broker.SetAuthorizationHeader(key, secret)).Wait();
 
                 WriteHelp();
 
