@@ -12,6 +12,7 @@ namespace Dwolla.Client.Models.Requests
         public Dictionary<string, string> Metadata { get; set; }
         public Clearing Clearing { get; set; }
         public List<Fee> Fees { get; set; }
+        public AchDetails AchDetails { get; set; }
         public string CorrelationId { get; set; }
     }
 }
