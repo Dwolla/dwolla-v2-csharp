@@ -108,7 +108,7 @@ namespace ExampleApp
             (await PostAsync<EmptyResponse, IavTokenResponse>(new Uri(customerUri.AbsoluteUri + "/iav-token"), null)).Content;
 
         internal async Task<Uri> CreateTransferAsync(string sourceFundingSourceId, string destinationFundingSourceId,
-            decimal amount, decimal? fee, Uri chargeTo)
+            decimal amount, decimal? fee, Uri chargeTo, string sourceAddenda, string destinationAddenda)
         {
             var response = await PostAsync(new Uri($"{_client.ApiBaseAddress}/transfers"),
                 new CreateTransferRequest
@@ -132,7 +132,26 @@ namespace ExampleApp
                                 Amount = new Money {Value = fee.Value, Currency = "USD"},
                                 Links = new Dictionary<string, Link> {{"charge-to", new Link {Href = chargeTo}}}
                             }
-                        }
+                        },
+                    AchDetails = sourceAddenda == null || destinationAddenda == null
+                        ? null
+                        : new AchDetails
+                        {
+                            Source = new SourceAddenda
+                            {
+                                Addenda = new Addenda
+                                {
+                                    Values = new List<string> {sourceAddenda}
+                                }
+                            },
+                            Destination = new DestinationAddenda
+                            {
+                                Addenda = new Addenda
+                                {
+                                    Values = new List<string> {destinationAddenda}
+                                }
+                            }
+                        }                  
                 });
             return response.Response.Headers.Location;
         }
@@ -184,6 +203,9 @@ namespace ExampleApp
             // TODO: Handle error specific to your application
             var e = r.Error;
             Console.WriteLine($"{e.Code}: {e.Message}");
+
+            // To print out the full error response, uncomment the line below
+            // Console.WriteLine(JsonConvert.SerializeObject(e, Formatting.Indented));
 
             // Example error handling. More info: https://docsv2.dwolla.com/#errors
             if (e.Code == "ExpiredAccessToken")

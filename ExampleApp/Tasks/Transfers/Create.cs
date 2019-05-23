@@ -16,16 +16,31 @@ namespace ExampleApp.Tasks.Transfers
             Write("Include a fee? (y/n): ");
             var includeFee = ReadLine();
 
+            Write("Include ACH details? (y/n): ");
+            var includeAchDetails = ReadLine();
+
+            string sourceAddenda = null;
+            string destinationAddenda = null;
+
+            if ("y".Equals(includeAchDetails, StringComparison.CurrentCultureIgnoreCase))
+            {
+                Write("Enter ACH details for Source bank account: ");
+                sourceAddenda = ReadLine();
+
+                Write("Enter ACH details for Destination bank account: ");
+                destinationAddenda = ReadLine();
+            } 
+
             Uri uri;
             if ("y".Equals(includeFee, StringComparison.CurrentCultureIgnoreCase))
             {
                 var fundingSource = await Broker.GetFundingSourceAsync(destinationFundingSource);
                 uri = await Broker.CreateTransferAsync(sourceFundingSource, destinationFundingSource, 50, 1,
-                    fundingSource.Links["customer"].Href);
+                    fundingSource.Links["customer"].Href, sourceAddenda, destinationAddenda);
             }
             else
             {
-                uri = await Broker.CreateTransferAsync(sourceFundingSource, destinationFundingSource, 50, null, null);
+                uri = await Broker.CreateTransferAsync(sourceFundingSource, destinationFundingSource, 50, null, null, sourceAddenda, destinationAddenda);
             }
 
             if (uri == null) return;
