@@ -21,7 +21,6 @@ namespace Dwolla.Client
     public interface IDwollaClient
     {
         string ApiBaseAddress { get; }
-        string AuthBaseAddress { get; }
 
         Task<RestResponse<TRes>> PostAuthAsync<TRes>(Uri uri, AppTokenRequest content) where TRes : IDwollaResponse;
         Task<RestResponse<TRes>> GetAsync<TRes>(Uri uri, Headers headers) where TRes : IDwollaResponse;
@@ -34,7 +33,6 @@ namespace Dwolla.Client
     {
         public const string ContentType = "application/vnd.dwolla.v1.hal+json";
         public string ApiBaseAddress { get; }
-        public string AuthBaseAddress { get; }
 
         private static readonly JsonSerializerSettings JsonSettings =
             new JsonSerializerSettings
@@ -128,7 +126,6 @@ namespace Dwolla.Client
         {
             _client = client;
             ApiBaseAddress = isSandbox ? "https://api-sandbox.dwolla.com" : "https://api.dwolla.com";
-            AuthBaseAddress = isSandbox ? "https://accounts-sandbox.dwolla.com" : "https://accounts.dwolla.com";
         }
 
         private static readonly string ClientVersion = typeof(DwollaClient).GetTypeInfo().Assembly

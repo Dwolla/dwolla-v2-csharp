@@ -3,9 +3,9 @@
     <TargetFramework>netstandard1.3</TargetFramework>
     <Company>Dwolla, Inc.</Company>
     <!-- Also update UserAgent version in DwollaClient.cs -->
-    <AssemblyVersion>5.1.1</AssemblyVersion>
-    <FileVersion>5.1.1</FileVersion>
-    <Version>5.1.1</Version>
+    <AssemblyVersion>5.2.0</AssemblyVersion>
+    <FileVersion>5.2.0</FileVersion>
+    <Version>5.2.0</Version>
     <Authors>Dwolla, Inc</Authors>
     <Description>Official C# Wrapper for Dwolla's API v2</Description>
     <Copyright>Copyright © 2018 Dwolla, Inc</Copyright>
