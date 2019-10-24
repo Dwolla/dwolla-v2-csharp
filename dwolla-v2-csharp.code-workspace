@@ -1,0 +1,12 @@
+{
+  "folders": [
+    {
+      "name": "dwolla-v2-csharp",
+      "path": "."
+    }
+  ],
+  "settings": {
+    "editor.tabSize": 4,
+    "editor.detectIndentation": false
+  }
+}

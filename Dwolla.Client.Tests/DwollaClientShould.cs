@@ -19,9 +19,9 @@ namespace Dwolla.Client.Tests
     {
         private const string JsonV1 = "application/vnd.dwolla.v1.hal+json";
         private const string RequestId = "some-id";
-        private const string UserAgent = "dwolla-v2-csharp/5.1.1";
+        private const string UserAgent = "dwolla-v2-csharp/6.0.0";
         private static readonly Uri RequestUri = new Uri("https://api-sandbox.dwolla.com/foo");
-        private static readonly Uri AuthRequestUri = new Uri("https://accounts-sandbox.dwolla.com/foo");
+        private static readonly Uri AuthRequestUri = new Uri("https://api-sandbox.dwolla.com/token");
         private static readonly Headers Headers = new Headers {{"key1", "value1"}, {"key2", "value2"}};
         private static readonly TestRequest Request = new TestRequest {Message = "requestTest"};
         private static readonly TestResponse Response = new TestResponse {Message = "responseTest"};
@@ -43,15 +43,44 @@ namespace Dwolla.Client.Tests
         }
 
         [Fact]
-        public async void CreatePostAuthRequestAndPassToClient()
+        public async void CreatePostAppTokenAuthRequestAndPassToClient()
         {
             var response = CreateRestResponse(HttpMethod.Post, Response);
             var req = new AppTokenRequest {Key = "key", Secret = "secret"};
             var request = CreateAuthHttpRequest(req);
             _restClient.Setup(x => x.SendAsync<TestResponse>(It.IsAny<HttpRequestMessage>()))
-                .Callback<HttpRequestMessage>(y => AppTokenCallback(request, y)).ReturnsAsync(response);
+                .Callback<HttpRequestMessage>(y => AppTokenCallback(request, y))
+                .ReturnsAsync(response);
 
-            var actual = await _client.PostAuthAsync<TestResponse>(AuthRequestUri, req);
+            var actual = await _client.PostAuthAsync<TestResponse>(req);
+
+            Assert.Equal(response, actual);
+        }
+        
+        [Fact]
+        public async void CreatePostAuthorizationCodeTokenAuthRequestAndPassToClient()
+        {
+            var response = CreateRestResponse(HttpMethod.Post, Response);
+            var req = new AuthorizationCodeRequest {Key = "key", Secret = "secret", Code = "code", RedirectUri = "redirect-uri"};
+            var request = CreateAuthHttpRequest(req);
+            _restClient.Setup(x => x.SendAsync<TestResponse>(It.IsAny<HttpRequestMessage>()))
+                .Callback<HttpRequestMessage>(y => AuthCodeTokenCallback(request, y)).ReturnsAsync(response);
+
+            var actual = await _client.PostAuthAsync<TestResponse>(req);
+
+            Assert.Equal(response, actual);
+        }
+        
+        [Fact]
+        public async void CreatePostRefreshTokenAuthRequestAndPassToClient()
+        {
+            var response = CreateRestResponse(HttpMethod.Post, Response);
+            var req = new RefreshTokenRequest {Key = "key", Secret = "secret", RefreshToken = "refresh-token"};
+            var request = CreateAuthHttpRequest(req);
+            _restClient.Setup(x => x.SendAsync<TestResponse>(It.IsAny<HttpRequestMessage>()))
+                .Callback<HttpRequestMessage>(y => RefreshTokenCallback(request, y)).ReturnsAsync(response);
+
+            var actual = await _client.PostAuthAsync<TestResponse>(req);
 
             Assert.Equal(response, actual);
         }
@@ -161,7 +190,28 @@ namespace Dwolla.Client.Tests
             {
                 Content = new FormUrlEncodedContent(new Dictionary<string, string>
                 {
-                    {"client_id", req.Key}, {"client_secret", req.Secret}, {"grant_type", req.GrantType}
+                    {"grant_type", req.GrantType}
+                })
+            };
+        
+        private static HttpRequestMessage CreateAuthHttpRequest(AuthorizationCodeRequest req) =>
+            new HttpRequestMessage(HttpMethod.Post, AuthRequestUri)
+            {
+                Content = new FormUrlEncodedContent(new Dictionary<string, string>
+                {
+                    {"grant_type", req.GrantType},
+                    {"code", req.Code},
+                    {"redirect_uri", req.RedirectUri}
+                })
+            };
+        
+        private static HttpRequestMessage CreateAuthHttpRequest(RefreshTokenRequest req) =>
+            new HttpRequestMessage(HttpMethod.Post, AuthRequestUri)
+            {
+                Content = new FormUrlEncodedContent(new Dictionary<string, string>
+                {
+                    {"grant_type", req.GrantType},
+                    {"refresh_token", req.RefreshToken}
                 })
             };
 
@@ -215,7 +265,23 @@ namespace Dwolla.Client.Tests
         {
             Assert.Equal(expected.Method, actual.Method);
             Assert.Equal(expected.RequestUri, actual.RequestUri);
-            Assert.Equal("client_id=key&client_secret=secret&grant_type=client_credentials", await actual.Content.ReadAsStringAsync());
+            Assert.Equal("grant_type=client_credentials", await actual.Content.ReadAsStringAsync());
+            Assert.Equal("application/x-www-form-urlencoded", actual.Content.Headers.ContentType.ToString());
+        }
+        
+        private static async void AuthCodeTokenCallback(HttpRequestMessage expected, HttpRequestMessage actual)
+        {
+            Assert.Equal(expected.Method, actual.Method);
+            Assert.Equal(expected.RequestUri, actual.RequestUri);
+            Assert.Equal("grant_type=authorization_code&code=code&redirect_uri=redirect-uri", await actual.Content.ReadAsStringAsync());
+            Assert.Equal("application/x-www-form-urlencoded", actual.Content.Headers.ContentType.ToString());
+        }
+        
+        private static async void RefreshTokenCallback(HttpRequestMessage expected, HttpRequestMessage actual)
+        {
+            Assert.Equal(expected.Method, actual.Method);
+            Assert.Equal(expected.RequestUri, actual.RequestUri);
+            Assert.Equal("grant_type=refresh_token&refresh_token=refresh-token", await actual.Content.ReadAsStringAsync());
             Assert.Equal("application/x-www-form-urlencoded", actual.Content.Headers.ContentType.ToString());
         }
 
