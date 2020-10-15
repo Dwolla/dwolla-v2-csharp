@@ -11,7 +11,7 @@ namespace Dwolla.Client.Models.Responses
         public DateTime Created { get; set; }
         public Dictionary<string, string> Metadata { get; set; }
         public Clearing Clearing { get; set; }
-        public AchDetails AchDetails {get; set; }
+        public AchDetails AchDetails { get; set; }
         public string CorrelationId { get; set; }
     }
 }

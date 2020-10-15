@@ -6,6 +6,7 @@ using Dwolla.Client.Models;
 using Dwolla.Client.Models.Requests;
 using Dwolla.Client.Models.Responses;
 using Dwolla.Client.Rest;
+using Newtonsoft.Json;
 
 namespace ExampleApp
 {
@@ -19,7 +20,7 @@ namespace ExampleApp
         internal async Task<TokenResponse> SetAuthorizationHeader(string key, string secret)
         {
             var response = await _client.PostAuthAsync<TokenResponse>(
-                new Uri($"{_client.AuthBaseAddress}/token"), new AppTokenRequest {Key = key, Secret = secret});
+                new Uri($"{_client.ApiBaseAddress}/token"), new AppTokenRequest {Key = key, Secret = secret});
 
             // TODO: Securely store token in your database for reuse
             if (!_headers.ContainsKey("Authorization"))
@@ -141,14 +142,14 @@ namespace ExampleApp
                             {
                                 Addenda = new Addenda
                                 {
-                                    Values = new List<string> {sourceAddenda}
+                                    Values = new List<string> { sourceAddenda }
                                 }
                             },
                             Destination = new DestinationAddenda
                             {
                                 Addenda = new Addenda
                                 {
-                                    Values = new List<string> {destinationAddenda}
+                                    Values = new List<string> { destinationAddenda }
                                 }
                             }
                         }                  
@@ -183,6 +184,88 @@ namespace ExampleApp
             (await GetAsync<GetBusinessClassificationsResponse>(
                 new Uri($"{_client.ApiBaseAddress}/business-classifications"))).Content;
 
+        internal async Task<Uri> CreateLabelAsync(Uri uri, decimal amount) =>
+            await CreateLabelAsync(uri, new CreateLabelRequest
+            {
+                Amount = new Money { Currency = "USD", Value = amount }
+            });
+            
+        
+        internal async Task<Uri> CreateLabelAsync(Uri uri, CreateLabelRequest request)
+        {
+            var response = await PostAsync(uri, request);
+            return response.Response.Headers.Location;
+        }
+
+        internal async Task<Label> GetLabelAsync(string id) =>
+            (await GetAsync<Label>(new Uri($"{_client.ApiBaseAddress}/labels/{id}"))).Content;
+
+        internal async Task<Label> GetLabelAsync(Uri uri) =>
+            (await GetAsync<Label>(uri)).Content;
+        
+        internal async Task<GetLabelsResponse> GetLabelsAsync(string id) =>
+            (await GetAsync<GetLabelsResponse>(new Uri($"{_client.ApiBaseAddress}/customers/{id}/labels"))).Content;
+
+        internal async Task<GetLabelsResponse> GetLabelsAsync(Uri uri) =>
+            (await GetAsync<GetLabelsResponse>(uri)).Content;
+
+        internal async Task DeleteLabelAsync(string id) => 
+            await DeleteAsync<object>(new Uri($"{_client.ApiBaseAddress}/labels/{id}"), null);
+
+        internal async Task<Uri> CreateLabelLedgerEntryAsync(string id, decimal amount) =>
+            await CreateLabelLedgerEntryAsync(new Uri($"{_client.ApiBaseAddress}/labels/{id}/ledger-entries"), 
+            new CreateLabelLedgerEntryRequest
+            {
+                Amount = new Money { Currency = "USD", Value = amount }
+            });
+
+        internal async Task<Uri> CreateLabelLedgerEntryAsync(Uri uri, CreateLabelLedgerEntryRequest request)
+        {
+            var response = await PostAsync(uri, request);
+            return response.Response.Headers.Location;
+        }
+
+        internal async Task<LabelLedgerEntry> GetLabelLedgerEntryAsync(string id) =>
+            (await GetAsync<LabelLedgerEntry>(new Uri($"{_client.ApiBaseAddress}/ledger-entries/{id}"))).Content;
+
+        internal async Task<LabelLedgerEntry> GetLabelLedgerEntryAsync(Uri uri) =>
+            (await GetAsync<LabelLedgerEntry>(uri)).Content;
+
+        internal async Task<GetLabelLedgerEntriesResponse> GetLabelLedgerEntriesAsync(string id) =>
+            (await GetAsync<GetLabelLedgerEntriesResponse>(new Uri($"{_client.ApiBaseAddress}/labels/{id}/ledger-entries"))).Content;
+
+        internal async Task<GetLabelLedgerEntriesResponse> GetLabelLedgerEntriesAsync(Uri uri) =>
+            (await GetAsync<GetLabelLedgerEntriesResponse>(uri)).Content;
+
+        internal async Task<Uri> CreateLabelReallocationAsync(string fromLabelId, string toLabelId,
+            decimal amount) =>
+            await CreateLabelReallocationAsync(new Uri($"{_client.ApiBaseAddress}/label-reallocations"),
+                new CreateLabelReallocationRequest
+                {
+                    Amount = new Money
+                    {
+                        Currency = "USD",
+                        Value = amount
+                    },
+                    Links = new Dictionary<string, Link>
+                    {
+                        {"from", new Link {Href = new Uri($"{_client.ApiBaseAddress}/labels/{fromLabelId}")}},
+                        {"to", new Link {Href = new Uri($"{_client.ApiBaseAddress}/labels/{toLabelId}")}}
+                    }
+                });
+
+        internal async Task<Uri> CreateLabelReallocationAsync(Uri uri, CreateLabelReallocationRequest request)
+        {
+            var response = await PostAsync(uri, request);
+            return response.Response.Headers.Location;
+        }
+
+        internal async Task<LabelReallocation> GetLabelReallocationAsync(string id) =>
+            (await GetAsync<LabelReallocation>(new Uri($"{_client.ApiBaseAddress}/label-reallocations/{id}"))).Content;
+
+        internal async Task<LabelReallocation> GetLabelReallocationAsync(Uri uri) =>
+            (await GetAsync<LabelReallocation>(uri)).Content;
+            
         private async Task<RestResponse<TRes>> GetAsync<TRes>(Uri uri) where TRes : IDwollaResponse =>
             await ExecAsync(() => _client.GetAsync<TRes>(uri, _headers));
 
