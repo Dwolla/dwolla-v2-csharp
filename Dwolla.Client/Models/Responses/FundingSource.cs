@@ -16,11 +16,21 @@ namespace Dwolla.Client.Models.Responses
         public string BankName { get; set; }
         public IavAccountHolders IavAccountHolders { get; set; }
         public string Fingerprint { get; set; }
+        public CardDetails CardDetails { get; set; }
     }
 
     public class IavAccountHolders
     {
         public string Selected { get; set; }
         public List<string> Other { get; set; }
+    }
+
+    public class CardDetails
+    {
+        public string Brand { get; set; }
+        public string LastFour { get; set; }
+        public string ExpirationMonth { get; set; }
+        public string ExpirationYear { get; set; }
+        public string NameOnCard { get; set; }
     }
 }

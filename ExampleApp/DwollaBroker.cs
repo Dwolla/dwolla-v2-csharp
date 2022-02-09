@@ -83,6 +83,22 @@ namespace ExampleApp
         internal async Task<GetDocumentsResponse> GetCustomerDocumentsAsync(Uri customerUri) =>
             (await GetAsync<GetDocumentsResponse>(new Uri(customerUri.AbsoluteUri + "/documents"))).Content;
 
+         internal async Task<Uri> CreateFundingSourceAsync(Uri uri, string routingNumber, string accountNumber, string bankAccountType, string name) =>
+                   await CreateFundingSourceAsync(uri, new CreateFundingSourceRequest
+                   {
+                       RoutingNumber = routingNumber,
+                       AccountNumber = accountNumber,
+                       BankAccountType = bankAccountType,
+                       Name = name,
+                   });
+        internal async Task<Uri> CreateFundingSourceAsync(Uri uri, CreateFundingSourceRequest request)
+        {
+            var response = await PostAsync<CreateFundingSourceRequest, EmptyResponse>(uri, request);
+            return response.Response.Headers.Location;
+
+        }
+        internal async Task<FundingSource> GetFundingSourceAsync(Uri uri) => (await GetAsync<FundingSource>(uri)).Content;
+
         internal async Task<GetFundingSourcesResponse> GetCustomerFundingSourcesAsync(Uri customerUri) =>
             (await GetAsync<GetFundingSourcesResponse>(new Uri(customerUri.AbsoluteUri + "/funding-sources"))).Content;
 
