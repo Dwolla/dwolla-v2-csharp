@@ -2,7 +2,7 @@
 
 Dwolla V2 cross-platform C# client.
 
-[API Documentation](https://docsv2.dwolla.com)
+[API Documentation](https://developers.dwolla.com/api-reference)
 
 ## Installation
 
@@ -25,6 +25,7 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/Dwolla
 
 ## Changelog
 
+- **5.2.1** Add Masspayment models and examples, support RTP transfers
 - **5.2.0** Change Token URLs and Add Labels models and examples
 - **5.1.1** Update Content-Type and Accept headers for Token URLs
 - **5.1.0** Change Token URLs
