@@ -182,6 +182,35 @@ namespace ExampleApp
         internal async Task<TransferFailureResponse> GetTransferFailureAsync(string id) =>
             (await GetAsync<TransferFailureResponse>(new Uri($"{_client.ApiBaseAddress}/transfers/{id}/failure"))).Content;
 
+        internal async Task<Uri> CreateMasspaymentAsync(string sourceFundingSourceId, string destinationFundingSourceId1, decimal amount1, string destinationFundingSourceId2, decimal amount2)
+        {
+            var response = await PostAsync(new Uri($"{_client.ApiBaseAddress}/mass-payments"),
+                new CreateMasspaymentRequest
+                {
+                    Links = new Dictionary<string, Link>
+                    {
+                        {"source", new Link {Href = new Uri($"{_client.ApiBaseAddress}/funding-sources/{sourceFundingSourceId}")}},
+                    },
+                    Items = new List<MasspaymentItem> {
+                      new MasspaymentItem{
+                        Links = new Dictionary<string, Link> {{"destination", new Link {Href = new Uri($"https://api-sandbox.dwolla.com/funding-sources/{destinationFundingSourceId1}")}}},
+                        Amount= new Money {Value = amount1, Currency = "USD"},
+                      },
+                      new MasspaymentItem{
+                        Links = new Dictionary<string, Link> {{"destination", new Link {Href = new Uri($"https://api-sandbox.dwolla.com/funding-sources/{destinationFundingSourceId2}")}}},
+                        Amount= new Money {Value = amount2, Currency = "USD"},
+                      }
+                   }
+                });
+            return response.Response.Headers.Location;
+        }
+
+        internal async Task<MasspaymentResponse> GetMasspaymentAsync(Uri masspaymentUri) =>
+            (await GetAsync<MasspaymentResponse>(masspaymentUri)).Content;
+
+        internal async Task<MasspaymentResponse> GetMasspaymentAsync(string id) =>
+            (await GetAsync<MasspaymentResponse>(new Uri($"{_client.ApiBaseAddress}/mass-payments/{id}"))).Content;
+
         internal async Task<Uri> CreateWebhookSubscriptionAsync(Uri uri, string url, string secret) =>
             (await PostAsync(uri, new CreateWebhookSubscriptionRequest {Url = url, Secret = secret})).Response.Headers.Location;
 
@@ -306,7 +335,7 @@ namespace ExampleApp
             // To print out the full error response, uncomment the line below
             // Console.WriteLine(JsonConvert.SerializeObject(e, Formatting.Indented));
 
-            // Example error handling. More info: https://docsv2.dwolla.com/#errors
+            // Example error handling. More info: https://developers.dwolla.com/api-reference#errors
             if (e.Code == "ExpiredAccessToken")
             {
                 // TODO: Refresh token and retry request
