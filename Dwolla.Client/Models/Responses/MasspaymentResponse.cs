@@ -1,20 +1,17 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace Dwolla.Client.Models.Responses
 {
-    public class TransferResponse : BaseResponse
+    public class MasspaymentResponse : BaseResponse
     {
         public string Id { get; set; }
         public string Status { get; set; }
-        public Money Amount { get; set; }
         public DateTime Created { get; set; }
         public Dictionary<string, string> Metadata { get; set; }
         public Clearing Clearing { get; set; }
-        public AchDetails AchDetails { get; set; }
-        public RtpDetails RtpDetails { get; set; }
+        public Money Total { get; set; }
+        public Money TotalFees { get; set; }
         public string CorrelationId { get; set; }
-        public string IndividualACHId { get; set; }
-        public ProcessingChannel ProcessingChannel { get; set; }
     }
 }
