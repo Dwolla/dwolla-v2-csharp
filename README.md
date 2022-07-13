@@ -25,6 +25,7 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/Dwolla
 
 ## Changelog
 
+- **5.2.2** Update `Newtonsoft.Json` to version 13.0.1
 - **5.2.1** Add Masspayment models and examples, support RTP transfers
 - **5.2.0** Change Token URLs and Add Labels models and examples
 - **5.1.1** Update Content-Type and Accept headers for Token URLs
