@@ -11,7 +11,7 @@ request can be made using this SDK when executed within a server-side environmen
   - [Initialization](#initialization)
     - [Tokens](#tokens)
 - [Making Requests](#making-requests)
-  - [Low-level Requests](#low-level-requests)
+  - [Low-Level Requests](#low-level-requests)
     - [Setting Headers](#setting-headers)
     - [GET](#get)
     - [POST](#post)
@@ -28,7 +28,7 @@ request can be made using this SDK when executed within a server-side environmen
 To begin using this SDK, you will first need to download it to your machine. We use
 [NuGet](https://www.nuget.org/packages/Dwolla.Client) to distribute this package. Check out the
 [Microsoft](https://docs.microsoft.com/en-us/nuget/consume-packages/install-use-packages-visual-studio)
-docs for more information on how to install and manage packages from Nuget.
+documentation for more information on how to install and manage packages from Nuget using Visual Studio.
 
 Here's an example using the
 [Package Manager Console](https://docs.microsoft.com/en-us/nuget/consume-packages/install-use-packages-powershell?view=vsmac-2022)
@@ -46,10 +46,9 @@ visit one of the following links:
 - Production: https://dashboard.dwolla.com/applications
 - Sandbox: https://dashboard-sandbox.dwolla.com/applications
 
-Finally, you can create an instance of `Client` with `key` and `secret` replaced with the
-application key and secret that you fetched from one of the aforementioned links, respectively.
+Finally, you can create an instance of `DwollaClient` by specifying which environment you will be using—Production or Sandbox—via the `isSandbox` boolean flag.
 
-```
+```csharp
 var client = DwollaClient.Create(isSandbox: true);
 ```
 
@@ -61,7 +60,7 @@ itself (`webhooks`, `events`, `webhook-subscriptions`) or the Dwolla Account tha
 application (`accounts`, `customers`, `funding-sources`, etc.). Application tokens are obtained by
 using the [`client_credentials`](https://tools.ietf.org/html/rfc6749#section-4.4) OAuth grant type:
 
-```
+```csharp
 var tokenRes = await client.PostAuthAsync<AppTokenRequest, TokenResponse>(
     new Uri($"{client.AuthBaseAddress}/token"),
     new AppTokenRequest {Key = "...", Secret = "..."});
@@ -72,19 +71,19 @@ expires, generate a new one using `AppTokenRequest`._
 
 ## Making Requests
 
-Once you've created a `Token`, currently, you can make low-level HTTP requests.
+Once you've created a `DwollaClient`, currently, you can make low-level HTTP requests.
 
-### Low-level Requests
+### Low-Level Requests
 
-To make low-level HTTP requests, you can use the `GetAsync()`, `PostAsync()`, `UploadAsync` and
+To make low-level HTTP requests, you can use the `GetAsync()`, `PostAsync()`, `UploadAsync()` and
 `DeleteAsync()` methods with the available
 [request models](https://github.com/Dwolla/dwolla-v2-csharp/blob/main/Dwolla.Client/Models/Requests).
 These methods will return responses that can be mapped to one of the available
 [response models](https://github.com/Dwolla/dwolla-v2-csharp/blob/main/Dwolla.Client/Models/Responses).
 
-#### Setting headers
+#### Setting Headers
 
-To set headers on a request you can pass a `Headers` object as the last argument.
+To specify headers for a request (e.g., `Authorization`), you can pass a `Headers` object as the last argument.
 
 ```csharp
 var headers = new Headers {{"Authorization", $"Bearer {tokenRes.Content.Token}"}};
@@ -136,12 +135,12 @@ var url = "https://api.dwolla.com/labels/{id}"
 client.DeleteAsync<object>(url, null);
 ```
 
-### Example app
+### Example App
 
 Take a look at the
 [Example Application](https://github.com/Dwolla/dwolla-v2-csharp/tree/master/ExampleApp) for
-examples on how to use the available models to call the API. Set your DWOLLA_APP_KEY and
-DWOLLA_APP_SECRET environment variables to run the CLI app.
+examples on how to use the available C# models to call the Dwolla API. Before you can begin using the app, however, you will need to specify a `DWOLLA_APP_KEY` and
+`DWOLLA_APP_SECRET` environment variable.
 
 ## Changelog
 
