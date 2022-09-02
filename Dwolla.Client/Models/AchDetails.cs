@@ -1,8 +1,13 @@
 namespace Dwolla.Client.Models
 {
+    public class AchDetailsTrace
+    {
+        public string TraceId { get; set; }
+    }
+    
     public class AchDetails
     {
-        public SourceAddenda Source { get; set; }
-        public DestinationAddenda Destination { get; set; }
+        public AchDetailsTrace Source { get; set; }
+        public AchDetailsTrace Destination { get; set; }
     }
 }
