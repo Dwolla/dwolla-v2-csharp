@@ -138,9 +138,13 @@ client.DeleteAsync<object>(url, null);
 ### Example App
 
 Take a look at the
-[Example Application](https://github.com/Dwolla/dwolla-v2-csharp/tree/master/ExampleApp) for
+[Example Application](https://github.com/Dwolla/dwolla-v2-csharp/tree/main/ExampleApp) for
 examples on how to use the available C# models to call the Dwolla API. Before you can begin using the app, however, you will need to specify a `DWOLLA_APP_KEY` and
 `DWOLLA_APP_SECRET` environment variable.
+
+## Docker
+
+If you prefer to use Docker to run the ExampleApp locally, a Dockerfile is included at the root directory. You will need to specify `DWOLLA_APP_KEY` and `DWOLLA_APP_SECRET` environment variables in the Dockerfile. Then follow these instructions from [Docker's website](https://docs.docker.com/build/hellobuild/) to create a Docker image from the Dockerfile, and run it.
 
 ## Changelog
 
