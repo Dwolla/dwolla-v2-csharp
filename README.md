@@ -17,6 +17,7 @@ request can be made using this SDK when executed within a server-side environmen
     - [POST](#post)
     - [DELETE](#delete)
   - [Example App](#example-app)
+    - [Docker](#docker)
 - [Changelog](#changelog)
 - [Community](#community)
 - [Additional Resources](#additional-resources)
@@ -138,9 +139,37 @@ client.DeleteAsync<object>(url, null);
 ### Example App
 
 Take a look at the
-[Example Application](https://github.com/Dwolla/dwolla-v2-csharp/tree/master/ExampleApp) for
+[Example Application](https://github.com/Dwolla/dwolla-v2-csharp/tree/main/ExampleApp) for
 examples on how to use the available C# models to call the Dwolla API. Before you can begin using the app, however, you will need to specify a `DWOLLA_APP_KEY` and
 `DWOLLA_APP_SECRET` environment variable.
+
+#### Docker
+
+If you prefer to use Docker to run ExampleApp locally, a Dockerfile file is included in the root directory. You can either build the Docker image with your API key and secret (by passing the values via CLI), or you can specify the values for the `app_key` and `app_secret` build arguments in Dockerfile. Finally, you will need to build and run the Docker image. More information on this topic can be found on [Docker's website](https://docs.docker.com/build/hellobuild/), or you can find some example commands below.
+
+##### Building Docker Container
+
+```shell
+# Building container by specifying build arguments.
+# In this configuration, you will not need to modify Dockerfile. All of the
+# necessary arguments are passed via Docker's `--build-arg` option.
+$ docker build \
+    --build-arg app_key=YOUR_API_KEY \
+    --build-arg app_secret=YOUR_APP_SECRET \
+    -t dwolla/csharp-example-app:latest .
+    
+# Building container without specifying build arguments.
+# In this configuration, you will need to specify your account API key and 
+# secret (retrieved from Dwolla) in the Dockerfile file.
+$ docker build -t dwolla/csharp-example-app:latest .
+```
+
+##### Running Container Instance
+
+```shell
+# Running Docker container in interactive shell
+$ docker run --init -it dwolla/csharp-example-app:latest
+```
 
 ## Changelog
 
