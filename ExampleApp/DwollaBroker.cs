@@ -20,7 +20,7 @@ namespace ExampleApp
         internal async Task<TokenResponse> SetAuthorizationHeader(string key, string secret)
         {
             var response = await _client.PostAuthAsync<TokenResponse>(
-                new Uri($"{_client.ApiBaseAddress}/token"), new AppTokenRequest {Key = key, Secret = secret});
+                new Uri($"{_client.ApiBaseAddress}/token"), new AppTokenRequest { Key = key, Secret = secret });
 
             // TODO: Securely store token in your database for reuse
             if (!_headers.ContainsKey("Authorization"))
@@ -53,7 +53,7 @@ namespace ExampleApp
             (await GetAsync<BeneficialOwnershipResponse>(uri)).Content;
 
         internal async Task<Uri> CertifyBeneficialOwnershipAsync(Uri uri) =>
-            (await PostAsync(uri, new CertifyBeneficialOwnershipRequest {Status = "certified"})).Response.Headers.Location;
+            (await PostAsync(uri, new CertifyBeneficialOwnershipRequest { Status = "certified" })).Response.Headers.Location;
 
         internal async Task<Uri> CreateCustomerAsync(Uri uri, string firstName, string lastName, string email) =>
             await CreateCustomerAsync(uri, new CreateCustomerRequest
@@ -83,14 +83,35 @@ namespace ExampleApp
         internal async Task<GetDocumentsResponse> GetCustomerDocumentsAsync(Uri customerUri) =>
             (await GetAsync<GetDocumentsResponse>(new Uri(customerUri.AbsoluteUri + "/documents"))).Content;
 
-         internal async Task<Uri> CreateFundingSourceAsync(Uri uri, string routingNumber, string accountNumber, string bankAccountType, string name) =>
-                   await CreateFundingSourceAsync(uri, new CreateFundingSourceRequest
-                   {
-                       RoutingNumber = routingNumber,
-                       AccountNumber = accountNumber,
-                       BankAccountType = bankAccountType,
-                       Name = name,
-                   });
+        internal async Task<GetExchangePartnersResponse> GetExchangePartnersAsync() => (await GetAsync<GetExchangePartnersResponse>(new Uri($"{_client.ApiBaseAddress}/exchange-partners"))).Content;
+
+        // Create an MX exchange for a customer
+        // Exchange-Partner ID for MX = 'bca8d065-49a5-475b-a6b4-509bc8504d22'
+        internal async Task<Uri> CreateExchangeAsync(Uri uri, string token)
+        {
+            var r = await PostAsync<CreateExchangeRequest, EmptyResponse>(uri, new CreateExchangeRequest
+            {
+                Token = token,
+                Links = new Dictionary<string, Link>
+                    {
+                        {"exchange-partner", new Link {Href = new Uri($"{_client.ApiBaseAddress}/exchange-partners/bca8d065-49a5-475b-a6b4-509bc8504d22")}}
+                    },
+            });
+            return r.Response.Headers.Location;
+        }
+
+        internal async Task<ExchangeResponse> GetExchangeAsync(Uri uri) => (await GetAsync<ExchangeResponse>(uri)).Content;
+
+        internal async Task<GetExchangesResponse> GetExchangesAsync(Uri uri) => (await GetAsync<GetExchangesResponse>(uri)).Content;
+
+        internal async Task<Uri> CreateFundingSourceAsync(Uri uri, string routingNumber, string accountNumber, string bankAccountType, string name) =>
+                  await CreateFundingSourceAsync(uri, new CreateFundingSourceRequest
+                  {
+                      RoutingNumber = routingNumber,
+                      AccountNumber = accountNumber,
+                      BankAccountType = bankAccountType,
+                      Name = name,
+                  });
         internal async Task<Uri> CreateFundingSourceAsync(Uri uri, CreateFundingSourceRequest request)
         {
             var response = await PostAsync<CreateFundingSourceRequest, EmptyResponse>(uri, request);
@@ -113,8 +134,8 @@ namespace ExampleApp
             (await PostAsync(new Uri($"{_client.ApiBaseAddress}/funding-sources/{fundingSourceId}/micro-deposits"),
                 new MicroDepositsRequest
                 {
-                    Amount1 = new Money {Value = amount1, Currency = "USD"},
-                    Amount2 = new Money {Value = amount2, Currency = "USD"}
+                    Amount1 = new Money { Value = amount1, Currency = "USD" },
+                    Amount2 = new Money { Value = amount2, Currency = "USD" }
                 })).Response.Headers.Location;
 
 
@@ -168,7 +189,7 @@ namespace ExampleApp
                                     Values = new List<string> { destinationAddenda }
                                 }
                             }
-                        }                  
+                        }
                 });
             return response.Response.Headers.Location;
         }
@@ -212,7 +233,7 @@ namespace ExampleApp
             (await GetAsync<MasspaymentResponse>(new Uri($"{_client.ApiBaseAddress}/mass-payments/{id}"))).Content;
 
         internal async Task<Uri> CreateWebhookSubscriptionAsync(Uri uri, string url, string secret) =>
-            (await PostAsync(uri, new CreateWebhookSubscriptionRequest {Url = url, Secret = secret})).Response.Headers.Location;
+            (await PostAsync(uri, new CreateWebhookSubscriptionRequest { Url = url, Secret = secret })).Response.Headers.Location;
 
         internal async Task DeleteWebhookSubscriptionAsync(Uri uri) => await DeleteAsync<object>(uri, null);
 
@@ -234,8 +255,8 @@ namespace ExampleApp
             {
                 Amount = new Money { Currency = "USD", Value = amount }
             });
-            
-        
+
+
         internal async Task<Uri> CreateLabelAsync(Uri uri, CreateLabelRequest request)
         {
             var response = await PostAsync(uri, request);
@@ -247,18 +268,18 @@ namespace ExampleApp
 
         internal async Task<Label> GetLabelAsync(Uri uri) =>
             (await GetAsync<Label>(uri)).Content;
-        
+
         internal async Task<GetLabelsResponse> GetLabelsAsync(string id) =>
             (await GetAsync<GetLabelsResponse>(new Uri($"{_client.ApiBaseAddress}/customers/{id}/labels"))).Content;
 
         internal async Task<GetLabelsResponse> GetLabelsAsync(Uri uri) =>
             (await GetAsync<GetLabelsResponse>(uri)).Content;
 
-        internal async Task DeleteLabelAsync(string id) => 
+        internal async Task DeleteLabelAsync(string id) =>
             await DeleteAsync<object>(new Uri($"{_client.ApiBaseAddress}/labels/{id}"), null);
 
         internal async Task<Uri> CreateLabelLedgerEntryAsync(string id, decimal amount) =>
-            await CreateLabelLedgerEntryAsync(new Uri($"{_client.ApiBaseAddress}/labels/{id}/ledger-entries"), 
+            await CreateLabelLedgerEntryAsync(new Uri($"{_client.ApiBaseAddress}/labels/{id}/ledger-entries"),
             new CreateLabelLedgerEntryRequest
             {
                 Amount = new Money { Currency = "USD", Value = amount }
@@ -310,7 +331,7 @@ namespace ExampleApp
 
         internal async Task<LabelReallocation> GetLabelReallocationAsync(Uri uri) =>
             (await GetAsync<LabelReallocation>(uri)).Content;
-            
+
         private async Task<RestResponse<TRes>> GetAsync<TRes>(Uri uri) where TRes : IDwollaResponse =>
             await ExecAsync(() => _client.GetAsync<TRes>(uri, _headers));
 
@@ -342,6 +363,11 @@ namespace ExampleApp
             }
 
             return r;
+        }
+
+        internal Task CreateBeneficialOwnerAsync(Uri uri, CreateExchangeRequest createExchangeRequest)
+        {
+            throw new NotImplementedException();
         }
     }
 }
