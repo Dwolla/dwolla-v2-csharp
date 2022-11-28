@@ -19,12 +19,12 @@ namespace Dwolla.Client.Tests
     {
         private const string JsonV1 = "application/vnd.dwolla.v1.hal+json";
         private const string RequestId = "some-id";
-        private const string UserAgent = "dwolla-v2-csharp/5.2.2";
+        private const string UserAgent = "dwolla-v2-csharp/5.3.0";
         private static readonly Uri RequestUri = new Uri("https://api-sandbox.dwolla.com/foo");
         private static readonly Uri AuthRequestUri = new Uri("https://accounts-sandbox.dwolla.com/foo");
-        private static readonly Headers Headers = new Headers {{"key1", "value1"}, {"key2", "value2"}};
-        private static readonly TestRequest Request = new TestRequest {Message = "requestTest"};
-        private static readonly TestResponse Response = new TestResponse {Message = "responseTest"};
+        private static readonly Headers Headers = new Headers { { "key1", "value1" }, { "key2", "value2" } };
+        private static readonly TestRequest Request = new TestRequest { Message = "requestTest" };
+        private static readonly TestResponse Response = new TestResponse { Message = "responseTest" };
 
         private readonly Mock<IRestClient> _restClient;
         private readonly DwollaClient _client;
@@ -46,7 +46,7 @@ namespace Dwolla.Client.Tests
         public async void CreatePostAuthRequestAndPassToClient()
         {
             var response = CreateRestResponse(HttpMethod.Post, Response);
-            var req = new AppTokenRequest {Key = "key", Secret = "secret"};
+            var req = new AppTokenRequest { Key = "key", Secret = "secret" };
             var request = CreateAuthHttpRequest(req);
             _restClient.Setup(x => x.SendAsync<TestResponse>(It.IsAny<HttpRequestMessage>()))
                 .Callback<HttpRequestMessage>(y => AppTokenCallback(request, y)).ReturnsAsync(response);
@@ -150,7 +150,7 @@ namespace Dwolla.Client.Tests
         {
             var r = new HttpResponseMessage
             {
-                RequestMessage = new HttpRequestMessage {RequestUri = RequestUri, Method = method}
+                RequestMessage = new HttpRequestMessage { RequestUri = RequestUri, Method = method }
             };
             r.Headers.Add("x-request-id", RequestId);
             return new RestResponse<T>(r, content, rawContent);
