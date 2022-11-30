@@ -173,6 +173,9 @@ $ docker run --init -it dwolla/csharp-example-app:latest
 
 ## Changelog
 
+- [**5.3.0**](https://github.com/Dwolla/dwolla-v2-csharp/releases/tag/5.3.0)
+  - Add API models and examples for Exchanges
+  - Add Trace ID under AchDetails object
 - **5.2.2** Update `Newtonsoft.Json` to version 13.0.1
 - **5.2.1** Add Masspayment models and examples, support RTP transfers
 - **5.2.0** Change Token URLs and Add Labels models and examples
