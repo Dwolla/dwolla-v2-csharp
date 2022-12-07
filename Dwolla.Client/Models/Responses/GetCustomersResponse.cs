@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Dwolla.Client.Models.Responses
 {
     public class GetCustomersResponse : BaseGetResponse<Customer>
     {
-        [JsonProperty(PropertyName = "_embedded")]
+        [JsonPropertyName("_embedded")]
         public new CustomersEmbed Embedded { get; set; }
     }
 

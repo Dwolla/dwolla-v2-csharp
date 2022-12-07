@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Net.Http;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Dwolla.Client.Models.Responses;
-using Newtonsoft.Json;
 
 namespace Dwolla.Client.Rest
 {
@@ -27,8 +27,8 @@ namespace Dwolla.Client.Rest
                 try
                 {
                     return ErrorRegex.IsMatch(rawContent)
-                        ? Error<T>(response, JsonConvert.DeserializeObject<ErrorResponse>(rawContent), rawContent)
-                        : new RestResponse<T>(response, JsonConvert.DeserializeObject<T>(rawContent), rawContent);
+                        ? Error<T>(response, JsonSerializer.Deserialize<ErrorResponse>(rawContent), rawContent)
+                        : new RestResponse<T>(response, JsonSerializer.Deserialize<T>(rawContent), rawContent);
                 }
                 catch (Exception e)
                 {

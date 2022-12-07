@@ -1,5 +1,4 @@
 ﻿using System;
-using Newtonsoft.Json;
 
 namespace Dwolla.Client.Models.Requests
 {
@@ -8,7 +7,7 @@ namespace Dwolla.Client.Models.Requests
         public string FirstName { get; set; }
         public string LastName { get; set; }
 
-        [JsonConverter(typeof(DateOnlyConverter))]
+        // TODO: [JsonConverter(typeof(DateOnlyConverter))] 
         public DateTime DateOfBirth { get; set; }
 
         public string Ssn { get; set; }

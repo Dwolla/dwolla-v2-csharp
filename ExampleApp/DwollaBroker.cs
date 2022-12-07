@@ -6,7 +6,6 @@ using Dwolla.Client.Models;
 using Dwolla.Client.Models.Requests;
 using Dwolla.Client.Models.Responses;
 using Dwolla.Client.Rest;
-using Newtonsoft.Json;
 
 namespace ExampleApp
 {

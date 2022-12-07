@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Dwolla.Client.Models.Responses
 {
@@ -12,7 +12,7 @@ namespace Dwolla.Client.Models.Responses
 
     public abstract class BaseResponse : IDwollaResponse
     {
-        [JsonProperty(PropertyName = "_links")]
+        [JsonPropertyName("_links")]
         public Dictionary<string, Link> Links { get; set; }
     }
 }
