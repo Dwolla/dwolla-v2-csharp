@@ -34,10 +34,11 @@ namespace Dwolla.Client
         public const string ContentType = "application/vnd.dwolla.v1.hal+json";
         public string ApiBaseAddress { get; }
 
-        private static readonly JsonSerializerOptions JsonSettings = new JsonSerializerOptions
+        public static readonly JsonSerializerOptions JsonSettings = new()
         {
             Converters = { new DateOnlyConverter() },
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            PropertyNameCaseInsensitive = true,
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
         };
         private readonly IRestClient _client;
