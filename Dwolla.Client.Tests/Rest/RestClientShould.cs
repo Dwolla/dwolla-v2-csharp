@@ -19,7 +19,7 @@ namespace Dwolla.Client.Tests.Rest
         {
             _handler = new FakeClientHandler();
             _builder = new Mock<IResponseBuilder>();
-            _restClient = new RestClient(new HttpClient(_handler), _builder.Object);
+            _restClient = new RestClient(_builder.Object);
 
             _request = new HttpRequestMessage(HttpMethod.Get, new Uri("https://example.com/foo"));
             _response = new RestResponse<TestResponse>(new HttpResponseMessage(), new TestResponse(), null);
