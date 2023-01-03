@@ -1,11 +1,11 @@
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Dwolla.Client.Models.Responses
 {
     public class GetLabelsResponse : BaseGetResponse<Label>
     {
-        [JsonProperty(PropertyName = "_embedded")]
+        [JsonPropertyName("_embedded")]
         public new LabelsEmbed Embedded { get; set; }
     }
 

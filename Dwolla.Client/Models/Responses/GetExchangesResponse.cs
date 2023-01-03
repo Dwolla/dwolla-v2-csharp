@@ -1,13 +1,13 @@
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Dwolla.Client.Models.Responses
 {
     public class GetExchangesResponse : BaseGetResponse<ExchangeResponse>
     {
-        [JsonProperty(PropertyName = "_links")]
+        [JsonPropertyName("_links")]
         public Dictionary<string, Link> Links { get; set; }
-        [JsonProperty(PropertyName = "_embedded")]
+        [JsonPropertyName("_embedded")]
         public new ExchangesEmbed Embedded { get; set; }
     }
 

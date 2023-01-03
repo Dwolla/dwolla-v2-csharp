@@ -6,13 +6,12 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Security.Authentication;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Dwolla.Client.Models;
 using Dwolla.Client.Models.Requests;
 using Dwolla.Client.Models.Responses;
 using Dwolla.Client.Rest;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 
 [assembly: InternalsVisibleTo("Dwolla.Client.Tests")]
 
@@ -32,13 +31,13 @@ namespace Dwolla.Client
     public class DwollaClient : IDwollaClient
     {
         public const string ContentType = "application/vnd.dwolla.v1.hal+json";
-        public string ApiBaseAddress { get; }
+        public 
+            string ApiBaseAddress { get; }
 
-        private static readonly JsonSerializerSettings JsonSettings =
-            new JsonSerializerSettings
+        private static readonly JsonSerializerOptions JsonSettings =
+            new JsonSerializerOptions
             {
-                ContractResolver = new CamelCasePropertyNamesContractResolver(),
-                NullValueHandling = NullValueHandling.Ignore
+                IgnoreNullValues = true
             };
 
         private readonly IRestClient _client;
@@ -86,7 +85,7 @@ namespace Dwolla.Client
             HttpMethod method, Uri requestUri, Headers headers, TReq content, string contentType)
         {
             var r = CreateRequest(method, requestUri, headers);
-            r.Content = new StringContent(JsonConvert.SerializeObject(content, JsonSettings), Encoding.UTF8, contentType);
+            r.Content = new StringContent(JsonSerializer.Serialize(content, JsonSettings), Encoding.UTF8, contentType);
             return r;
         }
 

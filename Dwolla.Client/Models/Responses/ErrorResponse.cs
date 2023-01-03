@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Dwolla.Client.Models.Responses
 {
@@ -8,7 +8,7 @@ namespace Dwolla.Client.Models.Responses
         public string Code { get; set; }
         public string Message { get; set; }
 
-        [JsonProperty(PropertyName = "_embedded")]
+        [JsonPropertyName("_embedded")]
         public ErrorEmbed Embedded { get; set; }
     }
 
@@ -19,7 +19,7 @@ namespace Dwolla.Client.Models.Responses
 
     public class Error
     {
-        [JsonProperty(PropertyName = "_links")]
+        [JsonPropertyName("_links")]
         public Dictionary<string, Link> Links { get; set; }
 
         public string Code { get; set; }

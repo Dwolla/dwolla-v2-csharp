@@ -1,5 +1,5 @@
 ﻿using System;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Dwolla.Client.Models
 {
@@ -8,7 +8,7 @@ namespace Dwolla.Client.Models
         public Uri Href { get; set; }
         public string Type { get; set; }
 
-        [JsonProperty(PropertyName = "resource-type")]
+        [JsonPropertyName("resource-type")]
         public string ResourceType { get; set; }
     }
 }
