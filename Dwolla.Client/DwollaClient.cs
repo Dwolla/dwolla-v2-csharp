@@ -31,19 +31,18 @@ namespace Dwolla.Client
     public class DwollaClient : IDwollaClient
     {
         public const string ContentType = "application/vnd.dwolla.v1.hal+json";
-        public 
-            string ApiBaseAddress { get; }
+        public string ApiBaseAddress { get; }
 
         private static readonly JsonSerializerOptions JsonSettings =
             new JsonSerializerOptions
             {
-                IgnoreNullValues = true
+                DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
             };
 
         private readonly IRestClient _client;
 
         public static DwollaClient Create(bool isSandbox) =>
-            new DwollaClient(new RestClient(CreateHttpClient()), isSandbox);
+            new DwollaClient(new RestClient(), isSandbox);
 
         public async Task<RestResponse<TRes>> PostAuthAsync<TRes>(
             Uri uri, AppTokenRequest content) where TRes : IDwollaResponse =>
@@ -125,16 +124,6 @@ namespace Dwolla.Client
         {
             _client = client;
             ApiBaseAddress = isSandbox ? "https://api-sandbox.dwolla.com" : "https://api.dwolla.com";
-        }
-
-        private static readonly string ClientVersion = typeof(DwollaClient).GetTypeInfo().Assembly
-            .GetCustomAttribute<AssemblyFileVersionAttribute>().Version;
-
-        internal static HttpClient CreateHttpClient()
-        {
-            var client = new HttpClient(new HttpClientHandler {SslProtocols = SslProtocols.Tls12});
-            client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("dwolla-v2-csharp", ClientVersion));
-            return client;
         }
     }
 }
