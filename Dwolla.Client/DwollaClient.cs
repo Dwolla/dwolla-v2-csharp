@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Security;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Security.Authentication;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Dwolla.Client.Models;
 using Dwolla.Client.Models.Requests;
@@ -36,13 +38,13 @@ namespace Dwolla.Client
         private static readonly JsonSerializerOptions JsonSettings =
             new JsonSerializerOptions
             {
-                DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
             };
 
         private readonly IRestClient _client;
 
         public static DwollaClient Create(bool isSandbox) =>
-            new DwollaClient(new RestClient(), isSandbox);
+            new DwollaClient(new RestClient(CreateHttpClient()), isSandbox);
 
         public async Task<RestResponse<TRes>> PostAuthAsync<TRes>(
             Uri uri, AppTokenRequest content) where TRes : IDwollaResponse =>
@@ -124,6 +126,27 @@ namespace Dwolla.Client
         {
             _client = client;
             ApiBaseAddress = isSandbox ? "https://api-sandbox.dwolla.com" : "https://api.dwolla.com";
+        }
+
+        private static readonly string ClientVersion = typeof(DwollaClient).GetTypeInfo().Assembly
+            .GetCustomAttribute<AssemblyFileVersionAttribute>().Version;
+
+        internal static HttpClient CreateHttpClient()
+        {
+#if NETSTANDARD2_0
+            return HttpClientFactory.Create();
+#endif
+#if NET5_0_OR_GREATER
+            var client = new HttpClient(
+                new SocketsHttpHandler 
+                { 
+                    PooledConnectionLifetime = TimeSpan.FromMinutes(2),
+                    SslOptions = new SslClientAuthenticationOptions { EnabledSslProtocols = SslProtocols.Tls }
+                }
+            );
+            client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("dwolla-v2-csharp", ClientVersion));
+            return client;
+#endif
         }
     }
 }

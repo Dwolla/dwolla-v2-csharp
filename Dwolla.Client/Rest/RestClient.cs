@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Reflection;
-using System.Security.Authentication;
 using System.Threading.Tasks;
 
 namespace Dwolla.Client.Rest
@@ -14,19 +11,15 @@ namespace Dwolla.Client.Rest
 
     public class RestClient : IRestClient
     {
-        private static readonly string ClientVersion = typeof(RestClient).GetTypeInfo().Assembly
-            .GetCustomAttribute<AssemblyFileVersionAttribute>().Version;
-
-        private static readonly HttpClient _client = new HttpClient(new HttpClientHandler {SslProtocols = SslProtocols.Tls12, });
+        private readonly HttpClient _client;
         private readonly IResponseBuilder _builder;
 
-        public RestClient() : this(new ResponseBuilder())
+        public RestClient(HttpClient client) : this(client, new ResponseBuilder())
         {
         }
 
         public async Task<RestResponse<T>> SendAsync<T>(HttpRequestMessage request)
         {
-
             try
             {
                 using (var response = await _client.SendAsync(request))
@@ -40,10 +33,9 @@ namespace Dwolla.Client.Rest
             }
         }
 
-        internal RestClient(IResponseBuilder builder)
-        { 
-            _client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("dwolla-v2-csharp", ClientVersion));
-
+        internal RestClient(HttpClient client, IResponseBuilder builder)
+        {
+            _client = client;
             _builder = builder;
         }
     }
