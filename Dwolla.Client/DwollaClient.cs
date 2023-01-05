@@ -40,9 +40,31 @@ namespace Dwolla.Client
             {
                 DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
             };
-
+        private static readonly string ClientVersion = typeof(DwollaClient).GetTypeInfo().Assembly
+            .GetCustomAttribute<AssemblyFileVersionAttribute>().Version;
+#if NET5_0_OR_GREATER
+        private static readonly HttpClient StaticHttpClient = new HttpClient(
+                new SocketsHttpHandler 
+                { 
+                    PooledConnectionLifetime = TimeSpan.FromMinutes(2),
+                    SslOptions = new SslClientAuthenticationOptions { EnabledSslProtocols = SslProtocols.Tls12 }
+                }
+            );
+#endif
+#if NETSTANDARD2_0
+        private static HttpClientHandler _staticClientHandler;
+        private static DateTime _staticClientHandlerExpirationDate;
+#endif
+        
         private readonly IRestClient _client;
 
+        static DwollaClient()
+        {
+#if NET5_0_OR_GREATER
+            SetupHttpClientDefaults(StaticHttpClient);
+#endif
+        }
+        
         public static DwollaClient Create(bool isSandbox) =>
             new DwollaClient(new RestClient(), isSandbox);
 
@@ -127,25 +149,29 @@ namespace Dwolla.Client
             _client = client;
             ApiBaseAddress = isSandbox ? "https://api-sandbox.dwolla.com" : "https://api.dwolla.com";
         }
-
-        private static readonly string ClientVersion = typeof(DwollaClient).GetTypeInfo().Assembly
-            .GetCustomAttribute<AssemblyFileVersionAttribute>().Version;
+        
+        private static void SetupHttpClientDefaults(HttpClient client)
+        {
+            client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("dwolla-v2-csharp", ClientVersion));
+        }
 
         internal static HttpClient CreateHttpClient()
         {
+            // https://learn.microsoft.com/en-us/dotnet/fundamentals/networking/http/httpclient-guidelines#recommended-use
 #if NETSTANDARD2_0
-            return HttpClientFactory.Create();
+            if (_staticClientHandler == null || _staticClientHandlerExpirationDate < DateTime.UtcNow)
+            {
+                _staticClientHandler = new HttpClientHandler();
+                _staticClientHandler.SslProtocols = SslProtocols.Tls12;
+                _staticClientHandlerExpirationDate = DateTime.UtcNow + TimeSpan.FromMinutes(2);
+            }
+            
+            var client = new HttpClient(_staticClientHandler);
+            SetupHttpClientDefaults(client);
+            return client;
 #endif
 #if NET5_0_OR_GREATER
-            var client = new HttpClient(
-                new SocketsHttpHandler 
-                { 
-                    PooledConnectionLifetime = TimeSpan.FromMinutes(2),
-                    SslOptions = new SslClientAuthenticationOptions { EnabledSslProtocols = SslProtocols.Tls12 }
-                }
-            );
-            client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("dwolla-v2-csharp", ClientVersion));
-            return client;
+            return StaticHttpClient;
 #endif
         }
     }
