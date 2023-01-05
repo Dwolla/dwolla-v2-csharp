@@ -44,7 +44,7 @@ namespace Dwolla.Client
         private readonly IRestClient _client;
 
         public static DwollaClient Create(bool isSandbox) =>
-            new DwollaClient(new RestClient(CreateHttpClient()), isSandbox);
+            new DwollaClient(new RestClient(), isSandbox);
 
         public async Task<RestResponse<TRes>> PostAuthAsync<TRes>(
             Uri uri, AppTokenRequest content) where TRes : IDwollaResponse =>
@@ -72,7 +72,7 @@ namespace Dwolla.Client
             await SendAsync<EmptyResponse>(CreateDeleteRequest(uri, content, headers));
 
         private async Task<RestResponse<TRes>> SendAsync<TRes>(HttpRequestMessage request) =>
-            await _client.SendAsync<TRes>(request);
+            await _client.SendAsync<TRes>(request, CreateHttpClient());
 
         private static HttpRequestMessage CreateDeleteRequest<TReq>(
             Uri requestUri, TReq content, Headers headers, string contentType = ContentType) =>
@@ -141,7 +141,7 @@ namespace Dwolla.Client
                 new SocketsHttpHandler 
                 { 
                     PooledConnectionLifetime = TimeSpan.FromMinutes(2),
-                    SslOptions = new SslClientAuthenticationOptions { EnabledSslProtocols = SslProtocols.Tls }
+                    SslOptions = new SslClientAuthenticationOptions { EnabledSslProtocols = SslProtocols.Tls12 }
                 }
             );
             client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("dwolla-v2-csharp", ClientVersion));

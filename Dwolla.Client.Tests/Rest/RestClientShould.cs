@@ -11,6 +11,7 @@ namespace Dwolla.Client.Tests.Rest
         private readonly FakeClientHandler _handler;
         private readonly Mock<IResponseBuilder> _builder;
         private readonly RestClient _restClient;
+        private readonly HttpClient _client;
 
         private readonly HttpRequestMessage _request;
         private readonly RestResponse<TestResponse> _response;
@@ -19,7 +20,8 @@ namespace Dwolla.Client.Tests.Rest
         {
             _handler = new FakeClientHandler();
             _builder = new Mock<IResponseBuilder>();
-            _restClient = new RestClient(new HttpClient(_handler), _builder.Object);
+            _restClient = new RestClient(_builder.Object);
+            _client = new HttpClient(_handler);
 
             _request = new HttpRequestMessage(HttpMethod.Get, new Uri("https://example.com/foo"));
             _response = new RestResponse<TestResponse>(new HttpResponseMessage(), new TestResponse(), null);
@@ -32,7 +34,7 @@ namespace Dwolla.Client.Tests.Rest
             _handler.AddFakeResponse(_request.RequestUri, response);
             _builder.Setup(x => x.Build<TestResponse>(response)).ReturnsAsync(_response);
 
-            var actual = await _restClient.SendAsync<TestResponse>(_request);
+            var actual = await _restClient.SendAsync<TestResponse>(_request, _client);
 
             Assert.Equal(_response, actual);
             Assert.Single(_handler.Requests);
@@ -43,7 +45,7 @@ namespace Dwolla.Client.Tests.Rest
         {
             _builder.Setup(x => x.Error<TestResponse>(null, "HttpClientException", "Not Found", null)).Returns(_response);
 
-            var actual = await _restClient.SendAsync<TestResponse>(_request);
+            var actual = await _restClient.SendAsync<TestResponse>(_request, _client);
 
             Assert.Equal(_response, actual);
             Assert.Single(_handler.Requests);

@@ -23,9 +23,8 @@ namespace Dwolla.Client.Tests.Rest
             var actual = await _builder.Build<TestResponse>(response);
 
             Assert.Null(actual.Content);
-            Assert.Equal("NullResponse", actual.Error.Code);
-            Assert.Equal("Response content is null", actual.Error.Message);
-            Assert.Null(actual.RawContent);
+            Assert.Equal("DeserializationException", actual.Error.Code);
+            Assert.Equal("The input does not contain any JSON tokens. Expected the input to start with a valid JSON token, when isFinalBlock is true. Path: $ | LineNumber: 0 | BytePositionInLine: 0.", actual.Error.Message);
             Assert.Equal(RequestId, actual.RequestId);
             Assert.Equal(response, actual.Response);
         }
@@ -40,7 +39,7 @@ namespace Dwolla.Client.Tests.Rest
 
             Assert.Null(actual.Content);
             Assert.Equal("DeserializationException", actual.Error.Code);
-            Assert.Equal("Unexpected end when reading JSON. Path '', line 1, position 1.", actual.Error.Message);
+            Assert.Equal("Expected depth to be zero at the end of the JSON payload. There is an open JSON object or array that should be closed. Path: $ | LineNumber: 0 | BytePositionInLine: 1.", actual.Error.Message);
             Assert.Equal(raw, actual.RawContent);
             Assert.Equal(RequestId, actual.RequestId);
             Assert.Equal(response, actual.Response);

@@ -6,23 +6,22 @@ namespace Dwolla.Client.Rest
 {
     public interface IRestClient
     {
-        Task<RestResponse<T>> SendAsync<T>(HttpRequestMessage request);
+        Task<RestResponse<T>> SendAsync<T>(HttpRequestMessage request, HttpClient httpClient);
     }
 
     public class RestClient : IRestClient
     {
-        private readonly HttpClient _client;
         private readonly IResponseBuilder _builder;
 
-        public RestClient(HttpClient client) : this(client, new ResponseBuilder())
+        public RestClient() : this(new ResponseBuilder())
         {
         }
 
-        public async Task<RestResponse<T>> SendAsync<T>(HttpRequestMessage request)
+        public async Task<RestResponse<T>> SendAsync<T>(HttpRequestMessage request, HttpClient httpClient)
         {
             try
             {
-                using (var response = await _client.SendAsync(request))
+                using (var response = await httpClient.SendAsync(request))
                 {
                     return await _builder.Build<T>(response);
                 }
@@ -33,9 +32,8 @@ namespace Dwolla.Client.Rest
             }
         }
 
-        internal RestClient(HttpClient client, IResponseBuilder builder)
+        internal RestClient(IResponseBuilder builder)
         {
-            _client = client;
             _builder = builder;
         }
     }
