@@ -5,8 +5,6 @@ namespace Dwolla.Client.Models.Responses
 {
     public class GetExchangePartnersResponse : BaseGetResponse<ExchangePartnerResponse>
     {
-        [JsonPropertyName("_links")]
-        public Dictionary<string, Link> Links { get; set; }
         [JsonPropertyName("_embedded")]
         public new ExchangePartnersEmbed Embedded { get; set; }
     }
