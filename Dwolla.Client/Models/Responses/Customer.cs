@@ -1,4 +1,5 @@
 ﻿using System;
+using Newtonsoft.Json;
 
 namespace Dwolla.Client.Models.Responses
 {
@@ -20,6 +21,11 @@ namespace Dwolla.Client.Models.Responses
         public string BusinessName { get; set; }
         public string DoingBusinessAs { get; set; }
         public string Website { get; set; }
+        public string BusinessType { get; set; }
+        public string BusinessClassification { get; set; }
         public Controller Controller { get; set; }
+        public string CorrelationId { get; set; }
+        [JsonProperty(PropertyName = "_embedded")]
+        public ErrorEmbed Embedded { get; set; }
     }
 }
