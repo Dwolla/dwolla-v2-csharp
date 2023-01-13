@@ -16,6 +16,17 @@ namespace Dwolla.Client.Rest
     public class ResponseBuilder : IResponseBuilder
     {
         private static readonly Regex ErrorRegex = new Regex("^{.*\"code\":.*\"message\":.*}$", RegexOptions.IgnoreCase);
+        private readonly JsonSerializerOptions _jsonSettings;
+
+        public ResponseBuilder()
+        {
+            _jsonSettings = new JsonSerializerOptions();
+        }
+
+        public ResponseBuilder(JsonSerializerOptions jsonSerializerOptions = null)
+        {
+            _jsonSettings = jsonSerializerOptions;
+        }
 
         public async Task<RestResponse<T>> Build<T>(HttpResponseMessage response)
         {
@@ -27,8 +38,8 @@ namespace Dwolla.Client.Rest
                 try
                 {
                     return ErrorRegex.IsMatch(rawContent)
-                        ? Error<T>(response, JsonSerializer.Deserialize<ErrorResponse>(rawContent), rawContent)
-                        : new RestResponse<T>(response, JsonSerializer.Deserialize<T>(rawContent), rawContent);
+                        ? Error<T>(response, JsonSerializer.Deserialize<ErrorResponse>(rawContent, _jsonSettings), rawContent)
+                        : new RestResponse<T>(response, JsonSerializer.Deserialize<T>(rawContent, _jsonSettings), rawContent);
                 }
                 catch (Exception e)
                 {

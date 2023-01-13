@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Dwolla.Client.Rest
@@ -13,7 +14,7 @@ namespace Dwolla.Client.Rest
     {
         private readonly IResponseBuilder _builder;
 
-        public RestClient() : this(new ResponseBuilder())
+        public RestClient(JsonSerializerOptions jsonSerializerOptions) : this(new ResponseBuilder(jsonSerializerOptions))
         {
         }
 

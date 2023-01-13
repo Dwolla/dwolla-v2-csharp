@@ -38,8 +38,10 @@ namespace Dwolla.Client
         private static readonly JsonSerializerOptions JsonSettings =
             new JsonSerializerOptions
             {
-                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+                PropertyNameCaseInsensitive = true
             };
+
         private static readonly string ClientVersion = typeof(DwollaClient).GetTypeInfo().Assembly
             .GetCustomAttribute<AssemblyFileVersionAttribute>().Version;
 #if NET5_0_OR_GREATER
@@ -66,7 +68,7 @@ namespace Dwolla.Client
         }
         
         public static DwollaClient Create(bool isSandbox) =>
-            new DwollaClient(new RestClient(), isSandbox);
+            new DwollaClient(new RestClient(JsonSettings), isSandbox);
 
         public async Task<RestResponse<TRes>> PostAuthAsync<TRes>(
             Uri uri, AppTokenRequest content) where TRes : IDwollaResponse =>
@@ -138,7 +140,7 @@ namespace Dwolla.Client
 
         private static HttpRequestMessage CreateRequest(HttpMethod method, Uri requestUri, Headers headers)
         {
-            var r = new HttpRequestMessage(method, requestUri);
+            var r = new HttpRequestMessage(method, requestUri.AbsoluteUri);
             r.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(ContentType));
             foreach (var header in headers) r.Headers.Add(header.Key, header.Value);
             return r;
