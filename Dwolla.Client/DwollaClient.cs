@@ -39,7 +39,8 @@ namespace Dwolla.Client
             new JsonSerializerOptions
             {
                 DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-                PropertyNameCaseInsensitive = true
+                PropertyNameCaseInsensitive = true,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             };
 
         private static readonly string ClientVersion = typeof(DwollaClient).GetTypeInfo().Assembly
@@ -110,7 +111,8 @@ namespace Dwolla.Client
             HttpMethod method, Uri requestUri, Headers headers, TReq content, string contentType)
         {
             var r = CreateRequest(method, requestUri, headers);
-            r.Content = new StringContent(JsonSerializer.Serialize(content, JsonSettings), Encoding.UTF8, contentType);
+            var json = JsonSerializer.Serialize(content, JsonSettings);
+            r.Content = new StringContent(json, Encoding.UTF8, contentType);
             return r;
         }
 
