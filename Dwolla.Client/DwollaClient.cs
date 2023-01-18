@@ -111,8 +111,7 @@ namespace Dwolla.Client
             HttpMethod method, Uri requestUri, Headers headers, TReq content, string contentType)
         {
             var r = CreateRequest(method, requestUri, headers);
-            var json = JsonSerializer.Serialize(content, JsonSettings);
-            r.Content = new StringContent(json, Encoding.UTF8, contentType);
+            r.Content = new StringContent(JsonSerializer.Serialize(content, JsonSettings), Encoding.UTF8, contentType);
             return r;
         }
 
