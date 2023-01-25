@@ -34,7 +34,7 @@ namespace Dwolla.Client.Tests.Rest
         public async void SetErrorOnInvalidJson()
         {
             const string raw = "{";
-            var response = CreateResponse(raw);
+            var response = CreateErrorResponse(raw);
 
             var actual = await _builder.Build<TestResponse>(response);
 
@@ -49,9 +49,9 @@ namespace Dwolla.Client.Tests.Rest
         [Fact]
         public async void DeserializeErrorResponse()
         {
-            var expected = new ErrorResponse {Code = "MyCode", Message = "MyMessage"};
+            var expected = new ErrorResponse { Code = "MyCode", Message = "MyMessage" };
             var raw = JsonConvert.SerializeObject(expected);
-            var response = CreateResponse(raw);
+            var response = CreateErrorResponse(raw);
 
             var actual = await _builder.Build<TestResponse>(response);
 
@@ -66,7 +66,7 @@ namespace Dwolla.Client.Tests.Rest
         [Fact]
         public async void DeserializeResponse()
         {
-            var expected = new TestResponse {TestProp = "testing"};
+            var expected = new TestResponse { TestProp = "testing" };
             var raw = JsonConvert.SerializeObject(expected);
             var response = CreateResponse(raw);
 
@@ -81,7 +81,20 @@ namespace Dwolla.Client.Tests.Rest
 
         private static HttpResponseMessage CreateResponse(string content)
         {
-            var r = new HttpResponseMessage {Content = content == null ? null : new StringContent(content, Encoding.UTF8)};
+            var r = new HttpResponseMessage
+            {
+                Content = content == null
+            ? null : new StringContent(content, Encoding.UTF8)
+            };
+            r.StatusCode = System.Net.HttpStatusCode.OK;
+            r.Headers.Add("x-request-id", RequestId);
+            return r;
+        }
+
+        private static HttpResponseMessage CreateErrorResponse(string content)
+        {
+            var r = new HttpResponseMessage { Content = new StringContent(content, Encoding.UTF8) };
+            r.StatusCode = System.Net.HttpStatusCode.BadRequest;
             r.Headers.Add("x-request-id", RequestId);
             return r;
         }
