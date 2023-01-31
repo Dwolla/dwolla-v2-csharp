@@ -173,6 +173,9 @@ $ docker run --init -it dwolla/csharp-example-app:latest
 
 ## Changelog
 
+- [**5.4.0**](https://github.com/Dwolla/dwolla-v2-csharp/releases/tag/5.4.0)
+  - Fix issue with deserialization of `200 Ok` response with an `_embedded` error on GET customer. Issue [#47](https://github.com/Dwolla/dwolla-v2-csharp/issues/47). (Thanks, @dahlbyk!)
+  - Add missing fields to Customer response schema - `Embedded`, `CorrelationID`, `BusinessType`, `BusinessClassification`.
 - [**5.3.0**](https://github.com/Dwolla/dwolla-v2-csharp/releases/tag/5.3.0)
   - Add API models and examples for Exchanges
   - Add Trace ID under AchDetails object
