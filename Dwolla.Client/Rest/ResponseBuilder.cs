@@ -15,8 +15,6 @@ namespace Dwolla.Client.Rest
 
     public class ResponseBuilder : IResponseBuilder
     {
-        private static readonly Regex ErrorRegex = new Regex("^{.*\"code\":.*\"message\":.*}$", RegexOptions.IgnoreCase);
-        private readonly JsonSerializerOptions _jsonSettings;
 
         public ResponseBuilder()
         {
@@ -35,9 +33,9 @@ namespace Dwolla.Client.Rest
                 if (content == null) return Error<T>(response, "NullResponse", "Response content is null", null);
                 var rawContent = await content.ReadAsStringAsync();
 
-                try
+                try:
                 {
-                    return ErrorRegex.IsMatch(rawContent)
+                    return (int)response.StatusCode >= 400
                         ? Error<T>(response, JsonSerializer.Deserialize<ErrorResponse>(rawContent, _jsonSettings), rawContent)
                         : new RestResponse<T>(response, JsonSerializer.Deserialize<T>(rawContent, _jsonSettings), rawContent);
                 }
@@ -49,7 +47,7 @@ namespace Dwolla.Client.Rest
         }
 
         public RestResponse<T> Error<T>(HttpResponseMessage response, string code, string message, string rawContent) =>
-            Error<T>(response, new ErrorResponse {Code = code, Message = message}, rawContent);
+            Error<T>(response, new ErrorResponse { Code = code, Message = message }, rawContent);
 
         private static RestResponse<T> Error<T>(HttpResponseMessage response, ErrorResponse error, string rawContent) =>
             new RestResponse<T>(response, default(T), rawContent, error);

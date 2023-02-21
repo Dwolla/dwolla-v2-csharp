@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 
 namespace ExampleApp.Tasks.ExchangePartners
 {
-    [Task("lexp", "List Events")]
+    [Task("lexp", "List Exchange Partners")]
     internal class List : BaseTask
     {
         public override async Task Run()
