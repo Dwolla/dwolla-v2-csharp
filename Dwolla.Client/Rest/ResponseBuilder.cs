@@ -15,8 +15,9 @@ namespace Dwolla.Client.Rest
 
     public class ResponseBuilder : IResponseBuilder
     {
+        private readonly JsonSerializerOptions _jsonSettings;
 
-        public ResponseBuilder()
+    public ResponseBuilder()
         {
             _jsonSettings = new JsonSerializerOptions();
         }
@@ -33,7 +34,7 @@ namespace Dwolla.Client.Rest
                 if (content == null) return Error<T>(response, "NullResponse", "Response content is null", null);
                 var rawContent = await content.ReadAsStringAsync();
 
-                try:
+                try
                 {
                     return (int)response.StatusCode >= 400
                         ? Error<T>(response, JsonSerializer.Deserialize<ErrorResponse>(rawContent, _jsonSettings), rawContent)
