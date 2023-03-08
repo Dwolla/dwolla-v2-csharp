@@ -2,17 +2,18 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Security;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Security.Authentication;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Dwolla.Client.Models;
 using Dwolla.Client.Models.Requests;
 using Dwolla.Client.Models.Responses;
 using Dwolla.Client.Rest;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 
 [assembly: InternalsVisibleTo("Dwolla.Client.Tests")]
 
@@ -34,17 +35,41 @@ namespace Dwolla.Client
         public const string ContentType = "application/vnd.dwolla.v1.hal+json";
         public string ApiBaseAddress { get; }
 
-        private static readonly JsonSerializerSettings JsonSettings =
-            new JsonSerializerSettings
+        private static readonly JsonSerializerOptions JsonSettings =
+            new JsonSerializerOptions
             {
-                ContractResolver = new CamelCasePropertyNamesContractResolver(),
-                NullValueHandling = NullValueHandling.Ignore
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+                PropertyNameCaseInsensitive = true,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             };
 
+        private static readonly string ClientVersion = typeof(DwollaClient).GetTypeInfo().Assembly
+            .GetCustomAttribute<AssemblyFileVersionAttribute>().Version;
+#if NET5_0_OR_GREATER
+        private static readonly HttpClient StaticHttpClient = new HttpClient(
+                new SocketsHttpHandler 
+                { 
+                    PooledConnectionLifetime = TimeSpan.FromMinutes(2),
+                    SslOptions = new SslClientAuthenticationOptions { EnabledSslProtocols = SslProtocols.Tls12 }
+                }
+            );
+#endif
+#if NETSTANDARD2_0
+        private static HttpClientHandler _staticClientHandler;
+        private static DateTime _staticClientHandlerExpirationDate;
+#endif
+        
         private readonly IRestClient _client;
 
+        static DwollaClient()
+        {
+#if NET5_0_OR_GREATER
+            SetupHttpClientDefaults(StaticHttpClient);
+#endif
+        }
+        
         public static DwollaClient Create(bool isSandbox) =>
-            new DwollaClient(new RestClient(CreateHttpClient()), isSandbox);
+            new DwollaClient(new RestClient(JsonSettings), isSandbox);
 
         public async Task<RestResponse<TRes>> PostAuthAsync<TRes>(
             Uri uri, AppTokenRequest content) where TRes : IDwollaResponse =>
@@ -72,7 +97,7 @@ namespace Dwolla.Client
             await SendAsync<EmptyResponse>(CreateDeleteRequest(uri, content, headers));
 
         private async Task<RestResponse<TRes>> SendAsync<TRes>(HttpRequestMessage request) =>
-            await _client.SendAsync<TRes>(request);
+            await _client.SendAsync<TRes>(request, CreateHttpClient());
 
         private static HttpRequestMessage CreateDeleteRequest<TReq>(
             Uri requestUri, TReq content, Headers headers, string contentType = ContentType) =>
@@ -86,7 +111,7 @@ namespace Dwolla.Client
             HttpMethod method, Uri requestUri, Headers headers, TReq content, string contentType)
         {
             var r = CreateRequest(method, requestUri, headers);
-            r.Content = new StringContent(JsonConvert.SerializeObject(content, JsonSettings), Encoding.UTF8, contentType);
+            r.Content = new StringContent(JsonSerializer.Serialize(content, JsonSettings), Encoding.UTF8, contentType);
             return r;
         }
 
@@ -116,7 +141,7 @@ namespace Dwolla.Client
 
         private static HttpRequestMessage CreateRequest(HttpMethod method, Uri requestUri, Headers headers)
         {
-            var r = new HttpRequestMessage(method, requestUri);
+            var r = new HttpRequestMessage(method, requestUri.AbsoluteUri);
             r.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(ContentType));
             foreach (var header in headers) r.Headers.Add(header.Key, header.Value);
             return r;
@@ -127,15 +152,30 @@ namespace Dwolla.Client
             _client = client;
             ApiBaseAddress = isSandbox ? "https://api-sandbox.dwolla.com" : "https://api.dwolla.com";
         }
-
-        private static readonly string ClientVersion = typeof(DwollaClient).GetTypeInfo().Assembly
-            .GetCustomAttribute<AssemblyFileVersionAttribute>().Version;
+        
+        private static void SetupHttpClientDefaults(HttpClient client)
+        {
+            client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("dwolla-v2-csharp", ClientVersion));
+        }
 
         internal static HttpClient CreateHttpClient()
         {
-            var client = new HttpClient(new HttpClientHandler {SslProtocols = SslProtocols.Tls12});
-            client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("dwolla-v2-csharp", ClientVersion));
+            // https://learn.microsoft.com/en-us/dotnet/fundamentals/networking/http/httpclient-guidelines#recommended-use
+#if NETSTANDARD2_0
+            if (_staticClientHandler == null || _staticClientHandlerExpirationDate < DateTime.UtcNow)
+            {
+                _staticClientHandler = new HttpClientHandler();
+                _staticClientHandler.SslProtocols = SslProtocols.Tls12;
+                _staticClientHandlerExpirationDate = DateTime.UtcNow + TimeSpan.FromMinutes(2);
+            }
+            
+            var client = new HttpClient(_staticClientHandler);
+            SetupHttpClientDefaults(client);
             return client;
+#endif
+#if NET5_0_OR_GREATER
+            return StaticHttpClient;
+#endif
         }
     }
 }

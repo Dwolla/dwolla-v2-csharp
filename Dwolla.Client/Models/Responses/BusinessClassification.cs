@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Dwolla.Client.Models.Responses
 {
     public class BusinessClassification : BaseResponse
     {
-        [JsonProperty(PropertyName = "_embedded")]
+        [JsonPropertyName("_embedded")]
         public IndustryClassificationsEmbed Embedded { get; set; }
 
         public string Id { get; set; }
@@ -14,7 +14,7 @@ namespace Dwolla.Client.Models.Responses
 
     public class IndustryClassificationsEmbed : Embed<IndustryClassification>
     {
-        [JsonProperty(PropertyName = "industry-classifications")]
+        [JsonPropertyName("industry-classifications")]
         public List<IndustryClassification> IndustryClassifications { get; set; }
 
         public override List<IndustryClassification> Results() => IndustryClassifications;

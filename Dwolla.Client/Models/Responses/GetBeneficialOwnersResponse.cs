@@ -1,17 +1,17 @@
 ﻿using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Dwolla.Client.Models.Responses
 {
     public class GetBeneficialOwnersResponse : BaseGetResponse<BeneficialOwnerResponse>
     {
-        [JsonProperty(PropertyName = "_embedded")]
+        [JsonPropertyName("_embedded")]
         public new BeneficialOwnersEmbed Embedded { get; set; }
     }
 
     public class BeneficialOwnersEmbed : Embed<BeneficialOwnerResponse>
     {
-        [JsonProperty(PropertyName = "beneficial-owners")]
+        [JsonPropertyName("beneficial-owners")]
         public List<BeneficialOwnerResponse> BeneficialOwners { get; set; }
 
         public override List<BeneficialOwnerResponse> Results() => BeneficialOwners;

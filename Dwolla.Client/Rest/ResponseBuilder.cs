@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Net.Http;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Dwolla.Client.Models.Responses;
-using Newtonsoft.Json;
 
 namespace Dwolla.Client.Rest
 {
@@ -15,19 +15,38 @@ namespace Dwolla.Client.Rest
 
     public class ResponseBuilder : IResponseBuilder
     {
+        private readonly JsonSerializerOptions _jsonSettings;
+
+    public ResponseBuilder()
+        {
+            _jsonSettings = new JsonSerializerOptions();
+        }
+
+        public ResponseBuilder(JsonSerializerOptions jsonSerializerOptions = null)
+        {
+            _jsonSettings = jsonSerializerOptions;
+        }
 
         public async Task<RestResponse<T>> Build<T>(HttpResponseMessage response)
         {
             using (var content = response.Content)
             {
-                if (content == null) return Error<T>(response, "NullResponse", "Response content is null", null);
                 var rawContent = await content.ReadAsStringAsync();
 
                 try
                 {
-                    return (int)response.StatusCode >= 400
-                        ? Error<T>(response, JsonConvert.DeserializeObject<ErrorResponse>(rawContent), rawContent)
-                        : new RestResponse<T>(response, JsonConvert.DeserializeObject<T>(rawContent), rawContent);
+                    if((int)response.StatusCode >= 400)
+                    {
+                        return Error<T>(response, JsonSerializer.Deserialize<ErrorResponse>(rawContent, _jsonSettings), rawContent);
+                    }
+                    else if(string.IsNullOrWhiteSpace(rawContent))
+                    {
+                        return new RestResponse<T>(response, default, rawContent);
+                    }
+                    else
+                    {
+                        return new RestResponse<T>(response, JsonSerializer.Deserialize<T>(rawContent, _jsonSettings), rawContent);
+                    }
                 }
                 catch (Exception e)
                 {

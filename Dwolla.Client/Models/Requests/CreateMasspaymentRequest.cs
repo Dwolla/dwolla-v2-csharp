@@ -1,11 +1,11 @@
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Dwolla.Client.Models.Requests
 {
     public class CreateMasspaymentRequest
     {
-        [JsonProperty(PropertyName = "_links")]
+        [JsonPropertyName("_links")]
         public Dictionary<string, Link> Links { get; set; }
         public List<MasspaymentItem> Items { get; set; }
         public Dictionary<string, string> Metadata { get; set; }

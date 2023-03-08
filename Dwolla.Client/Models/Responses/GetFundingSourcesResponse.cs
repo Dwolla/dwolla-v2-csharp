@@ -1,17 +1,17 @@
 ﻿using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Dwolla.Client.Models.Responses
 {
     public class GetFundingSourcesResponse : BaseGetResponse<FundingSource>
     {
-        [JsonProperty(PropertyName = "_embedded")]
+        [JsonPropertyName("_embedded")]
         public new FundingSourceEmbed Embedded { get; set; }
     }
 
     public class FundingSourceEmbed : Embed<FundingSource>
     {
-        [JsonProperty(PropertyName = "funding-sources")]
+        [JsonPropertyName("funding-sources")]
         public List<FundingSource> FundingSources { get; set; }
 
         public override List<FundingSource> Results() => FundingSources;

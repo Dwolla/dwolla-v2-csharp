@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Dwolla.Client.Models.Responses
 {
@@ -10,7 +10,7 @@ namespace Dwolla.Client.Models.Responses
 
     public abstract class BaseGetResponse<T> : BaseResponse, IEmbeddedResponse<T>
     {
-        [JsonProperty(PropertyName = "_embedded")]
+        [JsonPropertyName("_embedded")]
         public IEmbed<T> Embedded { get; set; }
 
         public int Total { get; set; }
