@@ -29,7 +29,8 @@ request can be made using this SDK when executed within a server-side environmen
 To begin using this SDK, you will first need to download it to your machine. We use
 [NuGet](https://www.nuget.org/packages/Dwolla.Client) to distribute this package. Check out the
 [Microsoft](https://docs.microsoft.com/en-us/nuget/consume-packages/install-use-packages-visual-studio)
-documentation for more information on how to install and manage packages from Nuget using Visual Studio.
+documentation for more information on how to install and manage packages from Nuget using Visual
+Studio.
 
 Here's an example using the
 [Package Manager Console](https://docs.microsoft.com/en-us/nuget/consume-packages/install-use-packages-powershell?view=vsmac-2022)
@@ -47,7 +48,8 @@ visit one of the following links:
 - Production: https://dashboard.dwolla.com/applications
 - Sandbox: https://dashboard-sandbox.dwolla.com/applications
 
-Finally, you can create an instance of `DwollaClient` by specifying which environment you will be using—Production or Sandbox—via the `isSandbox` boolean flag.
+Finally, you can create an instance of `DwollaClient` by specifying which environment you will be
+using—Production or Sandbox—via the `isSandbox` boolean flag.
 
 ```csharp
 var client = DwollaClient.Create(isSandbox: true);
@@ -84,7 +86,8 @@ These methods will return responses that can be mapped to one of the available
 
 #### Setting Headers
 
-To specify headers for a request (e.g., `Authorization`), you can pass a `Headers` object as the last argument.
+To specify headers for a request (e.g., `Authorization`), you can pass a `Headers` object as the
+last argument.
 
 ```csharp
 var headers = new Headers {{"Authorization", $"Bearer {tokenRes.Content.Token}"}};
@@ -139,13 +142,18 @@ client.DeleteAsync<object>(url, null);
 ### Example App
 
 Take a look at the
-[Example Application](https://github.com/Dwolla/dwolla-v2-csharp/tree/main/ExampleApp) for
-examples on how to use the available C# models to call the Dwolla API. Before you can begin using the app, however, you will need to specify a `DWOLLA_APP_KEY` and
-`DWOLLA_APP_SECRET` environment variable.
+[Example Application](https://github.com/Dwolla/dwolla-v2-csharp/tree/main/ExampleApp) for examples
+on how to use the available C# models to call the Dwolla API. Before you can begin using the app,
+however, you will need to specify a `DWOLLA_APP_KEY` and `DWOLLA_APP_SECRET` environment variable.
 
 #### Docker
 
-If you prefer to use Docker to run ExampleApp locally, a Dockerfile file is included in the root directory. You can either build the Docker image with your API key and secret (by passing the values via CLI), or you can specify the values for the `app_key` and `app_secret` build arguments in Dockerfile. Finally, you will need to build and run the Docker image. More information on this topic can be found on [Docker's website](https://docs.docker.com/build/hellobuild/), or you can find some example commands below.
+If you prefer to use Docker to run ExampleApp locally, a Dockerfile file is included in the root
+directory. You can either build the Docker image with your API key and secret (by passing the values
+via CLI), or you can specify the values for the `app_key` and `app_secret` build arguments in
+Dockerfile. Finally, you will need to build and run the Docker image. More information on this topic
+can be found on [Docker's website](https://docs.docker.com/build/hellobuild/), or you can find some
+example commands below.
 
 ##### Building Docker Container
 
@@ -157,9 +165,9 @@ $ docker build \
     --build-arg app_key=YOUR_API_KEY \
     --build-arg app_secret=YOUR_APP_SECRET \
     -t dwolla/csharp-example-app:latest .
-    
+
 # Building container without specifying build arguments.
-# In this configuration, you will need to specify your account API key and 
+# In this configuration, you will need to specify your account API key and
 # secret (retrieved from Dwolla) in the Dockerfile file.
 $ docker build -t dwolla/csharp-example-app:latest .
 ```
@@ -173,9 +181,24 @@ $ docker run --init -it dwolla/csharp-example-app:latest
 
 ## Changelog
 
+- [**6.0.0**](https://github.com/Dwolla/dwolla-v2-csharp/releases/tag/6.0.0)
+  - Fix issue [#41](https://github.com/Dwolla/dwolla-v2-csharp/issues/47) reported by,
+    [@waynebrantley](https://github.com/waynebrantley)
+    - Upgrade the target framework to `netstandard2.0` in line with Microsoft's recommendation to
+      avoid targeting `netstandard1.x`. Users of the SDK will need to update their applications to
+      target `netstandard2.0` or a later version to use the updated SDK.
+    - Replace `Newtonsoft.Json` with `System.Text.Json` to remove external dependencies.
+  - Configure static `HttpClient` in `DwollaClient` to adhere to
+    [Microsoft's HttpClient guidelines for .NET](https://learn.microsoft.com/en-us/dotnet/fundamentals/networking/http/httpclient-guidelines#recommended-use).
+  - Special thanks to [@natehitz](https://github.com/natehitze) and
+    [@IsaiahDahlberg](https://github.com/IsaiahDahlberg) for their contributions to this release!
+    :raised_hands:
 - [**5.4.0**](https://github.com/Dwolla/dwolla-v2-csharp/releases/tag/5.4.0)
-  - Fix issue with deserialization of `200 Ok` response with an `_embedded` error on GET customer. Issue [#47](https://github.com/Dwolla/dwolla-v2-csharp/issues/47). (Thanks, [@dahlbyk](https://github.com/dahlbyk)!)
-  - Add missing fields to Customer response schema - `Embedded`, `CorrelationID`, `BusinessType`, `BusinessClassification`.
+  - Fix issue with deserialization of `200 Ok` response with an `_embedded` error on GET customer.
+    Issue [#47](https://github.com/Dwolla/dwolla-v2-csharp/issues/47). (Thanks,
+    [@dahlbyk](https://github.com/dahlbyk)!)
+  - Add missing fields to Customer response schema - `Embedded`, `CorrelationID`, `BusinessType`,
+    `BusinessClassification`.
 - [**5.3.0**](https://github.com/Dwolla/dwolla-v2-csharp/releases/tag/5.3.0)
   - Add API models and examples for Exchanges
   - Add Trace ID under AchDetails object
