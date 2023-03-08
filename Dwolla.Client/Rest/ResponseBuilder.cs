@@ -31,14 +31,22 @@ namespace Dwolla.Client.Rest
         {
             using (var content = response.Content)
             {
-                if (content == null) return Error<T>(response, "NullResponse", "Response content is null", null);
                 var rawContent = await content.ReadAsStringAsync();
 
                 try
                 {
-                    return (int)response.StatusCode >= 400
-                        ? Error<T>(response, JsonSerializer.Deserialize<ErrorResponse>(rawContent, _jsonSettings), rawContent)
-                        : new RestResponse<T>(response, JsonSerializer.Deserialize<T>(rawContent, _jsonSettings), rawContent);
+                    if((int)response.StatusCode >= 400)
+                    {
+                        return Error<T>(response, JsonSerializer.Deserialize<ErrorResponse>(rawContent, _jsonSettings), rawContent);
+                    }
+                    else if(string.IsNullOrWhiteSpace(rawContent))
+                    {
+                        return new RestResponse<T>(response, default, rawContent);
+                    }
+                    else
+                    {
+                        return new RestResponse<T>(response, JsonSerializer.Deserialize<T>(rawContent, _jsonSettings), rawContent);
+                    }
                 }
                 catch (Exception e)
                 {

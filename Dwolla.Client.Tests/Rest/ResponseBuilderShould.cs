@@ -15,19 +15,6 @@ namespace Dwolla.Client.Tests.Rest
 
         public ResponseBuilderShould() => _builder = new ResponseBuilder();
 
-        [Fact]
-        public async void SetErrorOnNullContent()
-        {
-            var response = CreateResponse(null);
-
-            var actual = await _builder.Build<TestResponse>(response);
-
-            Assert.Null(actual.Content);
-            Assert.Equal("DeserializationException", actual.Error.Code);
-            Assert.Equal("The input does not contain any JSON tokens. Expected the input to start with a valid JSON token, when isFinalBlock is true. Path: $ | LineNumber: 0 | BytePositionInLine: 0.", actual.Error.Message);
-            Assert.Equal(RequestId, actual.RequestId);
-            Assert.Equal(response, actual.Response);
-        }
 
         [Fact]
         public async void SetErrorOnInvalidJson()
@@ -82,8 +69,7 @@ namespace Dwolla.Client.Tests.Rest
         {
             var r = new HttpResponseMessage
             {
-                Content = content == null
-            ? null : new StringContent(content, Encoding.UTF8)
+                Content = new StringContent(content, Encoding.UTF8)
             };
             r.StatusCode = System.Net.HttpStatusCode.OK;
             r.Headers.Add("x-request-id", RequestId);
