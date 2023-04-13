@@ -9,6 +9,7 @@ using System.Security.Authentication;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading;
 using System.Threading.Tasks;
 using Dwolla.Client.Models;
 using Dwolla.Client.Models.Requests;
@@ -23,11 +24,11 @@ namespace Dwolla.Client
     {
         string ApiBaseAddress { get; }
 
-        Task<RestResponse<TRes>> PostAuthAsync<TRes>(Uri uri, AppTokenRequest content) where TRes : IDwollaResponse;
-        Task<RestResponse<TRes>> GetAsync<TRes>(Uri uri, Headers headers) where TRes : IDwollaResponse;
-        Task<RestResponse<TRes>> PostAsync<TReq, TRes>(Uri uri, TReq content, Headers headers) where TRes : IDwollaResponse;
-        Task<RestResponse<EmptyResponse>> DeleteAsync<TReq>(Uri uri, TReq content, Headers headers);
-        Task<RestResponse<EmptyResponse>> UploadAsync(Uri uri, UploadDocumentRequest content, Headers headers);
+        Task<RestResponse<TRes>> PostAuthAsync<TRes>(Uri uri, AppTokenRequest content, CancellationToken cancellationToken = default) where TRes : IDwollaResponse;
+        Task<RestResponse<TRes>> GetAsync<TRes>(Uri uri, Headers headers, CancellationToken cancellationToken = default) where TRes : IDwollaResponse;
+        Task<RestResponse<TRes>> PostAsync<TReq, TRes>(Uri uri, TReq content, Headers headers, CancellationToken cancellationToken = default) where TRes : IDwollaResponse;
+        Task<RestResponse<EmptyResponse>> DeleteAsync<TReq>(Uri uri, TReq content, Headers headers, CancellationToken cancellationToken = default);
+        Task<RestResponse<EmptyResponse>> UploadAsync(Uri uri, UploadDocumentRequest content, Headers headers, CancellationToken cancellationToken = default);
     }
 
     public class DwollaClient : IDwollaClient
@@ -72,32 +73,33 @@ namespace Dwolla.Client
             new DwollaClient(new RestClient(JsonSettings), isSandbox);
 
         public async Task<RestResponse<TRes>> PostAuthAsync<TRes>(
-            Uri uri, AppTokenRequest content) where TRes : IDwollaResponse =>
+            Uri uri, AppTokenRequest content, CancellationToken cancellationToken = default) where TRes : IDwollaResponse =>
             await SendAsync<TRes>(new HttpRequestMessage(HttpMethod.Post, uri)
             {
                 Content = new FormUrlEncodedContent(new Dictionary<string, string>
                 {
                     {"client_id", content.Key}, {"client_secret", content.Secret}, {"grant_type", content.GrantType}
                 })
-            });
+            }, 
+            cancellationToken);
 
         public async Task<RestResponse<TRes>> GetAsync<TRes>(
-            Uri uri, Headers headers) where TRes : IDwollaResponse =>
-            await SendAsync<TRes>(CreateRequest(HttpMethod.Get, uri, headers));
+            Uri uri, Headers headers, CancellationToken cancellationToken = default) where TRes : IDwollaResponse =>
+            await SendAsync<TRes>(CreateRequest(HttpMethod.Get, uri, headers), cancellationToken);
 
         public async Task<RestResponse<TRes>> PostAsync<TReq, TRes>(
-            Uri uri, TReq content, Headers headers) where TRes : IDwollaResponse =>
-            await SendAsync<TRes>(CreatePostRequest(uri, content, headers));
+            Uri uri, TReq content, Headers headers, CancellationToken cancellationToken = default) where TRes : IDwollaResponse =>
+            await SendAsync<TRes>(CreatePostRequest(uri, content, headers), cancellationToken);
 
         public async Task<RestResponse<EmptyResponse>> UploadAsync(
-            Uri uri, UploadDocumentRequest content, Headers headers) =>
-            await SendAsync<EmptyResponse>(CreateUploadRequest(uri, content, headers));
+            Uri uri, UploadDocumentRequest content, Headers headers, CancellationToken cancellationToken = default) =>
+            await SendAsync<EmptyResponse>(CreateUploadRequest(uri, content, headers), cancellationToken);
 
-        public async Task<RestResponse<EmptyResponse>> DeleteAsync<TReq>(Uri uri, TReq content, Headers headers) =>
-            await SendAsync<EmptyResponse>(CreateDeleteRequest(uri, content, headers));
+        public async Task<RestResponse<EmptyResponse>> DeleteAsync<TReq>(Uri uri, TReq content, Headers headers, CancellationToken cancellationToken = default) =>
+            await SendAsync<EmptyResponse>(CreateDeleteRequest(uri, content, headers), cancellationToken);
 
-        private async Task<RestResponse<TRes>> SendAsync<TRes>(HttpRequestMessage request) =>
-            await _client.SendAsync<TRes>(request, CreateHttpClient());
+        private async Task<RestResponse<TRes>> SendAsync<TRes>(HttpRequestMessage request, CancellationToken cancellationToken = default) =>
+            await _client.SendAsync<TRes>(request, CreateHttpClient(), cancellationToken);
 
         private static HttpRequestMessage CreateDeleteRequest<TReq>(
             Uri requestUri, TReq content, Headers headers, string contentType = ContentType) =>

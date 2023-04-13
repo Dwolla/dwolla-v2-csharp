@@ -48,7 +48,7 @@ namespace Dwolla.Client.Tests
             var response = CreateRestResponse(HttpMethod.Post, Response);
             var req = new AppTokenRequest { Key = "key", Secret = "secret" };
             var request = CreateAuthHttpRequest(req);
-            _restClient.Setup(x => x.SendAsync<TestResponse>(It.IsAny<HttpRequestMessage>(), It.IsAny<HttpClient>()))
+            _restClient.Setup(x => x.SendAsync<TestResponse>(It.IsAny<HttpRequestMessage>(), It.IsAny<HttpClient>(), default))
                 .Callback<HttpRequestMessage, HttpClient>((y, c) => AppTokenCallback(request, y)).ReturnsAsync(response);
 
             var actual = await _client.PostAuthAsync<TestResponse>(AuthRequestUri, req);
@@ -166,19 +166,19 @@ namespace Dwolla.Client.Tests
             };
 
         private void SetupForGet(HttpRequestMessage req, RestResponse<TestResponse> res) =>
-            _restClient.Setup(x => x.SendAsync<TestResponse>(It.IsAny<HttpRequestMessage>(), It.IsAny<HttpClient>()))
+            _restClient.Setup(x => x.SendAsync<TestResponse>(It.IsAny<HttpRequestMessage>(), It.IsAny<HttpClient>(), default))
                 .Callback<HttpRequestMessage, HttpClient>((y, c) => GetCallback(req, y)).ReturnsAsync(res);
 
         private void SetupForPost<T>(HttpRequestMessage req, RestResponse<T> res) =>
-            _restClient.Setup(x => x.SendAsync<T>(It.IsAny<HttpRequestMessage>(), It.IsAny<HttpClient>()))
+            _restClient.Setup(x => x.SendAsync<T>(It.IsAny<HttpRequestMessage>(), It.IsAny<HttpClient>(), default))
                 .Callback<HttpRequestMessage, HttpClient>((y, c) => PostCallback(req, y)).ReturnsAsync(res);
 
         private void SetupForUpload(HttpRequestMessage r, RestResponse<EmptyResponse> response) =>
-            _restClient.Setup(x => x.SendAsync<EmptyResponse>(It.IsAny<HttpRequestMessage>(), It.IsAny<HttpClient>()))
+            _restClient.Setup(x => x.SendAsync<EmptyResponse>(It.IsAny<HttpRequestMessage>(), It.IsAny<HttpClient>(), default))
                 .Callback<HttpRequestMessage, HttpClient>((y, c) => UploadCallback(r, y)).ReturnsAsync(response);
 
         private void SetupForDelete(HttpRequestMessage req, RestResponse<EmptyResponse> res) =>
-            _restClient.Setup(x => x.SendAsync<EmptyResponse>(It.IsAny<HttpRequestMessage>(), It.IsAny<HttpClient>()))
+            _restClient.Setup(x => x.SendAsync<EmptyResponse>(It.IsAny<HttpRequestMessage>(), It.IsAny<HttpClient>(), default))
                 .Callback<HttpRequestMessage, HttpClient>((y, c) => DeleteCallback(req, y)).ReturnsAsync(res);
 
         private static async void PostCallback(HttpRequestMessage expected, HttpRequestMessage actual)
