@@ -38,7 +38,7 @@ namespace Dwolla.Client.HttpServices
 
             if (limit.HasValue)
             {
-                qb.Add("offset", limit.ToString());
+                qb.Add("limit", limit.ToString());
             }
 
             if (offset.HasValue)
@@ -71,7 +71,7 @@ namespace Dwolla.Client.HttpServices
 
             if (limit.HasValue)
             {
-                qb.Add("offset", limit.ToString());
+                qb.Add("limit", limit.ToString());
             }
 
             if (offset.HasValue)
