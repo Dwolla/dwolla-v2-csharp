@@ -1,14 +1,11 @@
-﻿using Dwolla.Client.HttpRequestServices;
-using Dwolla.Client.HttpServices.Architecture;
-using Dwolla.Client.Models;
+﻿using Dwolla.Client.HttpServices.Architecture;
 using Dwolla.Client.Models.Responses;
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Dwolla.Client.HttpServices
 {
-	public class DwollaHttpService
+    public class DwollaHttpService
 	{
 		private IDwollaClient _client;
 		public IDwollaClient Client
@@ -16,8 +13,8 @@ namespace Dwolla.Client.HttpServices
 			get => _client ?? DwollaConfiguration.Client;
 			set => _client = value;
 		}
-		
-		private static TokenResponse _cachedToken;
+
+				private static TokenResponse _cachedToken;
 		private static DateTime _expiresAtUtc;
 
 		private readonly Func<Task<string>> _getAccessTokenAsync;
@@ -25,7 +22,7 @@ namespace Dwolla.Client.HttpServices
 		private async Task<string> GetAccessTokenAsync()
 		{
 			if (_cachedToken != null && _expiresAtUtc > DateTime.UtcNow)
-			{ 
+			{
 				return _cachedToken.Token;
 			}
 
@@ -42,7 +39,7 @@ namespace Dwolla.Client.HttpServices
 			return _cachedToken.Token;
 		}
 
-		public DwollaHttpService() 
+		public DwollaHttpService()
 			: this(null, null) { }
 
 		public DwollaHttpService(Func<Task<string>> getAccessTokenAsync)
@@ -71,59 +68,118 @@ namespace Dwolla.Client.HttpServices
 		private AuthorizationHttpService _authorization;
 		public AuthorizationHttpService Authorization
 		{
-			get 
-			{
-				if (_authorization == null)
-				{
-					_authorization = new AuthorizationHttpService(Client, _getAccessTokenAsync);
-				}
-
-				return _authorization;
-			}
-		}
-
-		private MicroDepositsHttpService _microDeposits;
-		public MicroDepositsHttpService MicroDeposits
-		{
 			get
 			{
-				if (_microDeposits == null)
-				{
-					_microDeposits = new MicroDepositsHttpService(Client, _getAccessTokenAsync);
-				}
-
-				return _microDeposits;
+				return _authorization ?? (_authorization = new AuthorizationHttpService(Client, _getAccessTokenAsync));
 			}
 		}
 
-		public CustomersHttpService _customers;
+        private FundingSourcesHttpService _fundingSources;
+		public FundingSourcesHttpService FundingSources
+        {
+			get
+			{
+				return _fundingSources ?? (_fundingSources = new FundingSourcesHttpService(Client, _getAccessTokenAsync));
+			}
+		}
+
+        public BeneficialOwnersHttpService _beneficialOwners;
+        public BeneficialOwnersHttpService BeneficialOwners
+        {
+            get
+            {
+                return _beneficialOwners ?? (_beneficialOwners = new BeneficialOwnersHttpService(Client, _getAccessTokenAsync));
+            }
+        }
+
+        public BusinessClassificationHttpService _businessClassification;
+        public BusinessClassificationHttpService BusinessClassification
+        {
+            get
+            {
+                return _businessClassification ?? (_businessClassification = new BusinessClassificationHttpService(Client, _getAccessTokenAsync));
+            }
+        }
+
+        public DocumentsHttpService _documents;
+        public DocumentsHttpService Documents
+        {
+            get
+            {
+                return _documents ?? (_documents = new DocumentsHttpService(Client, _getAccessTokenAsync));
+            }
+        }
+
+        public EventsHttpService _events;
+        public EventsHttpService Events
+        {
+            get
+            {
+                return _events ?? (_events = new EventsHttpService(Client, _getAccessTokenAsync));
+            }
+        }
+
+        public ExchangesHttpService _exchanges;
+        public ExchangesHttpService Exchanges
+        {
+            get
+            {
+                return _exchanges ?? (_exchanges = new ExchangesHttpService(Client, _getAccessTokenAsync));
+            }
+        }
+
+        public LabelsHttpService _labels;
+        public LabelsHttpService Labels
+        {
+            get
+            {
+                return _labels ?? (_labels = new LabelsHttpService(Client, _getAccessTokenAsync));
+            }
+        }
+
+        public MassPaymentsHttpService _masspayments;
+        public MassPaymentsHttpService MassPayments
+        {
+            get
+            {
+                return _masspayments ?? (_masspayments = new MassPaymentsHttpService(Client, _getAccessTokenAsync));
+            }
+        }
+
+        public TransfersHttpService _transfers;
+        public TransfersHttpService Transfers
+        {
+            get
+            {
+                return _transfers ?? (_transfers = new TransfersHttpService(Client, _getAccessTokenAsync));
+            }
+        }
+
+        public CustomersHttpService _customers;
 		public CustomersHttpService Customers
 		{
 			get
 			{
-				if (_customers == null)
-				{
-					_customers = new CustomersHttpService(Client, _getAccessTokenAsync);
-				}
-
-				return _customers;
+				return _customers ?? (_customers = new CustomersHttpService(Client, _getAccessTokenAsync));
 			}
 		}
 
-		public RootHttpService _root;
-		public RootHttpService Root 
+        public WebhookSubscriptionsHttpService _webhookSubscriptions;
+        public WebhookSubscriptionsHttpService WebhookSubscriptions
+        {
+            get
+            {
+                return _webhookSubscriptions ?? (_webhookSubscriptions = new WebhookSubscriptionsHttpService(Client, _getAccessTokenAsync));
+            }
+        }
+
+        public RootHttpService _root;
+		public RootHttpService Root
 		{
 			get
 			{
-				if (_root == null)
-				{
-					return new RootHttpService(Client, _getAccessTokenAsync); 
-				}
-
-				return _root;
-			}
-		}
-
-		// TODO: Implement the rest of the resources
+                return _root ?? new RootHttpService(Client, _getAccessTokenAsync);
+            }
+        }
 	}
 }

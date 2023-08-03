@@ -17,10 +17,8 @@ namespace Dwolla.Client.HttpServices
 
 		public async Task<RestResponse<TokenResponse>> GetToken(CancellationToken cancellationToken = default)
 		{
-			var response = await client.PostAuthAsync<TokenResponse>(
+            return await client.PostAuthAsync<TokenResponse>(
 				new Uri($"{client.ApiBaseAddress}/token"), new AppTokenRequest { Key = DwollaConfiguration.Key, Secret = DwollaConfiguration.Secret }, cancellationToken);
-
-			return response;
 		}
 	}
 }

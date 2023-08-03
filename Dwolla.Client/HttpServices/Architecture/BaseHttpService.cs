@@ -1,4 +1,5 @@
 ﻿using Dwolla.Client.Models;
+using Dwolla.Client.Models.Requests;
 using Dwolla.Client.Models.Responses;
 using Dwolla.Client.Rest;
 using System;
@@ -45,8 +46,14 @@ namespace Dwolla.Client.HttpServices.Architecture
 
 			return await ExecAsync(() => client.DeleteAsync(uri, request, headers));
 		}
+        internal async Task<RestResponse<EmptyResponse>> UploadAsync(Uri uri, UploadDocumentRequest request)
+        {
+            var headers = await CreateHeaders();
 
-		private async Task<Headers> CreateHeaders(string idempotencyKey = null)
+			return await ExecAsync(() => client.UploadAsync(uri, request, headers));
+        }
+
+        private async Task<Headers> CreateHeaders(string idempotencyKey = null)
 		{
 			var headers = new Headers
 			{

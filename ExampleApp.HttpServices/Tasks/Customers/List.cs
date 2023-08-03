@@ -1,4 +1,4 @@
-﻿
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace ExampleApp.HttpServices.Tasks.Customers
@@ -8,10 +8,10 @@ namespace ExampleApp.HttpServices.Tasks.Customers
     {
         public override async Task Run()
         {
-            var rootRes = await HttpService.Root.GetAsync();
-            var res = await HttpService.Customers.GetCollectionAsync(rootRes.Content.Links["customers"].Href);
-            res.Content.Embedded.Customers
-                .ForEach(c => WriteLine($" - ID:{c.Id}  {c.FirstName} {c.LastName}"));
+            var response = await HttpService.Customers.GetCustomerCollectionAsync(string.Empty, string.Empty, new List<string>(), null, null);
+
+            response.Content.Embedded.Customers
+                .ForEach(c => WriteLine($"Customer: {c.Id} - {c.FirstName} - {c.LastName}"));
         }
     }
 }
