@@ -1,7 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
-using Dwolla.Client.Models;
+﻿using Dwolla.Client.Models;
 using Dwolla.Client.Models.Requests;
+using System;
+using System.Threading.Tasks;
 
 namespace ExampleApp.Tasks.BeneficialOwners
 {

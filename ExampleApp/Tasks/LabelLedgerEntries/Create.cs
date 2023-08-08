@@ -1,7 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using Dwolla.Client.Models;
-using Dwolla.Client.Models.Requests;
 
 namespace ExampleApp.Tasks.LabelLedgerEntries
 {
@@ -20,9 +18,9 @@ namespace ExampleApp.Tasks.LabelLedgerEntries
             {
                 amount = Convert.ToDecimal(Console.ReadLine());
             }
-            catch (System.OverflowException) {}
-            catch (System.FormatException) {}
-            catch (System.ArgumentNullException) {}
+            catch (System.OverflowException) { }
+            catch (System.FormatException) { }
+            catch (System.ArgumentNullException) { }
 
             var uri = await Broker.CreateLabelLedgerEntryAsync(input, amount);
 

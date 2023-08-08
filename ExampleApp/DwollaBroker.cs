@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Dwolla.Client;
+﻿using Dwolla.Client;
 using Dwolla.Client.Models;
 using Dwolla.Client.Models.Requests;
 using Dwolla.Client.Models.Responses;
 using Dwolla.Client.Rest;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ExampleApp
 {

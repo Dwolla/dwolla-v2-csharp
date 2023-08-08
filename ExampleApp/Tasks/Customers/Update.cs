@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Dwolla.Client.Models.Requests;
+using System;
 using System.Threading.Tasks;
-using Dwolla.Client.Models.Requests;
 
 namespace ExampleApp.Tasks.Customers
 {
@@ -14,7 +14,7 @@ namespace ExampleApp.Tasks.Customers
 
             var rootRes = await Broker.GetRootAsync();
             var res = await Broker.UpdateCustomerAsync(new Uri($"{rootRes.Links["customers"].Href}/{input}"),
-                new UpdateCustomerRequest {Status = "deactivated"});
+                new UpdateCustomerRequest { Status = "deactivated" });
 
             WriteLine($"Customer updated: Status={res.Status}");
         }

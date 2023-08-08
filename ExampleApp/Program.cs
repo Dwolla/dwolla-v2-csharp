@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Dwolla.Client;
+using ExampleApp.Tasks;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Dwolla.Client;
-using ExampleApp.Tasks;
 using static System.Console;
 
 namespace ExampleApp
@@ -90,7 +90,7 @@ namespace ExampleApp
             else
             {
                 var type = _tasks[command];
-                var task = (BaseTask) type.GetConstructor(new Type[0]).Invoke(new object[0]);
+                var task = (BaseTask)type.GetConstructor(new Type[0]).Invoke(new object[0]);
                 task.Broker = broker;
                 Task.Run(async () => await task.Run()).Wait();
             }

@@ -1,8 +1,8 @@
-﻿using System.Net.Http;
-using System.Text;
-using Dwolla.Client.Models.Responses;
+﻿using Dwolla.Client.Models.Responses;
 using Dwolla.Client.Rest;
 using Newtonsoft.Json;
+using System.Net.Http;
+using System.Text;
 using Xunit;
 
 namespace Dwolla.Client.Tests.Rest

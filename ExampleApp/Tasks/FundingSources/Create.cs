@@ -1,6 +1,6 @@
+using Dwolla.Client.Models.Requests;
 using System;
 using System.Threading.Tasks;
-using Dwolla.Client.Models.Requests;
 
 namespace ExampleApp.Tasks.FundingSources
 {

@@ -1,6 +1,6 @@
-﻿using System.Linq;
+﻿using Dwolla.Client.Models.Responses;
+using System.Linq;
 using System.Net.Http;
-using Dwolla.Client.Models.Responses;
 
 namespace Dwolla.Client.Rest
 {
