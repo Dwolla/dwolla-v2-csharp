@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Dwolla.Client.Models.Responses;
+using System;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Dwolla.Client.Models.Responses;
 
 namespace Dwolla.Client.Rest
 {
@@ -16,7 +16,7 @@ namespace Dwolla.Client.Rest
     {
         private readonly JsonSerializerOptions _jsonSettings;
 
-    public ResponseBuilder()
+        public ResponseBuilder()
         {
             _jsonSettings = new JsonSerializerOptions();
         }
@@ -34,11 +34,11 @@ namespace Dwolla.Client.Rest
 
                 try
                 {
-                    if((int)response.StatusCode >= 400)
+                    if ((int)response.StatusCode >= 400)
                     {
                         return Error<T>(response, JsonSerializer.Deserialize<ErrorResponse>(rawContent, _jsonSettings), rawContent);
                     }
-                    else if(string.IsNullOrWhiteSpace(rawContent))
+                    else if (string.IsNullOrWhiteSpace(rawContent))
                     {
                         return new RestResponse<T>(response, default, rawContent);
                     }

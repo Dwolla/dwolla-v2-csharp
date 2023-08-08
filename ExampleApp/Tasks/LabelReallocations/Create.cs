@@ -10,20 +10,20 @@ namespace ExampleApp.Tasks.LabelReallocations
         {
             Write("From Label ID: ");
             var fromLabelId = ReadLine();
-            
+
             Write("To Label ID: ");
             var toLabelId = ReadLine();
-            
+
             // Read String input and convert to Decimal
             decimal amount = 0;
-            WriteLine("Amount to reallocate: ");         
+            WriteLine("Amount to reallocate: ");
             try
             {
                 amount = Convert.ToDecimal(Console.ReadLine());
             }
-            catch (System.OverflowException) {}
-            catch (System.FormatException) {}
-            catch (System.ArgumentNullException) {}
+            catch (System.OverflowException) { }
+            catch (System.FormatException) { }
+            catch (System.ArgumentNullException) { }
 
             var uri = await Broker.CreateLabelReallocationAsync(fromLabelId, toLabelId, amount);
 

@@ -10,7 +10,6 @@ namespace ExampleApp.HttpServices.Tasks.Customers
     {
         public override async Task Run()
         {
-            var rootRes = await HttpService.Root.GetAsync();
             var request = new CreateCustomerRequest
             {
                 FirstName = "Night",
@@ -19,13 +18,14 @@ namespace ExampleApp.HttpServices.Tasks.Customers
             };
             var idempotencyKey = Guid.NewGuid().ToString();
 
-            var response = await HttpService.Customers.CreateAsync(rootRes.Content.Links["customers"].Href, request, idempotencyKey, default);
+            var response = await HttpService.Customers.CreateCustomerAsync(request, idempotencyKey, default);
 
             if (response.Response?.Headers?.Location == null) return;
-            var getResponse = await HttpService.Customers.GetAsync(response.Response.Headers.Location);
+
+            var getResponse = await HttpService.Customers.GetCustomerAsync(response.Response.Headers.Location.ToString().Split('/').Last());
             var customer = getResponse.Content;
 
-            WriteLine($"Created {customer.FirstName} {customer.LastName} with email={customer.Email}");
+            WriteLine($"Created: {customer.FirstName} {customer.LastName} {customer.Email}");
         }
     }
 }

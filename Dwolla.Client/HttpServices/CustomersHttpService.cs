@@ -3,6 +3,7 @@ using Dwolla.Client.Models.Requests;
 using Dwolla.Client.Models.Responses;
 using Dwolla.Client.Rest;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -15,27 +16,50 @@ namespace Dwolla.Client.HttpServices
 		{
 		}
 
-		public async Task<RestResponse<GetCustomersResponse>> GetCollectionAsync(Uri uri, CancellationToken cancellation = default)
+		public async Task<RestResponse<Customer>> GetCustomerAsync(string customerId, CancellationToken cancellation = default)
 		{
-			if (uri == null) throw new ArgumentNullException(nameof(uri));
+			if (string.IsNullOrWhiteSpace(customerId))
+			{
+				throw new ArgumentException("CustomerId should not be blank.");
+			}
+
+			return await GetAsync<Customer>(new Uri($"{client.ApiBaseAddress}/customers/{customerId}"), cancellation);
+		}
+
+		public async Task<RestResponse<IavTokenResponse>> GetCustomerIavTokenAsync(string customerId, CancellationToken cancellation = default)
+		{
+			if (string.IsNullOrWhiteSpace(customerId))
+			{
+				throw new ArgumentException("CustomerId should not be blank.");
+			}
+
+			return await GetAsync<IavTokenResponse>(new Uri($"{client.ApiBaseAddress}/customers/{customerId}/iav-token"), cancellation);
+		}
+
+		public async Task<RestResponse<GetCustomersResponse>> GetCustomerCollectionAsync(string search, string email, List<string> status, int? limit, int? offset, CancellationToken cancellation = default)
+		{
+			var uri = GetWithQueryString($"{client.ApiBaseAddress}/customers", limit, offset, search, email, status);
 
 			return await GetAsync<GetCustomersResponse>(uri, cancellation);
 		}
 
-		public async Task<RestResponse<Customer>> GetAsync(Uri uri, CancellationToken cancellation = default)
+		public async Task<RestResponse<EmptyResponse>> CreateCustomerAsync(CreateCustomerRequest request, string idempotencyKey = null, CancellationToken cancellationToken = default)
 		{
-			if (uri == null) throw new ArgumentNullException(nameof(uri));
+			if (request == null) throw new ArgumentNullException(nameof(request));
 
-			return await GetAsync<Customer>(uri, cancellation);
+			return await PostAsync<CreateCustomerRequest, EmptyResponse>(new Uri($"{client.ApiBaseAddress}/customers"), request, idempotencyKey, cancellationToken);
 		}
 
-		public async Task<RestResponse<EmptyResponse>> CreateAsync(Uri uri, CreateCustomerRequest request, string idempotencyKey = null, CancellationToken cancellationToken = default)
+		public async Task<RestResponse<Customer>> UpdateCustomerAsync(string customerId, UpdateCustomerRequest request, string idempotencyKey = null, CancellationToken cancellationToken = default)
 		{
-			if (uri == null) throw new ArgumentNullException(nameof(uri));
+			if (string.IsNullOrWhiteSpace(customerId))
+			{
+				throw new ArgumentException("CustomerId should not be blank.");
+			}
 
 			if (request == null) throw new ArgumentNullException(nameof(request));
 
-			return await PostAsync<CreateCustomerRequest, EmptyResponse>(uri, request, idempotencyKey, cancellationToken);
+			return await PostAsync<UpdateCustomerRequest, Customer>(new Uri($"{client.ApiBaseAddress}/customers/{customerId}"), request, idempotencyKey, cancellationToken);
 		}
 	}
 }

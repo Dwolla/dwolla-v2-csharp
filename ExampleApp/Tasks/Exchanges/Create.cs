@@ -1,9 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using Dwolla.Client;
-using Dwolla.Client.Models;
-using Dwolla.Client.Models.Requests;
 
 namespace ExampleApp.Tasks.Exchanges
 {

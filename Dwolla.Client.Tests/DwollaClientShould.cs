@@ -1,3 +1,8 @@
+using Dwolla.Client.Models;
+using Dwolla.Client.Models.Requests;
+using Dwolla.Client.Models.Responses;
+using Dwolla.Client.Rest;
+using Moq;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -5,11 +10,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
-using Dwolla.Client.Models;
-using Dwolla.Client.Models.Requests;
-using Dwolla.Client.Models.Responses;
-using Dwolla.Client.Rest;
-using Moq;
 using Xunit;
 using File = Dwolla.Client.Models.File;
 

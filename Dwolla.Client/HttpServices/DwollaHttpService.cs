@@ -1,129 +1,185 @@
-﻿using Dwolla.Client.HttpRequestServices;
-using Dwolla.Client.HttpServices.Architecture;
-using Dwolla.Client.Models;
+﻿using Dwolla.Client.HttpServices.Architecture;
 using Dwolla.Client.Models.Responses;
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Dwolla.Client.HttpServices
 {
-	public class DwollaHttpService
-	{
-		private IDwollaClient _client;
-		public IDwollaClient Client
-		{
-			get => _client ?? DwollaConfiguration.Client;
-			set => _client = value;
-		}
-		
-		private static TokenResponse _cachedToken;
-		private static DateTime _expiresAtUtc;
+    public class DwollaHttpService
+    {
+        private IDwollaClient _client;
+        public IDwollaClient Client
+        {
+            get => _client ?? DwollaConfiguration.Client;
+            set => _client = value;
+        }
 
-		private readonly Func<Task<string>> _getAccessTokenAsync;
+        private static TokenResponse _cachedToken;
+        private static DateTime _expiresAtUtc;
 
-		private async Task<string> GetAccessTokenAsync()
-		{
-			if (_cachedToken != null && _expiresAtUtc > DateTime.UtcNow)
-			{ 
-				return _cachedToken.Token;
-			}
+        private readonly Func<Task<string>> _getAccessTokenAsync;
 
-			var response = await Authorization.GetToken();
+        private async Task<string> GetAccessTokenAsync()
+        {
+            if (_cachedToken != null && _expiresAtUtc > DateTime.UtcNow)
+            {
+                return _cachedToken.Token;
+            }
 
-			if (response.Error != null)
-			{
-				throw new Exception(response.Error.Message);
-			}
+            var response = await Authorization.GetToken();
 
-			_cachedToken = response.Content;
-			_expiresAtUtc = DateTime.UtcNow.AddSeconds(response.Content.ExpiresIn);
+            if (response.Error != null)
+            {
+                throw new Exception(response.Error.Message);
+            }
 
-			return _cachedToken.Token;
-		}
+            _cachedToken = response.Content;
+            _expiresAtUtc = DateTime.UtcNow.AddSeconds(response.Content.ExpiresIn);
 
-		public DwollaHttpService() 
-			: this(null, null) { }
+            return _cachedToken.Token;
+        }
 
-		public DwollaHttpService(Func<Task<string>> getAccessTokenAsync)
-			: this(null, getAccessTokenAsync) { }
+        public DwollaHttpService()
+            : this(null, null) { }
 
-		public DwollaHttpService(IDwollaClient dwollaClient)
-			: this(dwollaClient, null) { }
+        public DwollaHttpService(Func<Task<string>> getAccessTokenAsync)
+            : this(null, getAccessTokenAsync) { }
 
-		public DwollaHttpService(IDwollaClient dwollaClient, Func<Task<string>> getAccessTokenAsync)
-		{
-			_getAccessTokenAsync = getAccessTokenAsync;
+        public DwollaHttpService(IDwollaClient dwollaClient)
+            : this(dwollaClient, null) { }
 
-			if (_getAccessTokenAsync == null)
-			{
-				_getAccessTokenAsync = GetAccessTokenAsync;
-			}
+        public DwollaHttpService(IDwollaClient dwollaClient, Func<Task<string>> getAccessTokenAsync)
+        {
+            _getAccessTokenAsync = getAccessTokenAsync;
 
-			_client = dwollaClient;
-		}
+            if (_getAccessTokenAsync == null)
+            {
+                _getAccessTokenAsync = GetAccessTokenAsync;
+            }
 
-		public async Task AccessTokenAsync()
-		{
-			await _getAccessTokenAsync();
-		}
+            _client = dwollaClient;
+        }
 
-		private AuthorizationHttpService _authorization;
-		public AuthorizationHttpService Authorization
-		{
-			get 
-			{
-				if (_authorization == null)
-				{
-					_authorization = new AuthorizationHttpService(Client, _getAccessTokenAsync);
-				}
+        public async Task AccessTokenAsync()
+        {
+            await _getAccessTokenAsync();
+        }
 
-				return _authorization;
-			}
-		}
+        private AuthorizationHttpService _authorization;
+        public AuthorizationHttpService Authorization
+        {
+            get
+            {
+                return _authorization ?? (_authorization = new AuthorizationHttpService(Client, _getAccessTokenAsync));
+            }
+        }
 
-		private MicroDepositsHttpService _microDeposits;
-		public MicroDepositsHttpService MicroDeposits
-		{
-			get
-			{
-				if (_microDeposits == null)
-				{
-					_microDeposits = new MicroDepositsHttpService(Client, _getAccessTokenAsync);
-				}
+        private FundingSourcesHttpService _fundingSources;
+        public FundingSourcesHttpService FundingSources
+        {
+            get
+            {
+                return _fundingSources ?? (_fundingSources = new FundingSourcesHttpService(Client, _getAccessTokenAsync));
+            }
+        }
 
-				return _microDeposits;
-			}
-		}
+        public BeneficialOwnersHttpService _beneficialOwners;
+        public BeneficialOwnersHttpService BeneficialOwners
+        {
+            get
+            {
+                return _beneficialOwners ?? (_beneficialOwners = new BeneficialOwnersHttpService(Client, _getAccessTokenAsync));
+            }
+        }
 
-		public CustomersHttpService _customers;
-		public CustomersHttpService Customers
-		{
-			get
-			{
-				if (_customers == null)
-				{
-					_customers = new CustomersHttpService(Client, _getAccessTokenAsync);
-				}
+        public BusinessClassificationHttpService _businessClassification;
+        public BusinessClassificationHttpService BusinessClassification
+        {
+            get
+            {
+                return _businessClassification ?? (_businessClassification = new BusinessClassificationHttpService(Client, _getAccessTokenAsync));
+            }
+        }
 
-				return _customers;
-			}
-		}
+        public DocumentsHttpService _documents;
+        public DocumentsHttpService Documents
+        {
+            get
+            {
+                return _documents ?? (_documents = new DocumentsHttpService(Client, _getAccessTokenAsync));
+            }
+        }
 
-		public RootHttpService _root;
-		public RootHttpService Root 
-		{
-			get
-			{
-				if (_root == null)
-				{
-					return new RootHttpService(Client, _getAccessTokenAsync); 
-				}
+        public EventsHttpService _events;
+        public EventsHttpService Events
+        {
+            get
+            {
+                return _events ?? (_events = new EventsHttpService(Client, _getAccessTokenAsync));
+            }
+        }
 
-				return _root;
-			}
-		}
+        public ExchangesHttpService _exchanges;
+        public ExchangesHttpService Exchanges
+        {
+            get
+            {
+                return _exchanges ?? (_exchanges = new ExchangesHttpService(Client, _getAccessTokenAsync));
+            }
+        }
 
-		// TODO: Implement the rest of the resources
-	}
+        public LabelsHttpService _labels;
+        public LabelsHttpService Labels
+        {
+            get
+            {
+                return _labels ?? (_labels = new LabelsHttpService(Client, _getAccessTokenAsync));
+            }
+        }
+
+        public MassPaymentsHttpService _masspayments;
+        public MassPaymentsHttpService MassPayments
+        {
+            get
+            {
+                return _masspayments ?? (_masspayments = new MassPaymentsHttpService(Client, _getAccessTokenAsync));
+            }
+        }
+
+        public TransfersHttpService _transfers;
+        public TransfersHttpService Transfers
+        {
+            get
+            {
+                return _transfers ?? (_transfers = new TransfersHttpService(Client, _getAccessTokenAsync));
+            }
+        }
+
+        public CustomersHttpService _customers;
+        public CustomersHttpService Customers
+        {
+            get
+            {
+                return _customers ?? (_customers = new CustomersHttpService(Client, _getAccessTokenAsync));
+            }
+        }
+
+        public WebhookSubscriptionsHttpService _webhookSubscriptions;
+        public WebhookSubscriptionsHttpService WebhookSubscriptions
+        {
+            get
+            {
+                return _webhookSubscriptions ?? (_webhookSubscriptions = new WebhookSubscriptionsHttpService(Client, _getAccessTokenAsync));
+            }
+        }
+
+        public RootHttpService _root;
+        public RootHttpService Root
+        {
+            get
+            {
+                return _root ?? new RootHttpService(Client, _getAccessTokenAsync);
+            }
+        }
+    }
 }

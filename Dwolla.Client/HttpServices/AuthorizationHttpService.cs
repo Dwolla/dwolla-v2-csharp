@@ -8,19 +8,17 @@ using System.Threading.Tasks;
 
 namespace Dwolla.Client.HttpServices
 {
-	public class AuthorizationHttpService : BaseHttpService
-	{
-		public AuthorizationHttpService(IDwollaClient dwollaClient, Func<Task<string>> getAccessToken)
-			: base(dwollaClient, getAccessToken)
-		{
-		}
+    public class AuthorizationHttpService : BaseHttpService
+    {
+        public AuthorizationHttpService(IDwollaClient dwollaClient, Func<Task<string>> getAccessToken)
+            : base(dwollaClient, getAccessToken)
+        {
+        }
 
-		public async Task<RestResponse<TokenResponse>> GetToken(CancellationToken cancellationToken = default)
-		{
-			var response = await client.PostAuthAsync<TokenResponse>(
-				new Uri($"{client.ApiBaseAddress}/token"), new AppTokenRequest { Key = DwollaConfiguration.Key, Secret = DwollaConfiguration.Secret }, cancellationToken);
-
-			return response;
-		}
-	}
+        public async Task<RestResponse<TokenResponse>> GetToken(CancellationToken cancellationToken = default)
+        {
+            return await client.PostAuthAsync<TokenResponse>(
+                new Uri($"{client.ApiBaseAddress}/token"), new AppTokenRequest { Key = DwollaConfiguration.Key, Secret = DwollaConfiguration.Secret }, cancellationToken);
+        }
+    }
 }
