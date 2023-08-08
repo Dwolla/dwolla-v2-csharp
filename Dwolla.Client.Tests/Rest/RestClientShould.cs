@@ -1,7 +1,7 @@
-﻿using System;
-using System.Net.Http;
-using Dwolla.Client.Rest;
+﻿using Dwolla.Client.Rest;
 using Moq;
+using System;
+using System.Net.Http;
 using Xunit;
 
 namespace Dwolla.Client.Tests.Rest

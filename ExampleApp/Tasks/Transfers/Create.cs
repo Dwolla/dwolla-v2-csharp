@@ -29,7 +29,7 @@ namespace ExampleApp.Tasks.Transfers
 
                 Write("Enter ACH details for Destination bank account: ");
                 destinationAddenda = ReadLine();
-            } 
+            }
 
             Uri uri;
             if ("y".Equals(includeFee, StringComparison.CurrentCultureIgnoreCase))

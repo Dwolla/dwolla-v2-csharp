@@ -6,82 +6,82 @@ using System.Threading.Tasks;
 namespace Dwolla.Client.HttpServices
 {
     public class DwollaHttpService
-	{
-		private IDwollaClient _client;
-		public IDwollaClient Client
-		{
-			get => _client ?? DwollaConfiguration.Client;
-			set => _client = value;
-		}
+    {
+        private IDwollaClient _client;
+        public IDwollaClient Client
+        {
+            get => _client ?? DwollaConfiguration.Client;
+            set => _client = value;
+        }
 
-				private static TokenResponse _cachedToken;
-		private static DateTime _expiresAtUtc;
+        private static TokenResponse _cachedToken;
+        private static DateTime _expiresAtUtc;
 
-		private readonly Func<Task<string>> _getAccessTokenAsync;
+        private readonly Func<Task<string>> _getAccessTokenAsync;
 
-		private async Task<string> GetAccessTokenAsync()
-		{
-			if (_cachedToken != null && _expiresAtUtc > DateTime.UtcNow)
-			{
-				return _cachedToken.Token;
-			}
+        private async Task<string> GetAccessTokenAsync()
+        {
+            if (_cachedToken != null && _expiresAtUtc > DateTime.UtcNow)
+            {
+                return _cachedToken.Token;
+            }
 
-			var response = await Authorization.GetToken();
+            var response = await Authorization.GetToken();
 
-			if (response.Error != null)
-			{
-				throw new Exception(response.Error.Message);
-			}
+            if (response.Error != null)
+            {
+                throw new Exception(response.Error.Message);
+            }
 
-			_cachedToken = response.Content;
-			_expiresAtUtc = DateTime.UtcNow.AddSeconds(response.Content.ExpiresIn);
+            _cachedToken = response.Content;
+            _expiresAtUtc = DateTime.UtcNow.AddSeconds(response.Content.ExpiresIn);
 
-			return _cachedToken.Token;
-		}
+            return _cachedToken.Token;
+        }
 
-		public DwollaHttpService()
-			: this(null, null) { }
+        public DwollaHttpService()
+            : this(null, null) { }
 
-		public DwollaHttpService(Func<Task<string>> getAccessTokenAsync)
-			: this(null, getAccessTokenAsync) { }
+        public DwollaHttpService(Func<Task<string>> getAccessTokenAsync)
+            : this(null, getAccessTokenAsync) { }
 
-		public DwollaHttpService(IDwollaClient dwollaClient)
-			: this(dwollaClient, null) { }
+        public DwollaHttpService(IDwollaClient dwollaClient)
+            : this(dwollaClient, null) { }
 
-		public DwollaHttpService(IDwollaClient dwollaClient, Func<Task<string>> getAccessTokenAsync)
-		{
-			_getAccessTokenAsync = getAccessTokenAsync;
+        public DwollaHttpService(IDwollaClient dwollaClient, Func<Task<string>> getAccessTokenAsync)
+        {
+            _getAccessTokenAsync = getAccessTokenAsync;
 
-			if (_getAccessTokenAsync == null)
-			{
-				_getAccessTokenAsync = GetAccessTokenAsync;
-			}
+            if (_getAccessTokenAsync == null)
+            {
+                _getAccessTokenAsync = GetAccessTokenAsync;
+            }
 
-			_client = dwollaClient;
-		}
+            _client = dwollaClient;
+        }
 
-		public async Task AccessTokenAsync()
-		{
-			await _getAccessTokenAsync();
-		}
+        public async Task AccessTokenAsync()
+        {
+            await _getAccessTokenAsync();
+        }
 
-		private AuthorizationHttpService _authorization;
-		public AuthorizationHttpService Authorization
-		{
-			get
-			{
-				return _authorization ?? (_authorization = new AuthorizationHttpService(Client, _getAccessTokenAsync));
-			}
-		}
+        private AuthorizationHttpService _authorization;
+        public AuthorizationHttpService Authorization
+        {
+            get
+            {
+                return _authorization ?? (_authorization = new AuthorizationHttpService(Client, _getAccessTokenAsync));
+            }
+        }
 
         private FundingSourcesHttpService _fundingSources;
-		public FundingSourcesHttpService FundingSources
+        public FundingSourcesHttpService FundingSources
         {
-			get
-			{
-				return _fundingSources ?? (_fundingSources = new FundingSourcesHttpService(Client, _getAccessTokenAsync));
-			}
-		}
+            get
+            {
+                return _fundingSources ?? (_fundingSources = new FundingSourcesHttpService(Client, _getAccessTokenAsync));
+            }
+        }
 
         public BeneficialOwnersHttpService _beneficialOwners;
         public BeneficialOwnersHttpService BeneficialOwners
@@ -156,13 +156,13 @@ namespace Dwolla.Client.HttpServices
         }
 
         public CustomersHttpService _customers;
-		public CustomersHttpService Customers
-		{
-			get
-			{
-				return _customers ?? (_customers = new CustomersHttpService(Client, _getAccessTokenAsync));
-			}
-		}
+        public CustomersHttpService Customers
+        {
+            get
+            {
+                return _customers ?? (_customers = new CustomersHttpService(Client, _getAccessTokenAsync));
+            }
+        }
 
         public WebhookSubscriptionsHttpService _webhookSubscriptions;
         public WebhookSubscriptionsHttpService WebhookSubscriptions
@@ -174,12 +174,12 @@ namespace Dwolla.Client.HttpServices
         }
 
         public RootHttpService _root;
-		public RootHttpService Root
-		{
-			get
-			{
+        public RootHttpService Root
+        {
+            get
+            {
                 return _root ?? new RootHttpService(Client, _getAccessTokenAsync);
             }
         }
-	}
+    }
 }

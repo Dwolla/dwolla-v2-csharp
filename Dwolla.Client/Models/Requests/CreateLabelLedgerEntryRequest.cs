@@ -1,5 +1,3 @@
-using System;
-
 namespace Dwolla.Client.Models.Requests
 {
     public class CreateLabelLedgerEntryRequest

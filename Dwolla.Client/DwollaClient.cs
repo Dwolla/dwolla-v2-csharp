@@ -1,3 +1,7 @@
+using Dwolla.Client.Models;
+using Dwolla.Client.Models.Requests;
+using Dwolla.Client.Models.Responses;
+using Dwolla.Client.Rest;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -11,10 +15,6 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
-using Dwolla.Client.Models;
-using Dwolla.Client.Models.Requests;
-using Dwolla.Client.Models.Responses;
-using Dwolla.Client.Rest;
 
 [assembly: InternalsVisibleTo("Dwolla.Client.Tests")]
 
@@ -48,8 +48,8 @@ namespace Dwolla.Client
             .GetCustomAttribute<AssemblyFileVersionAttribute>().Version;
 #if NET5_0_OR_GREATER
         private static readonly HttpClient StaticHttpClient = new HttpClient(
-                new SocketsHttpHandler 
-                { 
+                new SocketsHttpHandler
+                {
                     PooledConnectionLifetime = TimeSpan.FromMinutes(2),
                     SslOptions = new SslClientAuthenticationOptions { EnabledSslProtocols = SslProtocols.Tls12 }
                 }
@@ -59,7 +59,7 @@ namespace Dwolla.Client
         private static HttpClientHandler _staticClientHandler;
         private static DateTime _staticClientHandlerExpirationDate;
 #endif
-        
+
         private readonly IRestClient _client;
 
         static DwollaClient()
@@ -68,7 +68,7 @@ namespace Dwolla.Client
             SetupHttpClientDefaults(StaticHttpClient);
 #endif
         }
-        
+
         public static DwollaClient Create(bool isSandbox) =>
             new DwollaClient(new RestClient(JsonSettings), isSandbox);
 
@@ -80,7 +80,7 @@ namespace Dwolla.Client
                 {
                     {"client_id", content.Key}, {"client_secret", content.Secret}, {"grant_type", content.GrantType}
                 })
-            }, 
+            },
             cancellationToken);
 
         public async Task<RestResponse<TRes>> GetAsync<TRes>(
@@ -154,7 +154,7 @@ namespace Dwolla.Client
             _client = client;
             ApiBaseAddress = isSandbox ? "https://api-sandbox.dwolla.com" : "https://api.dwolla.com";
         }
-        
+
         private static void SetupHttpClientDefaults(HttpClient client)
         {
             client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("dwolla-v2-csharp", ClientVersion));
@@ -170,7 +170,7 @@ namespace Dwolla.Client
                 _staticClientHandler.SslProtocols = SslProtocols.Tls12;
                 _staticClientHandlerExpirationDate = DateTime.UtcNow + TimeSpan.FromMinutes(2);
             }
-            
+
             var client = new HttpClient(_staticClientHandler);
             SetupHttpClientDefaults(client);
             return client;

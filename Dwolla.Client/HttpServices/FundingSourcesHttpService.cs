@@ -45,7 +45,7 @@ namespace Dwolla.Client.HttpServices
             return await GetAsync<MicroDepositsResponse>(new Uri($"{client.ApiBaseAddress}/funding-sources/{fundingSourceId}/micro-deposits"), cancellation);
         }
 
-        public async Task<RestResponse<EmptyResponse>> VerifyMicroDepositAsync(string fundingSourceId, MicroDepositsRequest request ,CancellationToken cancellationToken = default)
+        public async Task<RestResponse<EmptyResponse>> VerifyMicroDepositAsync(string fundingSourceId, MicroDepositsRequest request, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(fundingSourceId))
             {

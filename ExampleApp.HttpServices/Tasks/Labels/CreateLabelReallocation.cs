@@ -14,10 +14,10 @@ namespace ExampleApp.HttpServices.Tasks.Labels
         {
             Write("From Label ID: ");
             var fromLabelId = ReadLine();
-            
+
             Write("To Label ID: ");
             var toLabelId = ReadLine();
-            
+
             WriteLine("Amount to reallocate: ");
 
             if (!decimal.TryParse(Console.ReadLine(), out decimal amount))

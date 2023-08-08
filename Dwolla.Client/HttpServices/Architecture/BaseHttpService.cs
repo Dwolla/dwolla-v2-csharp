@@ -2,7 +2,10 @@
 using Dwolla.Client.Models.Requests;
 using Dwolla.Client.Models.Responses;
 using Dwolla.Client.Rest;
+using Microsoft.AspNetCore.Http.Extensions;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -46,14 +49,46 @@ namespace Dwolla.Client.HttpServices.Architecture
 
 			return await ExecAsync(() => client.DeleteAsync(uri, request, headers));
 		}
-        internal async Task<RestResponse<EmptyResponse>> UploadAsync(Uri uri, UploadDocumentRequest request)
-        {
-            var headers = await CreateHeaders();
+		internal async Task<RestResponse<EmptyResponse>> UploadAsync(Uri uri, UploadDocumentRequest request, CancellationToken cancellationToken = default)
+		{
+			var headers = await CreateHeaders();
 
-			return await ExecAsync(() => client.UploadAsync(uri, request, headers));
-        }
+			return await ExecAsync(() => client.UploadAsync(uri, request, headers, cancellationToken));
+		}
 
-        private async Task<Headers> CreateHeaders(string idempotencyKey = null)
+		internal Uri GetWithQueryString(string url, int? limit, int? offset, string search = null, string email = null, List<string> status = null)
+		{
+			var qb = new QueryBuilder();
+
+			if (limit.HasValue)
+			{
+				qb.Add("limit", limit.ToString());
+			}
+
+			if (offset.HasValue)
+			{
+				qb.Add("offset", offset.ToString());
+			}
+
+			if (!string.IsNullOrEmpty(search))
+			{
+				qb.Add("search", search);
+			}
+
+			if (!string.IsNullOrEmpty(email))
+			{
+				qb.Add("email", email);
+			}
+
+			if (status?.Any() != false)
+			{
+				qb.Add("status", status);
+			}
+
+			return new Uri(url + qb.ToQueryString());
+		}
+
+		private async Task<Headers> CreateHeaders(string idempotencyKey = null)
 		{
 			var headers = new Headers
 			{

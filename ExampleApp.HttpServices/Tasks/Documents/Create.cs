@@ -1,7 +1,7 @@
-﻿using System.Reflection;
-using System.Threading.Tasks;
-using Dwolla.Client.Models;
+﻿using Dwolla.Client.Models;
 using Dwolla.Client.Models.Requests;
+using System.Reflection;
+using System.Threading.Tasks;
 
 namespace ExampleApp.HttpServices.Tasks.Documents
 {

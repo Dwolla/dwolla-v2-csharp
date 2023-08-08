@@ -2,10 +2,8 @@
 using Dwolla.Client.Models.Requests;
 using Dwolla.Client.Models.Responses;
 using Dwolla.Client.Rest;
-using Microsoft.AspNetCore.Http.Extensions;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -18,57 +16,31 @@ namespace Dwolla.Client.HttpServices
 		{
 		}
 
-        public async Task<RestResponse<Customer>> GetCustomerAsync(string customerId, CancellationToken cancellation = default)
-        {
-            if (string.IsNullOrWhiteSpace(customerId))
-            {
-                throw new ArgumentException("CustomerId should not be blank.");
-            }
-
-            return await GetAsync<Customer>(new Uri($"{client.ApiBaseAddress}/customers/{customerId}"), cancellation);
-        }
-
-        public async Task<RestResponse<IavTokenResponse>> GetCustomerIavTokenAsync(string customerId, CancellationToken cancellation = default)
-        {
-            if (string.IsNullOrWhiteSpace(customerId))
-            {
-                throw new ArgumentException("CustomerId should not be blank.");
-            }
-
-            return await GetAsync<IavTokenResponse>(new Uri($"{client.ApiBaseAddress}/customers/{customerId}/iav-token"), cancellation);
-        }
-
-        public async Task<RestResponse<GetCustomersResponse>> GetCustomerCollectionAsync(string search, string email, List<string> status, int? limit, int? offset, CancellationToken cancellation = default)
+		public async Task<RestResponse<Customer>> GetCustomerAsync(string customerId, CancellationToken cancellation = default)
 		{
-            var url = $"{client.ApiBaseAddress}/customers";
-            var qb = new QueryBuilder();
-
-            if (limit.HasValue)
-            {
-                qb.Add("limit", limit.ToString());
-            }
-
-            if (offset.HasValue)
-            {
-                qb.Add("offset", offset.ToString());
-            }
-
-            if (!string.IsNullOrEmpty(search))
+			if (string.IsNullOrWhiteSpace(customerId))
 			{
-                qb.Add("search", search);
-            }
+				throw new ArgumentException("CustomerId should not be blank.");
+			}
 
-            if (!string.IsNullOrEmpty(email))
-            {
-                qb.Add("email", email);
-            }
+			return await GetAsync<Customer>(new Uri($"{client.ApiBaseAddress}/customers/{customerId}"), cancellation);
+		}
 
-            if (status.Any())
-            {
-                qb.Add("status", status);
-            }
+		public async Task<RestResponse<IavTokenResponse>> GetCustomerIavTokenAsync(string customerId, CancellationToken cancellation = default)
+		{
+			if (string.IsNullOrWhiteSpace(customerId))
+			{
+				throw new ArgumentException("CustomerId should not be blank.");
+			}
 
-            return await GetAsync<GetCustomersResponse>(new Uri(url + qb.ToQueryString()), cancellation);
+			return await GetAsync<IavTokenResponse>(new Uri($"{client.ApiBaseAddress}/customers/{customerId}/iav-token"), cancellation);
+		}
+
+		public async Task<RestResponse<GetCustomersResponse>> GetCustomerCollectionAsync(string search, string email, List<string> status, int? limit, int? offset, CancellationToken cancellation = default)
+		{
+			var uri = GetWithQueryString($"{client.ApiBaseAddress}/customers", limit, offset, search, email, status);
+
+			return await GetAsync<GetCustomersResponse>(uri, cancellation);
 		}
 
 		public async Task<RestResponse<EmptyResponse>> CreateCustomerAsync(CreateCustomerRequest request, string idempotencyKey = null, CancellationToken cancellationToken = default)
@@ -78,16 +50,16 @@ namespace Dwolla.Client.HttpServices
 			return await PostAsync<CreateCustomerRequest, EmptyResponse>(new Uri($"{client.ApiBaseAddress}/customers"), request, idempotencyKey, cancellationToken);
 		}
 
-        public async Task<RestResponse<Customer>> UpdateCustomerAsync(string customerId, UpdateCustomerRequest request, string idempotencyKey = null, CancellationToken cancellationToken = default)
-        {
-            if (string.IsNullOrWhiteSpace(customerId))
-            {
-                throw new ArgumentException("CustomerId should not be blank.");
-            }
+		public async Task<RestResponse<Customer>> UpdateCustomerAsync(string customerId, UpdateCustomerRequest request, string idempotencyKey = null, CancellationToken cancellationToken = default)
+		{
+			if (string.IsNullOrWhiteSpace(customerId))
+			{
+				throw new ArgumentException("CustomerId should not be blank.");
+			}
 
-            if (request == null) throw new ArgumentNullException(nameof(request));
+			if (request == null) throw new ArgumentNullException(nameof(request));
 
-            return await PostAsync<UpdateCustomerRequest, Customer>(new Uri($"{client.ApiBaseAddress}/customers/{customerId}"), request, idempotencyKey, cancellationToken);
-        }
-    }
+			return await PostAsync<UpdateCustomerRequest, Customer>(new Uri($"{client.ApiBaseAddress}/customers/{customerId}"), request, idempotencyKey, cancellationToken);
+		}
+	}
 }

@@ -12,7 +12,7 @@ namespace ExampleApp.HttpServices.Tasks.Customers
 
             var response = await HttpService.Customers.GetCustomerAsync(input);
 
-             WriteLine($"Customer: {response.Content.Id} - {response.Content.FirstName} - {response.Content.LastName}");
+            WriteLine($"Customer: {response.Content.Id} - {response.Content.FirstName} - {response.Content.LastName}");
         }
     }
 }

@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Dwolla.Client.Models;
+using Dwolla.Client.Models.Requests;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Dwolla.Client.Models;
-using Dwolla.Client.Models.Requests;
 
 namespace ExampleApp.HttpServices.Tasks.Customers
 {
