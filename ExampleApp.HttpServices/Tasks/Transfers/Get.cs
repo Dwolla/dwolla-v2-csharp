@@ -12,7 +12,8 @@ namespace ExampleApp.HttpServices.Tasks.Transfers
 
             var response = await HttpService.Transfers.GetTransferAsync(input);
 
-            WriteLine($"Status: {response.Content.Status} | Amount - {response.Content.Amount.Value} {response.Content.Amount.Currency};");
+            WriteLine(response.Error is not null ? $"Error when retrieving transfer. {response.Error.Message}." :
+                $"Status: {response.Content.Status} | Amount - {response.Content.Amount.Value} {response.Content.Amount.Currency};");
         }
     }
 }

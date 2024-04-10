@@ -34,6 +34,16 @@ namespace Dwolla.Client.HttpServices
 
             return await GetAsync<GetFundingSourcesResponse>(new Uri($"{client.ApiBaseAddress}/funding-sources/{fundingSourceId}/funding-sources"), cancellation);
         }
+        
+        public async Task<RestResponse<EmptyResponse>> InitiateMicroDepositAsync(string fundingSourceId, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(fundingSourceId))
+            {
+                throw new ArgumentException("FundingSourceId should not be blank.");
+            }
+
+            return await PostAsync(new Uri($"{client.ApiBaseAddress}/funding-sources/{fundingSourceId}/micro-deposits"), cancellationToken);
+        }
 
         public async Task<RestResponse<MicroDepositsResponse>> GetMicroDepositAsync(string fundingSourceId, CancellationToken cancellation = default)
         {
@@ -79,6 +89,16 @@ namespace Dwolla.Client.HttpServices
             if (request == null) throw new ArgumentNullException(nameof(request));
 
             return await PostAsync<CreatePlaidFundingSourceRequest, EmptyResponse>(new Uri($"{client.ApiBaseAddress}/customers/{customerId}/funding-sources"), request, idempotencyKey, cancellationToken);
+        }
+        
+        public async Task<RestResponse<GetFundingSourceBalanceResponse>> GetFundingSourceBalanceAsync(string fundingSourceId, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(fundingSourceId))
+            {
+                throw new ArgumentException("fundingSourceId should not be blank.");
+            }
+
+            return await GetAsync<GetFundingSourceBalanceResponse>(new Uri($"{client.ApiBaseAddress}/funding-sources/{fundingSourceId}/balance"), cancellationToken);
         }
     }
 }

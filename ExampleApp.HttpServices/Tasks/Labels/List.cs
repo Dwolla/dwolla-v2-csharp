@@ -12,8 +12,14 @@ namespace ExampleApp.HttpServices.Tasks.Labels
 
             var response = await HttpService.Labels.GetLabelCustomerCollectionAsync(input, null, null);
 
-            response.Content.Embedded.Labels
-                .ForEach(l => WriteLine($"Label: ID - {l.Id}; Amount - {l.Amount.Value} {l.Amount.Currency}"));
+            if (response.Error is not null)
+            {
+                WriteLine($"Error retrieving label for customer. {response.Error.Message}.");
+            }
+            else
+            {
+                response.Content.Embedded.Labels.ForEach(l => WriteLine($"Label: ID - {l.Id}; Amount - {l.Amount.Value} {l.Amount.Currency}"));
+            }
         }
     }
 }

@@ -11,7 +11,9 @@ namespace ExampleApp.HttpServices.Tasks.FundingSources
             var input = ReadLine();
 
             var fundingSourceResponse = await HttpService.FundingSources.GetFundingSourceAsync(input);
-            WriteLine($"Created funding-source: {fundingSourceResponse.Content.Name}");
+            
+            WriteLine(fundingSourceResponse.Error is not null ? $"Error retrieving funding source {fundingSourceResponse.Error.Message}" 
+                : $"Created funding-source: {fundingSourceResponse.Content.Name}");
         }
     }
 }

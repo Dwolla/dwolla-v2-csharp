@@ -27,7 +27,7 @@ namespace ExampleApp.Tasks.Masspayments
             if (uri == null) return;
 
             var masspayment = await Broker.GetMasspaymentAsync(uri);
-            WriteLine($"Created {masspayment.Id}; Status: {masspayment.Status}; Total: {masspayment.Total.Value} {masspayment.Total.Currency}; Created: {masspayment.Created}");
+            WriteLine($"Created {masspayment.Id}; Status: {masspayment.Status}; Created: {masspayment.Created}");
         }
     }
 }

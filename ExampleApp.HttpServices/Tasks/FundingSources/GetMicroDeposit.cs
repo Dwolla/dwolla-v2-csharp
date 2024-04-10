@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 
 namespace ExampleApp.HttpServices.Tasks.FundingSources
 {
@@ -11,7 +12,24 @@ namespace ExampleApp.HttpServices.Tasks.FundingSources
             var input = ReadLine();
 
             var response = await HttpService.FundingSources.GetMicroDepositAsync(input);
-            WriteLine($"Status: {response.Content.Status}");
+            
+            if (response.Error is not null)
+            {
+                WriteLine($"Error retrieving micro deposits: {response.Error.Message}.");
+                if (response.Error.Embedded is not null && response.Error.Embedded.Errors.Any())
+                {
+                    WriteLine("  Errors:");
+                    foreach (var error in response.Error.Embedded.Errors)
+                    {
+                        WriteLine("    - " + error.Code + ": " + error.Message);
+                    }
+                    WriteLine("");
+                }
+            }
+            else
+            {
+                WriteLine($"Status: {response.Content.Status}");
+            }
         }
     }
 }

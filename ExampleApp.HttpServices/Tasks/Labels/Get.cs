@@ -12,7 +12,9 @@ namespace ExampleApp.HttpServices.Tasks.Labels
 
             var response = await HttpService.Labels.GetLabelAsync(input);
 
-            WriteLine($"Amount: {response.Content.Amount.Value} {response.Content.Amount.Currency}");
+            WriteLine(response.Error is not null
+                ? $"Error retrieving label. {response.Error.Message}."
+                : $"Amount: {response.Content?.Amount?.Value ?? 0} {response.Content?.Amount?.Currency ?? "NA"}");
         }
     }
 }

@@ -11,8 +11,10 @@ namespace ExampleApp.HttpServices.Tasks.Masspayments
             var input = ReadLine();
 
             var response = await HttpService.MassPayments.GetMassPaymentAsync(input);
-
-            WriteLine($"Created {response.Content.Id}: Status - {response.Content.Status} | Total - {response.Content.Total.Value} {response.Content.Total.Currency} | Created - {response.Content.Created}");
+            
+            WriteLine(response.Error is not null
+                ? $"Error when retrieving mass payment. {response.Error.Message}."
+                : $"Created {response.Content.Id}: Status - {response.Content.Status} | Created - {response.Content.Created}");
         }
     }
 }

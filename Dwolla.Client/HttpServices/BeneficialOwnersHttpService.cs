@@ -74,7 +74,7 @@ namespace Dwolla.Client.HttpServices
                 throw new ArgumentException("BeneficialOwnerId should not be blank.");
             }
 
-            return await PostAsync<EmptyResponse>(new Uri($"{client.ApiBaseAddress}/beneficial-owners/{beneficialOwnerId}"), null);
+            return await DeleteAsync<EmptyResponse>(new Uri($"{client.ApiBaseAddress}/beneficial-owners/{beneficialOwnerId}"), null);
         }
     }
 }
