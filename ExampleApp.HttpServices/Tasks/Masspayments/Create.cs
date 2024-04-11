@@ -18,6 +18,7 @@ namespace ExampleApp.HttpServices.Tasks.Masspayments
             Write("Destination Funding Source ID for first masspay item: ");
             var destinationFundingSourceId1 = ReadLine();
 
+            Write("Enter amount for funding source payment: ");
             if (!decimal.TryParse(Console.ReadLine(), out decimal amount1))
             {
                 WriteLine("Amount 1 entered is not a decimal. Please enter a correct value.");
@@ -27,6 +28,7 @@ namespace ExampleApp.HttpServices.Tasks.Masspayments
             Write("Destination Funding Source ID for second masspay item: ");
             var destinationFundingSourceId2 = ReadLine();
 
+            Write("Enter amount for funding source payment: ");
             if (!decimal.TryParse(Console.ReadLine(), out decimal amount2))
             {
                 WriteLine("Amount 2 entered is not a decimal. Please enter a correct value.");
@@ -55,8 +57,24 @@ namespace ExampleApp.HttpServices.Tasks.Masspayments
 
             if (response == null) return;
 
-            var massPaymentResponse = await HttpService.MassPayments.GetMassPaymentAsync(response.Response.Headers.Location.ToString().Split('/').Last());
-            WriteLine($"Created {massPaymentResponse.Content.Id}: Status - {massPaymentResponse.Content.Status} | Total - {massPaymentResponse.Content.Total.Value} {massPaymentResponse.Content.Total.Currency} | Created - {massPaymentResponse.Content.Created}");
+            if (response.Error is not null)
+            {
+                WriteLine($"Error creating mass payment: {response.Error.Message}.");
+                if (response.Error.Embedded is not null && response.Error.Embedded.Errors.Any())
+                {
+                    WriteLine("  Errors:");
+                    foreach (var error in response.Error.Embedded.Errors)
+                    {
+                        WriteLine("    - " + error.Code + ": " + error.Message);
+                    }
+                    WriteLine("");
+                }
+            }
+            else
+            {
+                var massPaymentResponse = await HttpService.MassPayments.GetMassPaymentAsync(response.Response.Headers.Location.ToString().Split('/').Last());
+                WriteLine($"Created {massPaymentResponse.Content.Id}: Status - {massPaymentResponse.Content.Status} | Created - {massPaymentResponse.Content.Created}");
+            }
         }
     }
 }

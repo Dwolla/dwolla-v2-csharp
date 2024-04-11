@@ -14,24 +14,34 @@ namespace ExampleApp.HttpServices.Tasks.FundingSources
             Write("Funding Source ID for which to verify the micro-deposits: ");
             var fundingSourceId = ReadLine();
 
-            Write("First micro-deposit amount: ");
-            var amount1 = decimal.Parse(ReadLine());
-
-            Write("Second micro-deposit amount: ");
-            var amount2 = decimal.Parse(ReadLine());
-
             var response = await HttpService.FundingSources.VerifyMicroDepositAsync(
                 fundingSourceId,
                 new MicroDepositsRequest
                 {
-                    Amount1 = new Money { Value = amount1, Currency = "USD" },
-                    Amount2 = new Money { Value = amount2, Currency = "USD" }
+                    Amount1 = new Money { Value = .05m, Currency = "USD" },
+                    Amount2 = new Money { Value = .05m, Currency = "USD" }
                 }
             );
 
             if (response == null) return;
 
-            Console.WriteLine($"Micro-deposit Verified: {response.Response.Headers.Location.ToString().Split('/').Last()}");
+            if (response.Error is not null)
+            {
+                WriteLine($"Error verifying micro deposit: {response.Error.Message}.");
+                if (response.Error.Embedded is not null && response.Error.Embedded.Errors.Any())
+                {
+                    WriteLine("  Errors:");
+                    foreach (var error in response.Error.Embedded.Errors)
+                    {
+                        WriteLine("    - " + error.Code + ": " + error.Message);
+                    }
+                    WriteLine("");
+                }
+            }
+            else
+            {
+                WriteLine($"Micro-deposit Verified");
+            }
         }
     }
 }

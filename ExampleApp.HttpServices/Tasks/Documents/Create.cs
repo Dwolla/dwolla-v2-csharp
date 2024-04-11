@@ -33,7 +33,9 @@ namespace ExampleApp.HttpServices.Tasks.Documents
 
             if (response == null) return;
 
-            WriteLine($"Customer document uploaded: URI - {response.Response.Headers.Location}");
+            WriteLine(response.Error is not null
+                ? $"Response {response.Response.StatusCode}. Failed to create document with error: {response.Error.Message}"
+                : $"Customer document uploaded: URI - {response.Response.Headers.Location}");
         }
     }
 }

@@ -12,7 +12,9 @@ namespace ExampleApp.HttpServices.Tasks.Labels
 
             var response = await HttpService.Labels.GetReallocationAsync(input);
 
-            WriteLine($"Created: {response.Content.Created}");
+            WriteLine(response.Error is not null
+                ? $"Error retrieving label reallocation. {response.Error.Message}."
+                : $"Label reallocation retrieved. Created: {response.Content.Created}");
         }
     }
 }

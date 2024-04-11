@@ -32,7 +32,7 @@ namespace Dwolla.Client.HttpServices
                 throw new ArgumentException("CustomerId should not be blank.");
             }
 
-            return await GetAsync<GetDocumentsResponse>(new Uri($"{client.ApiBaseAddress}/customers/{customerId}"), cancellation);
+            return await GetAsync<GetDocumentsResponse>(new Uri($"{client.ApiBaseAddress}/customers/{customerId}/documents"), cancellation);
         }
 
         public async Task<RestResponse<EmptyResponse>> UploadDocumentAsync(string customerId, UploadDocumentRequest request)

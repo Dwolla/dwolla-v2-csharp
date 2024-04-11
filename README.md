@@ -74,7 +74,7 @@ expires, generate a new one using `AppTokenRequest`._
 
 ## Making Requests
 
-Once you've created a `DwollaClient`, currently, you can make low-level HTTP requests.
+You can make either low-level or high-level HTTP requests.
 
 ### High-Level Requests
 
@@ -89,7 +89,7 @@ If you use a single resource HttpService you will need to pass in a method to re
 
 ### Low-Level Requests
 
-To make low-level HTTP requests, you can use the `GetAsync()`, `PostAsync()`, `UploadAsync()` and
+To make low-level HTTP requests, you can use the `DwollaClient` `GetAsync()`, `PostAsync()`, `UploadAsync()` and
 `DeleteAsync()` methods with the available
 [request models](https://github.com/Dwolla/dwolla-v2-csharp/blob/main/Dwolla.Client/Models/Requests).
 These methods will return responses that can be mapped to one of the available

@@ -12,8 +12,15 @@ namespace ExampleApp.HttpServices.Tasks.Labels
 
             var response = await HttpService.Labels.GetLedgerEntryCollectionAsync(input, null, null);
 
-            response.Content.Embedded.LedgerEntries
-                .ForEach(le => WriteLine($"Label Ledger Entry: ID - {le.Id} | Amount - {le.Amount.Value} {le.Amount.Currency}"));
+            if (response.Error is not null)
+            {
+                WriteLine($"Error retrieving label ledge entries. {response.Error.Message}.");
+            }
+            else
+            {
+                response.Content.Embedded.LedgerEntries
+                    .ForEach(le => WriteLine($"Label Ledger Entry: ID - {le.Id} | Amount - {le.Amount.Value} {le.Amount.Currency}"));
+            }
         }
     }
 }

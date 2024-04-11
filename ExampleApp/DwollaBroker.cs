@@ -141,9 +141,6 @@ namespace ExampleApp
         internal async Task<BalanceResponse> GetFundingSourceBalanceAsync(Uri balanceUri) =>
             (await GetAsync<BalanceResponse>(balanceUri)).Content;
 
-        internal async Task<IavTokenResponse> GetCustomerIavTokenAsync(Uri customerUri) =>
-            (await PostAsync<EmptyResponse, IavTokenResponse>(new Uri(customerUri.AbsoluteUri + "/iav-token"), null)).Content;
-
         internal async Task<Uri> CreateTransferAsync(string sourceFundingSourceId, string destinationFundingSourceId,
             decimal amount, decimal? fee, Uri chargeTo, string sourceAddenda, string destinationAddenda)
         {

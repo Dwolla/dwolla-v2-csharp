@@ -32,8 +32,23 @@ namespace ExampleApp.HttpServices.Tasks.Labels
 
             if (response == null) return;
 
-            var ownerResponse = await HttpService.Labels.GetLabelAsync(response.Response.Headers.Location.ToString().Split('/').Last());
-            WriteLine($"Created: {ownerResponse.Content.Id} ");
+            if (response.Error is not null)
+            {
+                WriteLine($"Response {response.Response.StatusCode}. Error creating label: {response.Error.Message}.");
+            }
+            else if (response.Response.Headers?.Location is not null)
+            {
+                var labelResponse = await HttpService.Labels.GetLabelAsync(response.Response.Headers.Location.ToString().Split('/').Last());
+
+                WriteLine(
+                    labelResponse.Error is not null
+                        ? $"Label was created. However, an error occurred while retrieving the label. {labelResponse.Error}"
+                        : $"Created: {labelResponse.Content.Id}");
+            }
+            else
+            {
+                WriteLine("Label created successfully. But no resource URI was provided.");
+            }
         }
     }
 }

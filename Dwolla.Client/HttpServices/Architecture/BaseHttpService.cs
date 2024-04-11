@@ -28,6 +28,13 @@ namespace Dwolla.Client.HttpServices.Architecture
 
 			return await ExecAsync(() => client.GetAsync<TRes>(uri, headers, cancellationToken));
 		}
+		
+		internal async Task<RestResponse<EmptyResponse>> PostAsync(Uri uri, CancellationToken cancellationToken = default)
+		{
+			var headers = await CreateHeaders();
+
+			return await ExecAsync(() => client.PostAsync(uri, headers, cancellationToken));
+		}
 
 		internal async Task<RestResponse<EmptyResponse>> PostAsync<TReq>(Uri uri, TReq request, CancellationToken cancellationToken = default)
 		{

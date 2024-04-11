@@ -26,16 +26,6 @@ namespace Dwolla.Client.HttpServices
 			return await GetAsync<Customer>(new Uri($"{client.ApiBaseAddress}/customers/{customerId}"), cancellation);
 		}
 
-		public async Task<RestResponse<IavTokenResponse>> GetCustomerIavTokenAsync(string customerId, CancellationToken cancellation = default)
-		{
-			if (string.IsNullOrWhiteSpace(customerId))
-			{
-				throw new ArgumentException("CustomerId should not be blank.");
-			}
-
-			return await GetAsync<IavTokenResponse>(new Uri($"{client.ApiBaseAddress}/customers/{customerId}/iav-token"), cancellation);
-		}
-
 		public async Task<RestResponse<GetCustomersResponse>> GetCustomerCollectionAsync(string search, string email, List<string> status, int? limit, int? offset, CancellationToken cancellation = default)
 		{
 			var uri = GetWithQueryString($"{client.ApiBaseAddress}/customers", limit, offset, search, email, status);

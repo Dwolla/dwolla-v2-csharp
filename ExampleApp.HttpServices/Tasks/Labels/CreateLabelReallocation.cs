@@ -43,9 +43,19 @@ namespace ExampleApp.HttpServices.Tasks.Labels
 
             if (response == null) return;
 
-            var entryResponse = await HttpService.Labels.GetReallocationAsync(response.Response.Headers.Location.ToString().Split('/').Last());
-
-            WriteLine($"Created: {entryResponse.Content.Created}");
+            if (response.Error is not null)
+            {
+                WriteLine($"Response {response.Response.StatusCode}. Error creating label real location: {response.Error.Message}.");
+            }
+            else if (response.Response.Headers.Location is not null)
+            {
+                var entryResponse = await HttpService.Labels.GetReallocationAsync(response.Response.Headers.Location.ToString().Split('/').Last());
+                WriteLine($"Created: {entryResponse.Content.Created}");
+            }
+            else
+            {
+                WriteLine("Label reallocation created successfully. But no resource URI was provided.");
+            }
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Dwolla.Client.Models.Responses
 {
@@ -9,12 +9,6 @@ namespace Dwolla.Client.Models.Responses
         public string Status { get; set; }
         public Money Amount { get; set; }
         public DateTime Created { get; set; }
-        public Dictionary<string, string> Metadata { get; set; }
         public Clearing Clearing { get; set; }
-        public AchDetails AchDetails { get; set; }
-        public RtpDetails RtpDetails { get; set; }
-        public string CorrelationId { get; set; }
-        public string IndividualACHId { get; set; }
-        public ProcessingChannel ProcessingChannel { get; set; }
     }
 }

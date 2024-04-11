@@ -27,6 +27,7 @@ namespace Dwolla.Client
         Task<RestResponse<TRes>> PostAuthAsync<TRes>(Uri uri, AppTokenRequest content, CancellationToken cancellationToken = default) where TRes : IDwollaResponse;
         Task<RestResponse<TRes>> GetAsync<TRes>(Uri uri, Headers headers, CancellationToken cancellationToken = default) where TRes : IDwollaResponse;
         Task<RestResponse<TRes>> PostAsync<TReq, TRes>(Uri uri, TReq content, Headers headers, CancellationToken cancellationToken = default) where TRes : IDwollaResponse;
+        Task<RestResponse<EmptyResponse>> PostAsync(Uri uri, Headers headers, CancellationToken cancellationToken = default);
         Task<RestResponse<EmptyResponse>> DeleteAsync<TReq>(Uri uri, TReq content, Headers headers, CancellationToken cancellationToken = default);
         Task<RestResponse<EmptyResponse>> UploadAsync(Uri uri, UploadDocumentRequest content, Headers headers, CancellationToken cancellationToken = default);
     }
@@ -90,7 +91,11 @@ namespace Dwolla.Client
         public async Task<RestResponse<TRes>> PostAsync<TReq, TRes>(
             Uri uri, TReq content, Headers headers, CancellationToken cancellationToken = default) where TRes : IDwollaResponse =>
             await SendAsync<TRes>(CreatePostRequest(uri, content, headers), cancellationToken);
-
+        
+        public async Task<RestResponse<EmptyResponse>> PostAsync(
+            Uri uri, Headers headers, CancellationToken cancellationToken = default) =>
+            await SendAsync<EmptyResponse>(CreateRequest(HttpMethod.Post, uri, headers), cancellationToken);
+        
         public async Task<RestResponse<EmptyResponse>> UploadAsync(
             Uri uri, UploadDocumentRequest content, Headers headers, CancellationToken cancellationToken = default) =>
             await SendAsync<EmptyResponse>(CreateUploadRequest(uri, content, headers), cancellationToken);

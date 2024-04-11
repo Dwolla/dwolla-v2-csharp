@@ -43,6 +43,12 @@ namespace ExampleApp.HttpServices.Tasks.Transfers
             {
                 var fundingSource = await HttpService.FundingSources.GetFundingSourceAsync(destinationFundingSourceId);
 
+                if (fundingSource.Error is not null)
+                {
+                    WriteLine($"Error getting funding source. {fundingSource.Error.Message}.");
+                    return;
+                }
+
                 response = await HttpService.Transfers.CreateTransferAsync(
                     new CreateTransferRequest
                     {
@@ -127,8 +133,30 @@ namespace ExampleApp.HttpServices.Tasks.Transfers
 
             if (response == null) return;
 
-            var transferResponse = await HttpService.Transfers.GetTransferAsync(response.Response.Headers.Location.ToString().Split('/').Last());
-            WriteLine($"Created {transferResponse.Content.Id}; Status: {transferResponse.Content.Status}");
+            if (response.Error is not null)
+            {
+                WriteLine($"Error creating transfer. {response.Error.Message}.");
+                if (response.Error.Embedded is not null && response.Error.Embedded.Errors.Any())
+                {
+                    WriteLine("  Errors:");
+                    foreach (var error in response.Error.Embedded.Errors)
+                    {
+                        WriteLine("    - " + error.Code + ": " + error.Message);
+                    }
+                    WriteLine("");
+                }
+            }
+            else if (response.Response.Headers?.Location is not null)
+            {
+                var transferResponse = await HttpService.Transfers.GetTransferAsync(response.Response.Headers.Location.ToString().Split('/').Last());
+                WriteLine(transferResponse.Error is not null
+                    ? $"Transfer created. But there was an error getting transfer. {transferResponse.Error.Message}."
+                    : $"Created {transferResponse.Content.Id}; Status: {transferResponse.Content.Status}");
+            }
+            else
+            {
+                WriteLine("Transfer created.");
+            }
         }
     }
 }

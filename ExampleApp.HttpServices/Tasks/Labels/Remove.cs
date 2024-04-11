@@ -13,7 +13,18 @@ namespace ExampleApp.HttpServices.Tasks.Labels
 
             var response = await HttpService.Labels.DeleteLabelAsync(input);
 
-            WriteLine($"Label Deleted: {response.Response.Headers.Location.ToString().Split('/').Last()}");
+            if (response.Error is not null)
+            {
+                WriteLine($"Error removing label. {response.Error.Message}");
+            }
+            else if (response.Response.Headers?.Location is not null)
+            {
+                WriteLine($"Label Deleted: {response.Response.Headers.Location.ToString().Split('/').Last()}");
+            }
+            else
+            {
+                WriteLine("Label Deleted.");
+            }
         }
     }
 }

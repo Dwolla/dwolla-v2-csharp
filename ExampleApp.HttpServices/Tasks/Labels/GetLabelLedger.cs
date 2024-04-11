@@ -11,8 +11,10 @@ namespace ExampleApp.HttpServices.Tasks.Labels
             var input = ReadLine();
 
             var response = await HttpService.Labels.GetLedgerEntryAsync(input);
-
-            WriteLine($"Amount: {response.Content.Amount.Value} {response.Content.Amount.Currency}");
+            
+            WriteLine(response.Error is not null
+                ? $"Error retrieving label ledger entry. {response.Error.Message}."
+                : $"Amount: {response.Content?.Amount?.Value ?? 0} {response.Content?.Amount?.Currency ?? "NA"}");
         }
     }
 }
