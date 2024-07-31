@@ -18,9 +18,9 @@ namespace ExampleApp.Tasks.Labels
             {
                 amount = Convert.ToDecimal(Console.ReadLine());
             }
-            catch (System.OverflowException) {}
-            catch (System.FormatException) {}
-            catch (System.ArgumentNullException) {}
+            catch (System.OverflowException) { }
+            catch (System.FormatException) { }
+            catch (System.ArgumentNullException) { }
 
             var rootRes = await Broker.GetRootAsync();
             var uri = await Broker.CreateLabelAsync(

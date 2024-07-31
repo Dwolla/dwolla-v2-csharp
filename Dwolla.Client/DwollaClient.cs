@@ -1,4 +1,8 @@
-﻿using System;
+using Dwolla.Client.Models;
+using Dwolla.Client.Models.Requests;
+using Dwolla.Client.Models.Responses;
+using Dwolla.Client.Rest;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -9,11 +13,8 @@ using System.Security.Authentication;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading;
 using System.Threading.Tasks;
-using Dwolla.Client.Models;
-using Dwolla.Client.Models.Requests;
-using Dwolla.Client.Models.Responses;
-using Dwolla.Client.Rest;
 
 [assembly: InternalsVisibleTo("Dwolla.Client.Tests")]
 
@@ -23,11 +24,12 @@ namespace Dwolla.Client
     {
         string ApiBaseAddress { get; }
 
-        Task<RestResponse<TRes>> PostAuthAsync<TRes>(Uri uri, AppTokenRequest content) where TRes : IDwollaResponse;
-        Task<RestResponse<TRes>> GetAsync<TRes>(Uri uri, Headers headers) where TRes : IDwollaResponse;
-        Task<RestResponse<TRes>> PostAsync<TReq, TRes>(Uri uri, TReq content, Headers headers) where TRes : IDwollaResponse;
-        Task<RestResponse<EmptyResponse>> DeleteAsync<TReq>(Uri uri, TReq content, Headers headers);
-        Task<RestResponse<EmptyResponse>> UploadAsync(Uri uri, UploadDocumentRequest content, Headers headers);
+        Task<RestResponse<TRes>> PostAuthAsync<TRes>(Uri uri, AppTokenRequest content, CancellationToken cancellationToken = default) where TRes : IDwollaResponse;
+        Task<RestResponse<TRes>> GetAsync<TRes>(Uri uri, Headers headers, CancellationToken cancellationToken = default) where TRes : IDwollaResponse;
+        Task<RestResponse<TRes>> PostAsync<TReq, TRes>(Uri uri, TReq content, Headers headers, CancellationToken cancellationToken = default) where TRes : IDwollaResponse;
+        Task<RestResponse<EmptyResponse>> PostAsync(Uri uri, Headers headers, CancellationToken cancellationToken = default);
+        Task<RestResponse<EmptyResponse>> DeleteAsync<TReq>(Uri uri, TReq content, Headers headers, CancellationToken cancellationToken = default);
+        Task<RestResponse<EmptyResponse>> UploadAsync(Uri uri, UploadDocumentRequest content, Headers headers, CancellationToken cancellationToken = default);
     }
 
     public class DwollaClient : IDwollaClient
@@ -47,8 +49,8 @@ namespace Dwolla.Client
             .GetCustomAttribute<AssemblyFileVersionAttribute>().Version;
 #if NET5_0_OR_GREATER
         private static readonly HttpClient StaticHttpClient = new HttpClient(
-                new SocketsHttpHandler 
-                { 
+                new SocketsHttpHandler
+                {
                     PooledConnectionLifetime = TimeSpan.FromMinutes(2),
                     SslOptions = new SslClientAuthenticationOptions { EnabledSslProtocols = SslProtocols.Tls12 }
                 }
@@ -58,7 +60,7 @@ namespace Dwolla.Client
         private static HttpClientHandler _staticClientHandler;
         private static DateTime _staticClientHandlerExpirationDate;
 #endif
-        
+
         private readonly IRestClient _client;
 
         static DwollaClient()
@@ -67,37 +69,42 @@ namespace Dwolla.Client
             SetupHttpClientDefaults(StaticHttpClient);
 #endif
         }
-        
+
         public static DwollaClient Create(bool isSandbox) =>
             new DwollaClient(new RestClient(JsonSettings), isSandbox);
 
         public async Task<RestResponse<TRes>> PostAuthAsync<TRes>(
-            Uri uri, AppTokenRequest content) where TRes : IDwollaResponse =>
+            Uri uri, AppTokenRequest content, CancellationToken cancellationToken = default) where TRes : IDwollaResponse =>
             await SendAsync<TRes>(new HttpRequestMessage(HttpMethod.Post, uri)
             {
                 Content = new FormUrlEncodedContent(new Dictionary<string, string>
                 {
                     {"client_id", content.Key}, {"client_secret", content.Secret}, {"grant_type", content.GrantType}
                 })
-            });
+            },
+            cancellationToken);
 
         public async Task<RestResponse<TRes>> GetAsync<TRes>(
-            Uri uri, Headers headers) where TRes : IDwollaResponse =>
-            await SendAsync<TRes>(CreateRequest(HttpMethod.Get, uri, headers));
+            Uri uri, Headers headers, CancellationToken cancellationToken = default) where TRes : IDwollaResponse =>
+            await SendAsync<TRes>(CreateRequest(HttpMethod.Get, uri, headers), cancellationToken);
 
         public async Task<RestResponse<TRes>> PostAsync<TReq, TRes>(
-            Uri uri, TReq content, Headers headers) where TRes : IDwollaResponse =>
-            await SendAsync<TRes>(CreatePostRequest(uri, content, headers));
-
+            Uri uri, TReq content, Headers headers, CancellationToken cancellationToken = default) where TRes : IDwollaResponse =>
+            await SendAsync<TRes>(CreatePostRequest(uri, content, headers), cancellationToken);
+        
+        public async Task<RestResponse<EmptyResponse>> PostAsync(
+            Uri uri, Headers headers, CancellationToken cancellationToken = default) =>
+            await SendAsync<EmptyResponse>(CreateRequest(HttpMethod.Post, uri, headers), cancellationToken);
+        
         public async Task<RestResponse<EmptyResponse>> UploadAsync(
-            Uri uri, UploadDocumentRequest content, Headers headers) =>
-            await SendAsync<EmptyResponse>(CreateUploadRequest(uri, content, headers));
+            Uri uri, UploadDocumentRequest content, Headers headers, CancellationToken cancellationToken = default) =>
+            await SendAsync<EmptyResponse>(CreateUploadRequest(uri, content, headers), cancellationToken);
 
-        public async Task<RestResponse<EmptyResponse>> DeleteAsync<TReq>(Uri uri, TReq content, Headers headers) =>
-            await SendAsync<EmptyResponse>(CreateDeleteRequest(uri, content, headers));
+        public async Task<RestResponse<EmptyResponse>> DeleteAsync<TReq>(Uri uri, TReq content, Headers headers, CancellationToken cancellationToken = default) =>
+            await SendAsync<EmptyResponse>(CreateDeleteRequest(uri, content, headers), cancellationToken);
 
-        private async Task<RestResponse<TRes>> SendAsync<TRes>(HttpRequestMessage request) =>
-            await _client.SendAsync<TRes>(request, CreateHttpClient());
+        private async Task<RestResponse<TRes>> SendAsync<TRes>(HttpRequestMessage request, CancellationToken cancellationToken = default) =>
+            await _client.SendAsync<TRes>(request, CreateHttpClient(), cancellationToken);
 
         private static HttpRequestMessage CreateDeleteRequest<TReq>(
             Uri requestUri, TReq content, Headers headers, string contentType = ContentType) =>
@@ -152,7 +159,7 @@ namespace Dwolla.Client
             _client = client;
             ApiBaseAddress = isSandbox ? "https://api-sandbox.dwolla.com" : "https://api.dwolla.com";
         }
-        
+
         private static void SetupHttpClientDefaults(HttpClient client)
         {
             client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("dwolla-v2-csharp", ClientVersion));
@@ -168,7 +175,7 @@ namespace Dwolla.Client
                 _staticClientHandler.SslProtocols = SslProtocols.Tls12;
                 _staticClientHandlerExpirationDate = DateTime.UtcNow + TimeSpan.FromMinutes(2);
             }
-            
+
             var client = new HttpClient(_staticClientHandler);
             SetupHttpClientDefaults(client);
             return client;

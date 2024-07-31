@@ -74,11 +74,22 @@ expires, generate a new one using `AppTokenRequest`._
 
 ## Making Requests
 
-Once you've created a `DwollaClient`, currently, you can make low-level HTTP requests.
+You can make either low-level or high-level HTTP requests.
+
+### High-Level Requests
+
+To make high-level HTTP requests you can use the [HttpServices](https://github.com/Dwolla/dwolla-v2-csharp/blob/main/Dwolla.Client/HttpServices).
+The HttpServices allow you to make resource level requests with ease. You can either use the DwollaHttpService which will encapsulate all other resource HttpServices. 
+Otherwise, you can simply use a single resource HttpService(e.g., CustomerHttpService).
+
+#### Setting Access Token
+
+The DwollaHttpService will use the AuthorizationHttpService in `GetAccessTokenAsync()` to retrieve and then cache the access token.
+If you use a single resource HttpService you will need to pass in a method to retrieve the access token.
 
 ### Low-Level Requests
 
-To make low-level HTTP requests, you can use the `GetAsync()`, `PostAsync()`, `UploadAsync()` and
+To make low-level HTTP requests, you can use the `DwollaClient` `GetAsync()`, `PostAsync()`, `UploadAsync()` and
 `DeleteAsync()` methods with the available
 [request models](https://github.com/Dwolla/dwolla-v2-csharp/blob/main/Dwolla.Client/Models/Requests).
 These methods will return responses that can be mapped to one of the available

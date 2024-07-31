@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Dwolla.Client;
+﻿using Dwolla.Client;
 using Dwolla.Client.Models;
 using Dwolla.Client.Models.Requests;
 using Dwolla.Client.Models.Responses;
 using Dwolla.Client.Rest;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ExampleApp
 {
@@ -140,9 +140,6 @@ namespace ExampleApp
 
         internal async Task<BalanceResponse> GetFundingSourceBalanceAsync(Uri balanceUri) =>
             (await GetAsync<BalanceResponse>(balanceUri)).Content;
-
-        internal async Task<IavTokenResponse> GetCustomerIavTokenAsync(Uri customerUri) =>
-            (await PostAsync<EmptyResponse, IavTokenResponse>(new Uri(customerUri.AbsoluteUri + "/iav-token"), null)).Content;
 
         internal async Task<Uri> CreateTransferAsync(string sourceFundingSourceId, string destinationFundingSourceId,
             decimal amount, decimal? fee, Uri chargeTo, string sourceAddenda, string destinationAddenda)
