@@ -192,6 +192,9 @@ $ docker run --init -it dwolla/csharp-example-app:latest
 
 ## Changelog
 
+- [**7.0.0-alpha**](https://github.com/Dwolla/dwolla-v2-csharp/releases/tag/7.0.0-alpha)
+  - Alpha pre-release introducing high-level HTTP requests with `HttpServices`, encapsulating resource-level requests.
+  - Special thanks to [@isaiah-eventlink](https://github.com/isaiah-eventlink) and [@miccav-eventlink](https://github.com/miccav-eventlink) for their contributions in adding HTTP services for high-level methods! 🎉
 - [**6.0.0**](https://github.com/Dwolla/dwolla-v2-csharp/releases/tag/6.0.0)
   - Fix issue [#41](https://github.com/Dwolla/dwolla-v2-csharp/issues/47) reported by,
     [@waynebrantley](https://github.com/waynebrantley)
