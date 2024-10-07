@@ -83,7 +83,7 @@ namespace Dwolla.Client.HttpServices
             }
         }
 
-        public BeneficialOwnersHttpService _beneficialOwners;
+        private BeneficialOwnersHttpService _beneficialOwners;
         public BeneficialOwnersHttpService BeneficialOwners
         {
             get
@@ -92,7 +92,7 @@ namespace Dwolla.Client.HttpServices
             }
         }
 
-        public BusinessClassificationHttpService _businessClassification;
+        private BusinessClassificationHttpService _businessClassification;
         public BusinessClassificationHttpService BusinessClassification
         {
             get
@@ -101,7 +101,7 @@ namespace Dwolla.Client.HttpServices
             }
         }
 
-        public DocumentsHttpService _documents;
+        private DocumentsHttpService _documents;
         public DocumentsHttpService Documents
         {
             get
@@ -110,7 +110,7 @@ namespace Dwolla.Client.HttpServices
             }
         }
 
-        public EventsHttpService _events;
+        private EventsHttpService _events;
         public EventsHttpService Events
         {
             get
@@ -119,7 +119,7 @@ namespace Dwolla.Client.HttpServices
             }
         }
 
-        public ExchangesHttpService _exchanges;
+        private ExchangesHttpService _exchanges;
         public ExchangesHttpService Exchanges
         {
             get
@@ -128,7 +128,7 @@ namespace Dwolla.Client.HttpServices
             }
         }
 
-        public LabelsHttpService _labels;
+        private LabelsHttpService _labels;
         public LabelsHttpService Labels
         {
             get
@@ -137,7 +137,7 @@ namespace Dwolla.Client.HttpServices
             }
         }
 
-        public MassPaymentsHttpService _masspayments;
+        private MassPaymentsHttpService _masspayments;
         public MassPaymentsHttpService MassPayments
         {
             get
@@ -146,7 +146,7 @@ namespace Dwolla.Client.HttpServices
             }
         }
 
-        public TransfersHttpService _transfers;
+        private TransfersHttpService _transfers;
         public TransfersHttpService Transfers
         {
             get
@@ -155,7 +155,7 @@ namespace Dwolla.Client.HttpServices
             }
         }
 
-        public CustomersHttpService _customers;
+        private CustomersHttpService _customers;
         public CustomersHttpService Customers
         {
             get
@@ -164,7 +164,7 @@ namespace Dwolla.Client.HttpServices
             }
         }
 
-        public WebhookSubscriptionsHttpService _webhookSubscriptions;
+        private WebhookSubscriptionsHttpService _webhookSubscriptions;
         public WebhookSubscriptionsHttpService WebhookSubscriptions
         {
             get
@@ -173,12 +173,12 @@ namespace Dwolla.Client.HttpServices
             }
         }
 
-        public RootHttpService _root;
+        private RootHttpService _root;
         public RootHttpService Root
         {
             get
             {
-                return _root ?? new RootHttpService(Client, _getAccessTokenAsync);
+                return _root ?? (_root = new RootHttpService(Client, _getAccessTokenAsync));
             }
         }
     }

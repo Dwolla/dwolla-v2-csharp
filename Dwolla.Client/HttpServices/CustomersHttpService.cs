@@ -51,5 +51,16 @@ namespace Dwolla.Client.HttpServices
 
 			return await PostAsync<UpdateCustomerRequest, Customer>(new Uri($"{client.ApiBaseAddress}/customers/{customerId}"), request, idempotencyKey, cancellationToken);
 		}
+		
+		public async Task<RestResponse<GetCustomerTransfersResponse>> ListCustomerTransfersAsync(string customerId, int? limit = null, int? offset = null, CancellationToken cancellation = default)
+		{
+			if (string.IsNullOrWhiteSpace(customerId))
+			{
+				throw new ArgumentException("CustomerId should not be blank.");
+			}
+
+			var uri = GetWithQueryString($"{client.ApiBaseAddress}/customers/{customerId}/transfers", limit, offset);
+			return await GetAsync<GetCustomerTransfersResponse>(uri, cancellation);
+		}	
 	}
 }
