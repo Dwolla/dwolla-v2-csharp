@@ -87,7 +87,7 @@ namespace Dwolla.Client.HttpServices.Architecture
 				qb.Add("email", email);
 			}
 
-			if (status?.Any() != false)
+			if (status?.Any() == true)
 			{
 				qb.Add("status", status);
 			}

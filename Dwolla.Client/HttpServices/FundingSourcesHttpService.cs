@@ -100,5 +100,15 @@ namespace Dwolla.Client.HttpServices
 
             return await GetAsync<GetFundingSourceBalanceResponse>(new Uri($"{client.ApiBaseAddress}/funding-sources/{fundingSourceId}/balance"), cancellationToken);
         }
+
+		public async Task<RestResponse<GetFundingSourcesResponse>> GetFundingSourceForCustomerAsync(string customerId, CancellationToken cancellation = default)
+		{
+			if (string.IsNullOrWhiteSpace(customerId))
+			{
+				throw new ArgumentException("CustomerId should not be blank.");
+			}
+
+			return await GetAsync<GetFundingSourcesResponse>(new Uri($"{client.ApiBaseAddress}/customers/{customerId}/funding-sources"), cancellation);
+		}
     }
 }
