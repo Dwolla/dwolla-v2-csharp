@@ -34,7 +34,8 @@ namespace Dwolla.Client.HttpServices
             }
 
             _cachedToken = response.Content;
-            _expiresAtUtc = DateTime.UtcNow.AddSeconds(response.Content.ExpiresIn);
+            // The default 'ExpiresIn' is 3600 seconds.
+            _expiresAtUtc = DateTime.UtcNow.AddSeconds(response.Content.ExpiresIn - 60);
 
             return _cachedToken.Token;
         }
