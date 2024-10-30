@@ -87,7 +87,7 @@ namespace Dwolla.Client.HttpServices.Architecture
 				qb.Add("email", email);
 			}
 
-			if (status?.Any() != false)
+			if (status?.Any() == true)
 			{
 				qb.Add("status", status);
 			}
@@ -99,12 +99,12 @@ namespace Dwolla.Client.HttpServices.Architecture
 		{
 			var headers = new Headers
 			{
-				["Authorization"] = $"Bearer {await getAccessToken()}"
+				["authorization"] = $"Bearer {await getAccessToken()}"
 			};
 
 			if (idempotencyKey != null)
 			{
-				headers["Idempotency-Key"] = idempotencyKey;
+				headers["idempotency-key"] = idempotencyKey;
 			}
 
 			return headers;
