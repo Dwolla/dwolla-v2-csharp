@@ -99,12 +99,12 @@ namespace Dwolla.Client.HttpServices.Architecture
 		{
 			var headers = new Headers
 			{
-				["Authorization"] = $"Bearer {await getAccessToken()}"
+				["authorization"] = $"Bearer {await getAccessToken()}"
 			};
 
 			if (idempotencyKey != null)
 			{
-				headers["Idempotency-Key"] = idempotencyKey;
+				headers["idempotency-key"] = idempotencyKey;
 			}
 
 			return headers;
