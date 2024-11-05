@@ -181,6 +181,11 @@ $ docker run --init -it dwolla/csharp-example-app:latest
 
 ## Changelog
 
+- [**6.0.1**](https://github.com/Dwolla/dwolla-v2-csharp/releases/tag/6.0.1)
+  - Fix issue [#56](https://github.com/Dwolla/dwolla-v2-csharp/issues/56) reported by [@StevP116](https://github.com/StevP116) and [@jacob-ezlandlord](https://github.com/jacob-ezlandlord), addressing a deserialization bug where quoted numeric values in responses (such as `amount.value`) caused a `DeserializationException`. The `JsonSerializerOptions` in `DwollaClient` has been updated with `JsonNumberHandling.AllowReadingFromString` to support both quoted and unquoted numeric values, ensuring compatibility with varied API responses. 
+  - Backward Compatibility - This update does not introduce any breaking changes, allowing existing integrations to continue functioning without modifications. 
+  - Thanks to [@StevP116](https://github.com/StevP116) for recommending a straightforward fix and to everyone who contributed insights. 🎉
+  - File Name Correction: Renamed `LableLedgerEntry.cs` to `LabelLedgerEntry.cs` to fix a typo in the file name. This change does not impact the functionality of existing integrations.
 - [**6.0.0**](https://github.com/Dwolla/dwolla-v2-csharp/releases/tag/6.0.0)
   - Fix issue [#41](https://github.com/Dwolla/dwolla-v2-csharp/issues/47) reported by,
     [@waynebrantley](https://github.com/waynebrantley)
@@ -192,7 +197,7 @@ $ docker run --init -it dwolla/csharp-example-app:latest
     [Microsoft's HttpClient guidelines for .NET](https://learn.microsoft.com/en-us/dotnet/fundamentals/networking/http/httpclient-guidelines#recommended-use).
   - Special thanks to [@natehitz](https://github.com/natehitze) and
     [@IsaiahDahlberg](https://github.com/IsaiahDahlberg) for their contributions to this release!
-    :raised_hands:
+    🙌
 - [**5.4.0**](https://github.com/Dwolla/dwolla-v2-csharp/releases/tag/5.4.0)
   - Fix issue with deserialization of `200 Ok` response with an `_embedded` error on GET customer.
     Issue [#47](https://github.com/Dwolla/dwolla-v2-csharp/issues/47). (Thanks,
